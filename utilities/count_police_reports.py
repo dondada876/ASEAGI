@@ -1,4 +1,5 @@
 #!/usr/bin/env python3
+# -*- coding: utf-8 -*-
 """
 Quick script to count police reports in the database
 """
@@ -7,6 +8,14 @@ import os
 import sys
 from pathlib import Path
 from supabase import create_client
+
+# Fix Windows console encoding for emoji support
+if sys.platform == 'win32':
+    try:
+        sys.stdout.reconfigure(encoding='utf-8')
+    except AttributeError:
+        import codecs
+        sys.stdout = codecs.getwriter('utf-8')(sys.stdout.buffer, 'strict')
 
 # Try to load credentials from multiple sources
 SUPABASE_URL = None
