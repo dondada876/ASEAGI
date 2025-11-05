@@ -382,7 +382,7 @@ def main():
                     st.subheader("📊 Properties")
                     st.write(f"**Size:** {file_data.get('size_mb', 0):.2f} MB")
                     st.write(f"**Extension:** {file_data.get('extension', 'N/A')}")
-                    st.write(f"**Created:** {file_data.get('created_date', 'N/A')}")
+                    st.write(f"**Created:** {file_data.get('created_at', 'N/A')}")
                     st.write(f"**Modified:** {file_data.get('modified_date', 'N/A')}")
                     st.write(f"**Indexed:** {file_data.get('indexed_at', 'N/A')}")
 
