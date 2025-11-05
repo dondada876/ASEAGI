@@ -1,0 +1,106 @@
+===================================================================
+PUSH TO GITHUB - FINAL STEP
+===================================================================
+
+Your code is ready! Just need your GitHub credentials.
+
+REPOSITORY: https://github.com/dondada876/ASEAGI.git
+LOCATION: ~/proj344-dashboard
+STATUS: ✅ All files committed and ready
+
+===================================================================
+OPTION 1: Manual Push (Easiest)
+===================================================================
+
+Run this command:
+
+    cd ~/proj344-dashboard
+    git push -u origin main
+
+You'll be prompted for:
+• Username: dondada876
+• Password: Use a Personal Access Token (NOT your GitHub password)
+
+===================================================================
+CREATE PERSONAL ACCESS TOKEN
+===================================================================
+
+1. Go to: https://github.com/settings/tokens
+2. Click "Generate new token (classic)"
+3. Name: "PROJ344 Dashboard Push"
+4. Expiration: 90 days
+5. Select scope: ✅ repo (Full control of private repositories)
+6. Click "Generate token"
+7. COPY THE TOKEN (you won't see it again!)
+8. Use this token as your password when pushing
+
+===================================================================
+OPTION 2: Use SSH (If you have SSH key)
+===================================================================
+
+    cd ~/proj344-dashboard
+    git remote set-url origin git@github.com:dondada876/ASEAGI.git
+    git push -u origin main
+
+===================================================================
+OPTION 3: Install GitHub CLI (Recommended for future)
+===================================================================
+
+    brew install gh
+    gh auth login
+    cd ~/proj344-dashboard
+    git push -u origin main
+
+===================================================================
+VERIFY SUCCESS
+===================================================================
+
+After pushing, your repository will be at:
+https://github.com/dondada876/ASEAGI
+
+You should see:
+✅ 16 files
+✅ README.md displayed
+✅ All dashboard code visible
+
+===================================================================
+WHAT'S BEING PUSHED
+===================================================================
+
+16 files, 5,446 lines of code:
+- proj344_master_dashboard.py      (PROJ344 dashboard)
+- ceo_global_dashboard.py          (CEO dashboard)
+- timeline_constitutional_violations.py
+- proj344_style.py
+- requirements.txt
+- README.md
+- .streamlit/config.toml
+
+Plus 9 other dashboard variations
+
+===================================================================
+AFTER PUSHING
+===================================================================
+
+Deploy to Streamlit Cloud:
+1. Go to: https://streamlit.io/cloud
+2. Click "New app"
+3. Select: github.com/dondada876/ASEAGI
+4. Main file: proj344_master_dashboard.py
+5. Add secrets:
+   SUPABASE_URL = "your-url"
+   SUPABASE_KEY = "your-key"
+6. Deploy!
+
+===================================================================
+SECURITY REMINDER
+===================================================================
+
+✅ No sensitive data in repository
+✅ .env excluded via .gitignore
+✅ secrets.toml excluded
+
+Consider making repository PRIVATE (it's currently public)
+Settings → Danger Zone → Change visibility
+
+===================================================================
