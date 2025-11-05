@@ -419,23 +419,35 @@ with tab1:
         recent_docs = stats['documents'][-20:][::-1]  # Reverse to show newest first
 
         for i, doc in enumerate(recent_docs, 1):
-            # Color code by relevancy
+            # Dark mode color scheme by relevancy
             if doc['relevancy'] >= 800:
-                color = "#d4edda"
+                bg_color = "#1a4d2e"  # Dark green
+                border_color = "#00ff00"
                 icon = "🟢"
+                text_color = "#e8f5e9"
             elif doc['relevancy'] >= 600:
-                color = "#fff3cd"
+                bg_color = "#4a3f0a"  # Dark amber
+                border_color = "#ffaa00"
                 icon = "🟡"
+                text_color = "#fff9e6"
             else:
-                color = "#f8d7da"
+                bg_color = "#4a1a1a"  # Dark red
+                border_color = "#ff4444"
                 icon = "🔴"
+                text_color = "#ffe6e6"
 
             st.markdown(f"""
-            <div style="background: {color}; padding: 1rem; border-radius: 8px; margin: 0.5rem 0;">
+            <div style="background: {bg_color};
+                        padding: 1rem;
+                        border-radius: 8px;
+                        margin: 0.5rem 0;
+                        border-left: 4px solid {border_color};
+                        box-shadow: 0 2px 8px rgba(0,0,0,0.3);
+                        color: {text_color};">
                 <div style="display: flex; justify-content: space-between; align-items: center;">
                     <div>
-                        <strong>{icon} {doc['filename']}</strong><br>
-                        <small>Relevancy: <strong>{doc['relevancy']}</strong> | Legal: <strong>{doc['legal']}</strong> | Cost: <strong>${doc['cost']:.4f}</strong></small>
+                        <strong style="font-size: 1.05rem;">{icon} {doc['filename']}</strong><br>
+                        <small style="opacity: 0.9;">Relevancy: <strong>{doc['relevancy']}</strong> | Legal: <strong>{doc['legal']}</strong> | Cost: <strong>${doc['cost']:.4f}</strong></small>
                     </div>
                 </div>
             </div>
