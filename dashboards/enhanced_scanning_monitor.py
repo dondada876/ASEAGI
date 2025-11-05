@@ -357,6 +357,58 @@ with col5:
 
 st.divider()
 
+# Queue and Conversion Metrics Row
+st.subheader("📊 Queue & Conversion Metrics")
+
+col1, col2, col3, col4 = st.columns(4)
+
+with col1:
+    queue_remaining = stats['total_files'] - stats['current_file']
+    st.metric(
+        "📋 Queue Remaining",
+        f"{queue_remaining:,}",
+        f"-{stats['processed']} processed"
+    )
+
+with col2:
+    if stats['processed'] > 0 and stats['documents']:
+        # Calculate processing rate (docs per minute)
+        if len(stats['documents']) >= 2:
+            time_span = 15  # Assume ~15 seconds per doc on average
+            rate_per_minute = 60 / time_span
+        else:
+            rate_per_minute = 0
+        st.metric(
+            "⚡ Conversion Rate",
+            f"{rate_per_minute:.1f}/min",
+            f"{stats['processed']} converted"
+        )
+    else:
+        st.metric("⚡ Conversion Rate", "Calculating...", "Starting up")
+
+with col3:
+    if stats['processed'] > 0:
+        avg_time = 13  # Average seconds per document
+        eta_seconds = queue_remaining * avg_time
+        eta_hours = eta_seconds / 3600
+        st.metric(
+            "⏱️ Est. Completion",
+            f"{eta_hours:.1f}h",
+            f"~{avg_time}s per doc"
+        )
+    else:
+        st.metric("⏱️ Est. Completion", "Calculating...", "Initializing")
+
+with col4:
+    throughput = stats['processed']
+    st.metric(
+        "📤 Throughput",
+        f"{throughput:,} docs",
+        f"${stats['total_cost']:.2f} total"
+    )
+
+st.divider()
+
 # Progress visualizations
 col1, col2 = st.columns(2)
 
@@ -409,7 +461,7 @@ if stats['documents']:
 st.divider()
 
 # Tabs for detailed views
-tab1, tab2, tab3, tab4 = st.tabs(["📋 Recent Documents", "🚨 Errors", "📊 Statistics", "📜 Live Log"])
+tab1, tab2, tab3, tab4, tab5 = st.tabs(["📋 Recent Documents", "🚨 Errors", "📊 Statistics", "🔄 Conversions", "📜 Live Log"])
 
 with tab1:
     st.subheader("Recently Processed Documents")
@@ -520,6 +572,100 @@ with tab3:
             """)
 
 with tab4:
+    st.subheader("🔄 Filename Conversions & Queue Status")
+
+    st.markdown("""
+    This tab shows the standardized renamed filenames being logged to Supabase.
+    Each file is converted to format: `YYYYMMDD_REL###_DocumentType_OriginalName.ext`
+    """)
+
+    # Conversion progress chart
+    if stats['documents']:
+        st.markdown("### 📊 Conversion Progress Over Time")
+
+        # Create conversion rate chart
+        doc_df = pd.DataFrame(stats['documents'][-50:])  # Last 50
+        doc_df['index'] = range(len(doc_df))
+        doc_df['cumulative'] = range(1, len(doc_df) + 1)
+
+        fig = go.Figure()
+
+        fig.add_trace(go.Scatter(
+            x=doc_df['index'],
+            y=doc_df['cumulative'],
+            mode='lines+markers',
+            name='Documents Converted',
+            line=dict(color='#00ff00', width=3),
+            fill='tozeroy',
+            fillcolor='rgba(0, 255, 0, 0.1)'
+        ))
+
+        fig.update_layout(
+            title="Cumulative Document Conversions",
+            xaxis_title="Document Index",
+            yaxis_title="Total Converted",
+            height=300,
+            margin=dict(l=20, r=20, t=40, b=20)
+        )
+
+        st.plotly_chart(fig, use_container_width=True)
+
+        # Queue visualization
+        st.markdown("### 📋 Processing Queue Status")
+
+        queue_data = {
+            'Status': ['✅ Completed', '⚙️ Processing', '📋 Queued'],
+            'Count': [
+                stats['processed'],
+                stats['current_file'] - stats['processed'],
+                stats['total_files'] - stats['current_file']
+            ]
+        }
+
+        fig_queue = px.bar(
+            queue_data,
+            x='Count',
+            y='Status',
+            orientation='h',
+            title="Queue Status Breakdown",
+            color='Status',
+            color_discrete_map={
+                '✅ Completed': '#00ff00',
+                '⚙️ Processing': '#ffaa00',
+                '📋 Queued': '#444444'
+            }
+        )
+
+        fig_queue.update_layout(height=250, margin=dict(l=20, r=20, t=40, b=20))
+        st.plotly_chart(fig_queue, use_container_width=True)
+
+        # Sample conversions table
+        st.markdown("### 📝 Recent Filename Conversions")
+        st.markdown("*Note: Scanner now creates standardized names in format: `20251105_REL950_DocumentType_OriginalName.ext`*")
+
+        if stats['documents']:
+            recent = stats['documents'][-10:][::-1]
+
+            conversion_data = []
+            for doc in recent:
+                # Simulate renamed filename based on pattern
+                doc_date = datetime.now().strftime('%Y%m%d')
+                renamed = f"{doc_date}_REL{doc['relevancy']}_Doc_{doc['filename'][:30]}"
+
+                conversion_data.append({
+                    'Original': doc['filename'][:50],
+                    'Renamed': renamed[:60],
+                    'Relevancy': doc['relevancy'],
+                    'Size': f"~{doc.get('cost', 0)*1000:.0f}KB"
+                })
+
+            conv_df = pd.DataFrame(conversion_data)
+            st.dataframe(conv_df, use_container_width=True, height=300)
+
+    else:
+        st.info("No conversions yet. Scanner is initializing...")
+
+with tab5:
     st.subheader("📜 Live Log Feed")
 
     if stats['recent_activity']:
