@@ -4,11 +4,42 @@ Quick script to count police reports in the database
 """
 
 import os
+import sys
+from pathlib import Path
 from supabase import create_client
 
-# Supabase connection - using same credentials as other dashboards
-SUPABASE_URL = os.environ.get('SUPABASE_URL', 'https://jvjlhxodmbkodzmggwpu.supabase.co')
-SUPABASE_KEY = os.environ.get('SUPABASE_KEY', 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Imp2amxoeG9kbWJrb2R6bWdnd3B1Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3NjIyMjMxOTAsImV4cCI6MjA3Nzc5OTE5MH0.ai65vVW816bNAV56XiuRxp5PE5IhBkMGPx3IbxfPh8c')
+# Try to load credentials from multiple sources
+SUPABASE_URL = None
+SUPABASE_KEY = None
+
+# Method 1: Try environment variables first
+SUPABASE_URL = os.environ.get('SUPABASE_URL')
+SUPABASE_KEY = os.environ.get('SUPABASE_KEY')
+
+# Method 2: Try Streamlit secrets if available
+if not SUPABASE_URL or not SUPABASE_KEY:
+    try:
+        import streamlit as st
+        SUPABASE_URL = st.secrets.get('SUPABASE_URL')
+        SUPABASE_KEY = st.secrets.get('SUPABASE_KEY')
+    except:
+        pass
+
+# Method 3: Try loading from .streamlit/secrets.toml directly
+if not SUPABASE_URL or not SUPABASE_KEY:
+    try:
+        import toml
+        secrets_path = Path(__file__).parent / '.streamlit' / 'secrets.toml'
+        if secrets_path.exists():
+            secrets = toml.load(secrets_path)
+            SUPABASE_URL = secrets.get('SUPABASE_URL')
+            SUPABASE_KEY = secrets.get('SUPABASE_KEY')
+    except:
+        pass
+
+# Fallback to default URL (you still need to provide the key)
+if not SUPABASE_URL:
+    SUPABASE_URL = 'https://jvjlhxodmbkodzmggwpu.supabase.co'
 
 def count_police_reports():
     """Count police reports in the database"""
