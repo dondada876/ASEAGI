@@ -380,15 +380,19 @@ with col_viz2:
 st.markdown("---")
 st.header("📅 Master Truth Timeline")
 
+# Map importance to numeric values for size parameter
+importance_map = {'CRITICAL': 3, 'HIGH': 2, 'MEDIUM': 1, 'LOW': 0.5}
+timeline_df['importance_size'] = timeline_df['importance'].map(importance_map).fillna(1)
+
 # Timeline scatter plot
 fig_timeline = px.scatter(
     timeline_df,
     x='date',
     y='truth_score',
     color='category',
-    size='importance',
+    size='importance_size',
     size_max=20,
-    hover_data=['title', 'who', 'type'],
+    hover_data=['title', 'who', 'type', 'importance'],
     title='Truth Timeline: Every Statement, Event & Action'
 )
 fig_timeline.add_hline(y=75, line_dash="dash", line_color="green", annotation_text="Truthful Threshold")
