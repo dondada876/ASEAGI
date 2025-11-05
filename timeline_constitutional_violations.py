@@ -39,15 +39,17 @@ tab1, tab2, tab3, tab4 = st.tabs([
 ])
 
 # ============================================================================
-# TAB 1: TIMELINE ANALYSIS
+# TAB 1: TIMELINE MATRIX - COMPREHENSIVE VIEW
 # ============================================================================
 with tab1:
-    st.header("Complete Timeline: Events + Evidence")
+    st.header("📊 Timeline Matrix: Events, Documents & Actions")
 
-    col1, col2 = st.columns([3, 1])
+    # Filters sidebar
+    col_filters, col_main = st.columns([1, 3])
 
-    with col2:
-        st.subheader("Filters")
+    with col_filters:
+        st.subheader("🔍 Filters")
+
         date_range = st.date_input(
             "Date Range",
             value=(datetime(2022, 8, 1), datetime.now()),
@@ -57,14 +59,22 @@ with tab1:
         event_types = st.multiselect(
             "Event Types",
             ["HEARING", "FILING", "ORDER", "EX_PARTE", "APPEAL", "SERVICE", "GENERAL"],
-            default=["HEARING", "EX_PARTE", "ORDER"]
+            default=["HEARING", "EX_PARTE", "ORDER", "FILING"]
         )
 
-    with col1:
-        # Get court events
+        show_docs = st.checkbox("Include Documents", value=True)
+        show_violations = st.checkbox("Include Violations", value=True)
+
+        min_relevancy = st.slider("Min Document Relevancy", 0, 1000, 500)
+
+    with col_main:
         try:
+            # Query all data sources
+            st.info("📥 Loading data from Supabase...")
+
+            # 1. Get court events
             events_response = supabase.table('court_events')\
-                .select('event_date, event_type, event_title, event_description, judge_name, event_outcome')\
+                .select('*')\
                 .gte('event_date', date_range[0].isoformat())\
                 .lte('event_date', date_range[1].isoformat())\
                 .order('event_date', desc=True)\
@@ -75,35 +85,181 @@ with tab1:
             if not events_df.empty and event_types:
                 events_df = events_df[events_df['event_type'].isin(event_types)]
 
-            # Get legal documents with relevancy scores
-            docs_response = supabase.table('legal_documents')\
-                .select('created_at, original_filename, relevancy_number, micro_number, document_type')\
-                .execute()
+            # 2. Get legal documents
+            docs_df = pd.DataFrame()
+            if show_docs:
+                docs_response = supabase.table('legal_documents')\
+                    .select('*')\
+                    .gte('relevancy_number', min_relevancy)\
+                    .order('created_at', desc=True)\
+                    .execute()
+                docs_df = pd.DataFrame(docs_response.data)
 
-            docs_df = pd.DataFrame(docs_response.data)
+            # 3. Get violations
+            violations_df = pd.DataFrame()
+            if show_violations:
+                try:
+                    violations_response = supabase.table('legal_violations')\
+                        .select('*')\
+                        .order('violation_date', desc=True)\
+                        .execute()
+                    violations_df = pd.DataFrame(violations_response.data)
+                except:
+                    pass  # Table might not exist
 
-            # Display timeline
-            st.subheader(f"📊 {len(events_df)} Court Events")
+            # === SUMMARY METRICS ===
+            st.markdown("### 📈 Overview Metrics")
+            col1, col2, col3, col4 = st.columns(4)
 
-            if not events_df.empty:
-                # Add indicator column
-                events_df['type'] = '⚖️ Court Event'
+            with col1:
+                st.metric("📅 Court Events", len(events_df))
+            with col2:
+                st.metric("📄 Documents", len(docs_df) if show_docs else 0)
+            with col3:
+                st.metric("⚖️ Violations", len(violations_df) if show_violations else 0)
+            with col4:
+                total_items = len(events_df) + len(docs_df) + len(violations_df)
+                st.metric("📊 Total Items", total_items)
 
-                display_df = events_df[['event_date', 'type', 'event_type', 'event_title', 'judge_name', 'event_outcome']]
-                display_df.columns = ['Date', 'Category', 'Type', 'Event', 'Judge', 'Outcome']
+            st.markdown("---")
 
-                st.dataframe(display_df, use_container_width=True, height=500)
+            # === TIMELINE MATRIX ===
+            st.markdown("### 📋 Comprehensive Timeline Matrix")
 
-                # Timeline chart
-                st.subheader("📈 Event Frequency Over Time")
-                events_df['event_date'] = pd.to_datetime(events_df['event_date'])
-                events_by_month = events_df.groupby(events_df['event_date'].dt.to_period('M')).size()
-                st.bar_chart(events_by_month)
+            # Build unified timeline
+            timeline_data = []
+
+            # Add events
+            for _, event in events_df.iterrows():
+                timeline_data.append({
+                    'Date': pd.to_datetime(event.get('event_date', '')),
+                    'Category': '⚖️ Court Event',
+                    'Type': event.get('event_type', 'N/A'),
+                    'Title': event.get('event_title', 'Untitled Event'),
+                    'Description': event.get('event_description', '')[:100] + '...' if event.get('event_description') else '',
+                    'Actor': event.get('judge_name', 'N/A'),
+                    'Outcome': event.get('event_outcome', ''),
+                    'Score': None,
+                    'Status': '✅ Completed' if event.get('event_outcome') else '⏳ Pending'
+                })
+
+            # Add documents
+            if show_docs and not docs_df.empty:
+                for _, doc in docs_df.iterrows():
+                    timeline_data.append({
+                        'Date': pd.to_datetime(doc.get('created_at', '')),
+                        'Category': '📄 Document',
+                        'Type': doc.get('document_type', 'Document'),
+                        'Title': doc.get('original_filename', 'Unknown')[:50],
+                        'Description': f"Relevancy: {doc.get('relevancy_number', 0)}, Micro: {doc.get('micro_number', 0)}",
+                        'Actor': doc.get('file_extension', ''),
+                        'Outcome': '',
+                        'Score': doc.get('relevancy_number', 0),
+                        'Status': '🔥 Critical' if doc.get('relevancy_number', 0) >= 800 else '✅ Filed'
+                    })
+
+            # Add violations
+            if show_violations and not violations_df.empty:
+                for _, viol in violations_df.iterrows():
+                    timeline_data.append({
+                        'Date': pd.to_datetime(viol.get('violation_date', '')),
+                        'Category': '🚨 Violation',
+                        'Type': viol.get('violation_category', 'Violation'),
+                        'Title': viol.get('violation_title', 'Unnamed Violation')[:50],
+                        'Description': viol.get('violation_description', '')[:100] + '...' if viol.get('violation_description') else '',
+                        'Actor': viol.get('perpetrator', 'Unknown'),
+                        'Outcome': '',
+                        'Score': viol.get('severity_score', 0),
+                        'Status': f"Severity: {viol.get('severity_score', 0)}"
+                    })
+
+            # Create DataFrame
+            if timeline_data:
+                timeline_df = pd.DataFrame(timeline_data)
+                timeline_df = timeline_df.sort_values('Date', ascending=False)
+
+                # Display matrix
+                st.dataframe(
+                    timeline_df,
+                    use_container_width=True,
+                    height=600,
+                    column_config={
+                        'Date': st.column_config.DatetimeColumn('Date', format='YYYY-MM-DD'),
+                        'Category': st.column_config.TextColumn('Category', width='medium'),
+                        'Type': st.column_config.TextColumn('Type', width='medium'),
+                        'Title': st.column_config.TextColumn('Title', width='large'),
+                        'Score': st.column_config.NumberColumn('Score', format='%.0f'),
+                        'Status': st.column_config.TextColumn('Status', width='medium')
+                    }
+                )
+
+                # === VISUALIZATIONS ===
+                st.markdown("---")
+                st.markdown("### 📊 Timeline Visualizations")
+
+                viz_col1, viz_col2 = st.columns(2)
+
+                with viz_col1:
+                    # Timeline by category
+                    st.subheader("Activity by Category")
+                    category_counts = timeline_df['Category'].value_counts()
+                    st.bar_chart(category_counts)
+
+                with viz_col2:
+                    # Activity over time
+                    st.subheader("Activity Over Time")
+                    timeline_df['Month'] = timeline_df['Date'].dt.to_period('M').astype(str)
+                    monthly_activity = timeline_df.groupby('Month').size()
+                    st.line_chart(monthly_activity)
+
+                # === DETAILED BREAKDOWN ===
+                st.markdown("---")
+                st.markdown("### 🔍 Detailed Breakdown by Category")
+
+                breakdown_tabs = st.tabs([
+                    f"📅 Events ({len(events_df)})",
+                    f"📄 Documents ({len(docs_df)})",
+                    f"🚨 Violations ({len(violations_df)})"
+                ])
+
+                with breakdown_tabs[0]:
+                    if not events_df.empty:
+                        st.dataframe(
+                            events_df[['event_date', 'event_type', 'event_title', 'judge_name', 'event_outcome']],
+                            use_container_width=True,
+                            hide_index=True
+                        )
+                    else:
+                        st.info("No court events in selected date range")
+
+                with breakdown_tabs[1]:
+                    if not docs_df.empty:
+                        st.dataframe(
+                            docs_df[['created_at', 'original_filename', 'document_type', 'relevancy_number', 'micro_number']].head(50),
+                            use_container_width=True,
+                            hide_index=True
+                        )
+                    else:
+                        st.info("No documents match filters")
+
+                with breakdown_tabs[2]:
+                    if not violations_df.empty:
+                        st.dataframe(
+                            violations_df[['violation_date', 'violation_category', 'violation_title', 'perpetrator', 'severity_score']],
+                            use_container_width=True,
+                            hide_index=True
+                        )
+                    else:
+                        st.info("No violations tracked")
+
             else:
-                st.info("No events found for selected filters")
+                st.warning("⚠️ No data found for selected filters")
 
         except Exception as e:
-            st.error(f"Error loading timeline: {e}")
+            st.error(f"❌ Error loading timeline data: {e}")
+            import traceback
+            with st.expander("Show error details"):
+                st.code(traceback.format_exc())
 
 # ============================================================================
 # TAB 2: AUGUST 2024 INCIDENT
