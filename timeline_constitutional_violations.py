@@ -73,7 +73,7 @@ with tab1:
 
             # Get legal documents with relevancy scores
             docs_response = supabase.table('legal_documents')\
-                .select('created_date, original_filename, relevancy_number, fraud_score, document_type')\
+                .select('created_at, original_filename, relevancy_number, fraud_score, document_type')\
                 .execute()
 
             docs_df = pd.DataFrame(docs_response.data)
@@ -256,7 +256,7 @@ with tab4:
     try:
         # Get all documents with scores
         docs_response = supabase.table('legal_documents')\
-            .select('original_filename, relevancy_number, fraud_score, document_type, created_date, file_extension')\
+            .select('original_filename, relevancy_number, fraud_score, document_type, created_at, file_extension')\
             .order('relevancy_number', desc=True)\
             .execute()
 
