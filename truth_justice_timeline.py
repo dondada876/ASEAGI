@@ -382,7 +382,10 @@ st.header("📅 Master Truth Timeline")
 
 # Map importance to numeric values for size parameter
 importance_map = {'CRITICAL': 3, 'HIGH': 2, 'MEDIUM': 1, 'LOW': 0.5}
-timeline_df['importance_size'] = timeline_df['importance'].map(importance_map).fillna(1)
+# Convert importance to string and strip whitespace, then map to numeric
+timeline_df['importance_size'] = timeline_df['importance'].astype(str).str.strip().map(importance_map)
+# Fill any NaN values with 1 and ensure numeric type
+timeline_df['importance_size'] = pd.to_numeric(timeline_df['importance_size'], errors='coerce').fillna(1)
 
 # Timeline scatter plot
 fig_timeline = px.scatter(
