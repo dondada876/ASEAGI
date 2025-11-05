@@ -1,0 +1,17 @@
+# PROJ344 Dashboard Requirements
+# Python 3.9+
+
+# Core dependencies
+streamlit==1.31.0
+pandas==2.1.4
+plotly==5.18.0
+
+# Supabase integration
+supabase==2.3.4
+postgrest==0.13.2
+
+# Image processing (for document scanner)
+Pillow==10.2.0
+
+# Additional utilities
+python-dotenv==1.0.0

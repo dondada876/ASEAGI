@@ -1,0 +1,36 @@
+version: '3.8'
+
+services:
+  proj344-master:
+    build: .
+    container_name: proj344-master-dashboard
+    ports:
+      - "8501:8501"
+    environment:
+      - SUPABASE_URL=${SUPABASE_URL}
+      - SUPABASE_KEY=${SUPABASE_KEY}
+      - ANTHROPIC_API_KEY=${ANTHROPIC_API_KEY}
+    command: ["--server.port=8501", "--server.address=0.0.0.0"]
+    restart: unless-stopped
+
+  legal-intelligence:
+    build: .
+    container_name: legal-intelligence-dashboard
+    ports:
+      - "8502:8502"
+    environment:
+      - SUPABASE_URL=${SUPABASE_URL}
+      - SUPABASE_KEY=${SUPABASE_KEY}
+    command: ["streamlit", "run", "dashboards/legal_intelligence_dashboard.py", "--server.port=8502", "--server.address=0.0.0.0"]
+    restart: unless-stopped
+
+  ceo-dashboard:
+    build: .
+    container_name: ceo-dashboard
+    ports:
+      - "8503:8503"
+    environment:
+      - SUPABASE_URL=${SUPABASE_URL}
+      - SUPABASE_KEY=${SUPABASE_KEY}
+    command: ["streamlit", "run", "dashboards/ceo_dashboard.py", "--server.port=8503", "--server.address=0.0.0.0"]
+    restart: unless-stopped
