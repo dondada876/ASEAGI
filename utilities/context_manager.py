@@ -6,12 +6,21 @@ Handles saving/loading dashboard states, caching, and context preservation
 """
 
 import os
+import sys
 import json
 import hashlib
 from datetime import datetime, timedelta
 from typing import Any, Dict, List, Optional, Union
 from supabase import create_client, Client
 import pandas as pd
+
+# Fix Windows console encoding for emoji support
+if sys.platform == 'win32':
+    try:
+        sys.stdout.reconfigure(encoding='utf-8')
+    except AttributeError:
+        import codecs
+        sys.stdout = codecs.getwriter('utf-8')(sys.stdout.buffer, 'strict')
 
 class ContextManager:
     """Manages context preservation and caching in Supabase"""
