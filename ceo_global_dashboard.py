@@ -49,11 +49,12 @@ st.set_page_config(
 )
 
 # Initialize Supabase
-SUPABASE_URL = os.getenv("SUPABASE_URL")
-SUPABASE_KEY = os.getenv("SUPABASE_KEY")
+# Try Streamlit secrets first, then environment variables
+SUPABASE_URL = st.secrets.get("SUPABASE_URL") if hasattr(st, 'secrets') else os.getenv("SUPABASE_URL")
+SUPABASE_KEY = st.secrets.get("SUPABASE_KEY") if hasattr(st, 'secrets') else os.getenv("SUPABASE_KEY")
 
 if not SUPABASE_URL or not SUPABASE_KEY:
-    st.error("Missing SUPABASE_URL or SUPABASE_KEY environment variables")
+    st.error("Missing SUPABASE_URL or SUPABASE_KEY in secrets.toml or environment variables")
     st.stop()
 
 supabase: Client = create_client(SUPABASE_URL, SUPABASE_KEY)

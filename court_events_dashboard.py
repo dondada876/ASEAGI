@@ -27,11 +27,12 @@ st.set_page_config(
 @st.cache_resource
 def init_supabase():
     """Initialize Supabase client"""
-    url = os.environ.get('SUPABASE_URL')
-    key = os.environ.get('SUPABASE_KEY')
+    # Try Streamlit secrets first, then environment variables
+    url = st.secrets.get('SUPABASE_URL') if hasattr(st, 'secrets') else os.environ.get('SUPABASE_URL')
+    key = st.secrets.get('SUPABASE_KEY') if hasattr(st, 'secrets') else os.environ.get('SUPABASE_KEY')
 
     if not url or not key:
-        return None, "Missing SUPABASE_URL or SUPABASE_KEY"
+        return None, "Missing SUPABASE_URL or SUPABASE_KEY in secrets.toml or environment variables"
 
     try:
         client = create_client(url, key)
