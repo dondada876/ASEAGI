@@ -73,7 +73,7 @@ with tab1:
 
             # Get legal documents with relevancy scores
             docs_response = supabase.table('legal_documents')\
-                .select('created_at, original_filename, relevancy_number, fraud_score, document_type')\
+                .select('created_at, original_filename, relevancy_number, document_type')\
                 .execute()
 
             docs_df = pd.DataFrame(docs_response.data)
@@ -256,7 +256,7 @@ with tab4:
     try:
         # Get all documents with scores
         docs_response = supabase.table('legal_documents')\
-            .select('original_filename, relevancy_number, fraud_score, document_type, created_at, file_extension')\
+            .select('original_filename, relevancy_number, document_type, created_at, file_extension')\
             .order('relevancy_number', desc=True)\
             .execute()
 
@@ -271,10 +271,10 @@ with tab4:
                 high_relevancy = len(docs_df[docs_df['relevancy_number'] >= 700])
                 st.metric("High Relevancy (≥700)", high_relevancy)
             with col3:
-                high_fraud = len(docs_df[docs_df['fraud_score'] >= 70])
-                st.metric("High Fraud Score (≥70)", high_fraud)
+                critical_relevancy = len(docs_df[docs_df['relevancy_number'] >= 800])
+                st.metric("Critical Relevancy (≥800)", critical_relevancy)
 
-            st.subheader("📄 Documents with Relevancy & Fraud Scores")
+            st.subheader("📄 Documents with Relevancy Scores")
 
             # Add filters
             min_relevancy = st.slider("Minimum Relevancy Score", 0, 999, 500)
