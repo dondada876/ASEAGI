@@ -12,6 +12,16 @@ import hashlib
 import io
 from typing import Dict, Any
 
+# Fix Windows console encoding for emoji support
+if sys.platform == 'win32':
+    try:
+        sys.stdout.reconfigure(encoding='utf-8')
+        sys.stderr.reconfigure(encoding='utf-8')
+    except (AttributeError, ValueError):
+        import codecs
+        sys.stdout = codecs.getwriter('utf-8')(sys.stdout.buffer, 'strict')
+        sys.stderr = codecs.getwriter('utf-8')(sys.stderr.buffer, 'strict')
+
 # Telegram bot imports
 try:
     from telegram import Update, ReplyKeyboardMarkup, ReplyKeyboardRemove
