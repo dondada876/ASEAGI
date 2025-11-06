@@ -71,10 +71,12 @@ def count_police_reports():
                 doc_type = doc.get('document_type', 'N/A')
                 relevancy = doc.get('relevancy_number', 'N/A')
                 created = doc.get('created_at', 'N/A')
+                file_ext = doc.get('file_extension', 'N/A')
 
                 print(f"  • {filename}")
                 print(f"    Type: {doc_type}")
                 print(f"    Relevancy Score: {relevancy}")
+                print(f"    File Extension: {file_ext}")
                 print(f"    Created: {created}")
                 print()
         else:
