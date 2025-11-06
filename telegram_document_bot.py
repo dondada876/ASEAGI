@@ -354,7 +354,8 @@ async def confirm_upload(update: Update, context: ContextTypes.DEFAULT_TYPE) -> 
             'document_title': data['title'],
             'relevancy_number': data['relevancy_score'],
             'file_extension': file_ext,
-            'notes': data['notes'],
+            'executive_summary': data['notes'],  # Use executive_summary instead of notes
+            'document_date': doc_date,
             'created_at': datetime.now().isoformat(),
             'file_hash': file_hash,
             'source': 'telegram_bot',
