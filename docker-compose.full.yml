@@ -7,18 +7,23 @@ version: '3.8'
 
 services:
   # ==========================================================================
-  # FASTAPI BACKEND - Main API
+  # FASTAPI BACKEND - Main API (NEW: Multi-channel unified API)
   # ==========================================================================
   api:
     build:
-      context: .
-      dockerfile: Dockerfile.api
+      context: ./api-service
+      dockerfile: Dockerfile
     container_name: aseagi-api
     ports:
       - "8000:8000"
     environment:
       - SUPABASE_URL=${SUPABASE_URL}
       - SUPABASE_KEY=${SUPABASE_KEY}
+      - TELEGRAM_BOT_TOKEN=${TELEGRAM_BOT_TOKEN}
+      - API_HOST=0.0.0.0
+      - API_PORT=8000
+      - API_BASE_URL=http://api:8000
+      - CORS_ORIGINS=*
       - OPENAI_API_KEY=${OPENAI_API_KEY}
       - ANTHROPIC_API_KEY=${ANTHROPIC_API_KEY}
       - REDIS_URL=redis://redis:6379
@@ -44,32 +49,24 @@ services:
       retries: 3
 
   # ==========================================================================
-  # TELEGRAM BOT - Separate container (NO PORT CONFLICTS!)
+  # TELEGRAM BOT - Client that connects to FastAPI (NEW: polling mode)
   # ==========================================================================
   telegram:
     build:
-      context: .
-      dockerfile: Dockerfile.telegram
+      context: ./api-service
+      dockerfile: Dockerfile
     container_name: aseagi-telegram
-    ports:
-      - "8443:8443"  # Webhook port (different from API!)
+    command: ["python", "telegram_bot.py"]
     environment:
       - TELEGRAM_BOT_TOKEN=${TELEGRAM_BOT_TOKEN}
-      - API_URL=http://api:8000  # Internal Docker network
-      - WEBHOOK_URL=https://${DOMAIN}:8443/webhook
-      - REDIS_URL=redis://redis:6379
-      - REDIS_PASSWORD=${REDIS_PASSWORD}
+      - API_BASE_URL=http://api:8000
+      - SUPABASE_URL=${SUPABASE_URL}
+      - SUPABASE_KEY=${SUPABASE_KEY}
     depends_on:
       - api
-      - redis
     restart: unless-stopped
     networks:
       - aseagi-network
-    healthcheck:
-      test: ["CMD", "curl", "-f", "http://localhost:8443/health"]
-      interval: 30s
-      timeout: 10s
-      retries: 3
 
   # ==========================================================================
   # STREAMLIT DASHBOARD - Analytics and visualization
