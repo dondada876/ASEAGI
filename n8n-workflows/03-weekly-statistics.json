@@ -1,0 +1,81 @@
+{
+  "name": "ASEAGI Weekly Case Statistics",
+  "nodes": [
+    {
+      "parameters": {
+        "rule": {
+          "interval": [
+            {
+              "field": "cronExpression",
+              "expression": "0 18 * * 0"
+            }
+          ]
+        }
+      },
+      "id": "schedule-weekly",
+      "name": "Every Sunday at 6 PM",
+      "type": "n8n-nodes-base.scheduleTrigger",
+      "typeVersion": 1.1,
+      "position": [250, 300]
+    },
+    {
+      "parameters": {
+        "operation": "select",
+        "table": "documents",
+        "returnAll": true
+      },
+      "id": "supabase-all-docs",
+      "name": "Get All Documents",
+      "type": "n8n-nodes-base.supabase",
+      "typeVersion": 1,
+      "position": [450, 300],
+      "credentials": {
+        "supabaseApi": {
+          "id": "REPLACE_WITH_YOUR_SUPABASE_CREDENTIAL_ID",
+          "name": "ASEAGI Supabase"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "jsCode": "const docs = $input.all();\n\n// Calculate statistics\nconst total = docs.length;\nconst byCategory = {};\nconst byDocType = {};\nconst fraudDocs = [];\nconst fraudIndicators = new Set();\n\nlet totalScore = 0;\nlet critical = 0;\nlet high = 0;\nlet medium = 0;\n\ndocs.forEach(doc => {\n  const d = doc.json;\n  \n  // Score distribution\n  totalScore += d.relevancy_score || 0;\n  if (d.relevancy_score >= 900) critical++;\n  else if (d.relevancy_score >= 800) high++;\n  else if (d.relevancy_score >= 700) medium++;\n  \n  // Categories\n  const cat = d.category || 'Uncategorized';\n  if (!byCategory[cat]) {\n    byCategory[cat] = { count: 0, totalScore: 0 };\n  }\n  byCategory[cat].count++;\n  byCategory[cat].totalScore += d.relevancy_score || 0;\n  \n  // Document types\n  const type = d.doc_type || 'Unknown';\n  byDocType[type] = (byDocType[type] || 0) + 1;\n  \n  // Fraud indicators\n  if (d.fraud_indicators && d.fraud_indicators.length > 0) {\n    fraudDocs.push(d.file_name);\n    d.fraud_indicators.forEach(ind => fraudIndicators.add(ind));\n  }\n});\n\nconst avgScore = total > 0 ? Math.round(totalScore / total) : 0;\n\n// Format category stats\nconst categoryStats = Object.entries(byCategory)\n  .sort((a, b) => b[1].count - a[1].count)\n  .map(([cat, stats]) => {\n    const avg = Math.round(stats.totalScore / stats.count);\n    return `• ${cat}: ${stats.count} docs (Avg: ${avg})`;\n  })\n  .join('\\n');\n\n// Format document type stats\nconst docTypeStats = Object.entries(byDocType)\n  .sort((a, b) => b[1] - a[1])\n  .map(([type, count]) => `• ${type}: ${count}`)\n  .join('\\n');\n\nconst message = `📊 **ASEAGI WEEKLY REPORT**\\n📅 Week of ${new Date().toLocaleDateString('en-US', { month: 'long', day: 'numeric', year: 'numeric' })}\\n\\n**Case J24-00478: Ashe Bucknor**\\n\\n📈 **OVERVIEW:**\\n• Total Documents: ${total}\\n• Average Relevancy: ${avgScore}\\n• Critical (900+): ${critical}\\n• High (800-899): ${high}\\n• Medium (700-799): ${medium}\\n\\n📁 **DOCUMENT BREAKDOWN:**\\n${categoryStats}\\n\\n📄 **BY TYPE:**\\n${docTypeStats}\\n\\n⚠️ **VIOLATION INDICATORS:**\\n• Unique Fraud Indicators: ${fraudIndicators.size}\\n• Documents with Fraud: ${fraudDocs.length}\\n${fraudIndicators.size > 0 ? `• Types: ${Array.from(fraudIndicators).join(', ')}` : ''}\\n\\n🔗 **Dashboards:**\\n• Master: http://137.184.1.91:8501\\n• Timeline: http://137.184.1.91:8502\\n• Court Events: http://137.184.1.91:8503`;\n\nreturn [{ json: { message } }];"
+      },
+      "id": "format-weekly",
+      "name": "Format Weekly Statistics",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [650, 300]
+    },
+    {
+      "parameters": {
+        "chatId": "YOUR_TELEGRAM_CHAT_ID",
+        "text": "={{ $json.message }}",
+        "additionalFields": {
+          "parse_mode": "Markdown"
+        }
+      },
+      "id": "telegram-weekly",
+      "name": "Send Weekly Report",
+      "type": "n8n-nodes-base.telegram",
+      "typeVersion": 1.1,
+      "position": [850, 300],
+      "credentials": {
+        "telegramApi": {
+          "id": "REPLACE_WITH_YOUR_TELEGRAM_CREDENTIAL_ID",
+          "name": "ASEAGI Bot"
+        }
+      }
+    }
+  ],
+  "connections": {
+    "Every Sunday at 6 PM": {
+      "main": [[{ "node": "Get All Documents", "type": "main", "index": 0 }]]
+    },
+    "Get All Documents": {
+      "main": [[{ "node": "Format Weekly Statistics", "type": "main", "index": 0 }]]
+    },
+    "Format Weekly Statistics": {
+      "main": [[{ "node": "Send Weekly Report", "type": "main", "index": 0 }]]
+    }
+  }
+}

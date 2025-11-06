@@ -1,0 +1,129 @@
+{
+  "name": "ASEAGI High Priority Document Alerts",
+  "nodes": [
+    {
+      "parameters": {
+        "rule": {
+          "interval": [
+            {
+              "field": "cronExpression",
+              "expression": "0 * * * *"
+            }
+          ]
+        }
+      },
+      "id": "schedule-hourly",
+      "name": "Every Hour",
+      "type": "n8n-nodes-base.scheduleTrigger",
+      "typeVersion": 1.1,
+      "position": [250, 300]
+    },
+    {
+      "parameters": {
+        "operation": "select",
+        "table": "documents",
+        "filterType": "manual",
+        "matchType": "allFilters",
+        "filters": {
+          "conditions": [
+            {
+              "keyName": "relevancy_score",
+              "keyValue": "900",
+              "condition": "gte"
+            },
+            {
+              "keyName": "created_at",
+              "keyValue": "={{ $now.minus(1, 'hour').toISO() }}",
+              "condition": "gte"
+            }
+          ]
+        },
+        "returnAll": true
+      },
+      "id": "supabase-critical-docs",
+      "name": "Get New Critical Documents",
+      "type": "n8n-nodes-base.supabase",
+      "typeVersion": 1,
+      "position": [450, 300],
+      "credentials": {
+        "supabaseApi": {
+          "id": "REPLACE_WITH_YOUR_SUPABASE_CREDENTIAL_ID",
+          "name": "ASEAGI Supabase"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "number": [
+            {
+              "value1": "={{ $json.length }}",
+              "operation": "larger",
+              "value2": 0
+            }
+          ]
+        }
+      },
+      "id": "check-new-docs",
+      "name": "Any New Critical Docs?",
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 1,
+      "position": [650, 300]
+    },
+    {
+      "parameters": {
+        "jsCode": "const docs = $input.all();\n\nif (docs.length === 0) {\n  return [];\n}\n\nconst alerts = docs.map(doc => {\n  const d = doc.json;\n  return `📄 **${d.file_name}**\\n🎯 Relevancy Score: ${d.relevancy_score}\\n📂 Category: ${d.category || 'Unknown'}\\n📅 Date: ${new Date(d.created_at).toLocaleDateString()}\\n${d.fraud_indicators ? `🚫 Fraud Indicators: ${d.fraud_indicators.join(', ')}` : ''}\\n${d.summary ? `\\n💡 ${d.summary.substring(0, 150)}...` : ''}`;\n}).join('\\n\\n---\\n\\n');\n\nconst message = `🚨 **HIGH PRIORITY ALERT**\\n\\n${docs.length} new critical document(s) detected!\\n\\n${alerts}\\n\\n🔗 Review now: http://137.184.1.91:8501`;\n\nreturn [{ json: { message } }];"
+      },
+      "id": "format-alert",
+      "name": "Format Alert Message",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [850, 200]
+    },
+    {
+      "parameters": {
+        "chatId": "YOUR_TELEGRAM_CHAT_ID",
+        "text": "={{ $json.message }}",
+        "additionalFields": {
+          "parse_mode": "Markdown"
+        }
+      },
+      "id": "telegram-alert",
+      "name": "Send Alert to Telegram",
+      "type": "n8n-nodes-base.telegram",
+      "typeVersion": 1.1,
+      "position": [1050, 200],
+      "credentials": {
+        "telegramApi": {
+          "id": "REPLACE_WITH_YOUR_TELEGRAM_CREDENTIAL_ID",
+          "name": "ASEAGI Bot"
+        }
+      }
+    },
+    {
+      "parameters": {},
+      "id": "no-docs-stop",
+      "name": "No New Docs - Stop",
+      "type": "n8n-nodes-base.noOp",
+      "typeVersion": 1,
+      "position": [850, 400]
+    }
+  ],
+  "connections": {
+    "Every Hour": {
+      "main": [[{ "node": "Get New Critical Documents", "type": "main", "index": 0 }]]
+    },
+    "Get New Critical Documents": {
+      "main": [[{ "node": "Any New Critical Docs?", "type": "main", "index": 0 }]]
+    },
+    "Any New Critical Docs?": {
+      "main": [
+        [{ "node": "Format Alert Message", "type": "main", "index": 0 }],
+        [{ "node": "No New Docs - Stop", "type": "main", "index": 0 }]
+      ]
+    },
+    "Format Alert Message": {
+      "main": [[{ "node": "Send Alert to Telegram", "type": "main", "index": 0 }]]
+    }
+  }
+}
