@@ -249,7 +249,7 @@ Return ONLY valid JSON, no markdown or explanation."""
 
         # Call Claude Vision API
         message = claude_client.messages.create(
-            model="claude-3-5-sonnet-20241022",
+            model="claude-3-opus-20240229",
             max_tokens=2000,
             messages=[
                 {

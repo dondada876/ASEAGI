@@ -236,9 +236,9 @@ IMPORTANT: Be honest about uncertainty. If you're not confident, ASK! Better to 
 
 Return ONLY valid JSON."""
 
-            # Call Claude
+            # Call Claude (using Opus for best vision analysis)
             message = self.claude.messages.create(
-                model="claude-3-5-sonnet-20241022",
+                model="claude-3-opus-20240229",
                 max_tokens=3000,
                 messages=[
                     {
