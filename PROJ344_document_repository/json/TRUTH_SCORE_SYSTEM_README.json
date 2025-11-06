@@ -1,0 +1,420 @@
+{
+  "metadata": {
+    "file_path": "/home/user/ASEAGI/TRUTH_SCORE_SYSTEM_README.md",
+    "file_name": "TRUTH_SCORE_SYSTEM_README.md",
+    "file_type": "md",
+    "file_size": 20627,
+    "file_hash": "103cf45eb2b58ee50bffc81abcb57751",
+    "extraction_date": "2025-11-06T15:53:38.702737",
+    "extraction_method": "direct_read",
+    "title": "# Truth Score & Justice Analysis System",
+    "author": null,
+    "created_date": "2025-11-06T15:45:47.136164",
+    "modified_date": "2025-11-05T21:59:37.984135",
+    "page_count": null,
+    "word_count": 2463,
+    "char_count": 19490
+  },
+  "content": "# Truth Score & Justice Analysis System\n**Complete Guide to Enhanced Truth Scoring, Timeline Analysis & Police Report Integration**\n\n---\n\n## 📋 Table of Contents\n\n1. [System Overview](#system-overview)\n2. [Core Components](#core-components)\n3. [Database Schema](#database-schema)\n4. [Police Report Scanner](#police-report-scanner)\n5. [Enhanced Dashboard](#enhanced-dashboard)\n6. [Truth Scoring Methodology](#truth-scoring-methodology)\n7. [Justice Score Calculation](#justice-score-calculation)\n8. [Usage Guide](#usage-guide)\n9. [API Reference](#api-reference)\n\n---\n\n## 🎯 System Overview\n\nThe Truth Score & Justice Analysis System provides comprehensive tracking and analysis of every statement, event, action, motion, and filing in your legal case. Each entry is scored for truthfulness (0-100) and rolls up into an overall **Justice Score** that represents the integrity of the entire case.\n\n### Key Features\n\n✅ **Truth Scoring** - Every timeline entry scored 0-100 (0=proven false, 100=verified true)\n✅ **Justice Score Rollup** - Weighted average of all truth scores\n✅ **5W+H Master Timeline** - Complete source of truth answering When, Where, Who, What, Why, How\n✅ **Police Report Integration** - Automated scanning and PX naming convention\n✅ **Enhanced Visualizations** - Heatmaps, trends, actor comparisons, timeline charts\n✅ **Evidence Binding** - Link police reports and evidence to timeline events\n✅ **Lie Detection** - Automatically identify and track proven false statements\n\n---\n\n## 🏗️ Core Components\n\n### 1. Master Absolute Timeline (`master_absolute_timeline` table)\n\nThe **source of truth** for your case. Every event, statement, action, motion, and filing is recorded with:\n\n- **5W+H Analysis**: When, Where, Who, What, Why, How\n- **Truth Score**: 0-100 rating of truthfulness\n- **Evidence Links**: Supporting and contradicting evidence\n- **Fraud Detection**: Perjury and fraud scoring\n- **Importance Weighting**: CRITICAL, HIGH, MEDIUM, LOW\n\n### 2. Police Report Scanner (`police_report_scanner.py`)\n\nAutomated system to:\n\n- Scan police report images/PDFs\n- Extract page numbers using Claude Vision AI\n- Apply PX naming convention\n- Tag and categorize reports\n- Extract case numbers and dates\n\n### 3. Enhanced Dashboard (`enhanced_truth_score_dashboard.py`)\n\nInteractive Streamlit dashboard with:\n\n- Justice Score gauge (main metric)\n- Truth score heatmaps\n- Timeline trend analysis\n- Actor comparison charts\n- 5W+H master matrix\n- Lies and false statements tracker\n- Export and reporting tools\n\n---\n\n## 🗄️ Database Schema\n\n### Tables\n\n#### 1. `master_absolute_timeline`\n\nPrimary table storing all timeline entries with truth scores.\n\n**Key Fields:**\n\n```sql\n- entry_id (TEXT)           -- Unique ID: TYPE-YYYYMMDD-NNN\n- entry_type (TEXT)          -- STATEMENT, EVENT, ACTION, MOTION, FILING, etc.\n- category (TEXT)            -- COURT_EVENT, LEGAL_DOCUMENT, VIOLATION, etc.\n\n-- 5W+H Fields\n- when_datetime (TIMESTAMPTZ)     -- When did it happen?\n- where_location (TEXT)            -- Where did it occur?\n- who_primary (TEXT)               -- Who is the primary actor?\n- what_title (TEXT)                -- What happened (brief)?\n- what_description (TEXT)          -- What happened (detailed)?\n- why_stated_reason (TEXT)         -- Why did it happen?\n- how_method (TEXT)                -- How was it done?\n\n-- Truth Scoring\n- truth_score (INTEGER 0-100)      -- 0=False, 100=True\n- fraud_score (INTEGER 0-100)      -- 0=No fraud, 100=Definite fraud\n- perjury_score (INTEGER 0-100)    -- Perjury likelihood\n\n-- Evidence\n- has_supporting_evidence (BOOLEAN)\n- supporting_evidence_ids (TEXT[])\n- contradicted_by_evidence (BOOLEAN)\n- contradicting_evidence_ids (TEXT[])\n\n-- Verification\n- verified_by_official_record (BOOLEAN)\n- official_record_reference (TEXT)\n- witness_corroboration (BOOLEAN)\n\n-- Importance\n- importance_level (TEXT)          -- CRITICAL, HIGH, MEDIUM, LOW\n- relevancy_score (INTEGER 0-1000)\n```\n\n#### 2. `police_reports`\n\nPolice reports with PX naming convention and page tracking.\n\n**Key Fields:**\n\n```sql\n- id (BIGSERIAL PRIMARY KEY)\n- px_code (TEXT)                   -- PX0, PX01, PX06-P1-P6, etc.\n- report_number (TEXT)             -- Official report number\n- report_type (TEXT)               -- Incident, CAD, Arrest, etc.\n- incident_date (TIMESTAMPTZ)\n- total_pages (INTEGER)\n- current_page (INTEGER)\n- truth_score (INTEGER 0-100)\n- is_smoking_gun (BOOLEAN)\n- relevancy_score (INTEGER 0-1000)\n```\n\n#### 3. `evidence_timeline_binding`\n\nLinks police reports to timeline entries.\n\n**Key Fields:**\n\n```sql\n- timeline_entry_id (BIGINT)       -- FK to master_absolute_timeline\n- police_report_id (BIGINT)        -- FK to police_reports\n- binding_type (TEXT)              -- SUPPORTS, CONTRADICTS, NEUTRAL, CLARIFIES\n- binding_strength (TEXT)          -- DEFINITIVE, STRONG, MODERATE, WEAK\n- truth_impact (INTEGER)           -- Impact on truth score (+/- points)\n```\n\n#### 4. `truth_score_history`\n\nTracks changes to truth scores over time.\n\n**Key Fields:**\n\n```sql\n- timeline_entry_id (BIGINT)\n- old_truth_score (INTEGER)\n- new_truth_score (INTEGER)\n- score_change (INTEGER)\n- change_reason (TEXT)\n- changed_by (TEXT)\n- changed_at (TIMESTAMPTZ)\n```\n\n---\n\n## 🔍 Police Report Scanner\n\n### PX Naming Convention\n\nThe system automatically renames police report files using the PX convention:\n\n| Format | Meaning | Example |\n|--------|---------|---------|\n| `PX0` | No pages (0 pages) | `PX0_empty_report.pdf` |\n| `PX01` | Single page (1 page) | `PX01_incident_summary.pdf` |\n| `PX06-P1-P6` | 6 pages, showing page 1 | `PX06-P1-P6_arrest_report.pdf` |\n| `PX12-P5-P12` | 12 pages, showing page 5 | `PX12-P5-P12_full_investigation.pdf` |\n\n### Usage\n\n```bash\n# Set your Anthropic API key\nexport ANTHROPIC_API_KEY='your-key-here'\n\n# Scan a directory for police reports (dry run)\npython3 police_report_scanner.py /path/to/documents\n\n# Actually rename files\npython3 police_report_scanner.py /path/to/documents --rename\n\n# Move renamed files to output directory\npython3 police_report_scanner.py /path/to/documents --rename --output-dir /path/to/organized\n\n# Non-recursive (current directory only)\npython3 police_report_scanner.py /path/to/documents --no-recursive\n```\n\n### What It Does\n\n1. **Scans** directory for files matching police report patterns\n2. **Analyzes** each image/PDF using Claude Vision AI\n3. **Extracts**:\n   - Page numbers (current page / total pages)\n   - Report type (Incident, CAD, Arrest, etc.)\n   - Case/Incident number\n   - Report date\n   - Confidence score\n4. **Renames** files with PX convention\n5. **Generates** JSON report with all findings\n\n### Example Output\n\n```\n🚔 POLICE REPORT SCANNER & LABELING SYSTEM\n══════════════════════════════════════════════════════════════════\nDirectory: /home/user/evidence/police_reports\nRecursive: True\nRename files: True\n══════════════════════════════════════════════════════════════════\n\n📂 Found 25 potential documents in /home/user/evidence/police_reports\n🚔 15 files match police report patterns\n\n[1/15] Processing: incident_report_aug2024.pdf\n  ✓ Confidence: 95%\n  ✓ Type: Incident Report\n  ✓ Case: 2024-12345\n  ✓ Pages: 6\n✅ Renamed: incident_report_aug2024.pdf → PX06-P1-P6_incident_report_aug2024.pdf\n\n...\n\n📊 Report saved to: police_reports_scan_results.json\n\n=== SUMMARY ===\nTotal files processed: 15\nSuccessful scans: 15\nFiles renamed: 15\nPolice reports identified: 14\n```\n\n---\n\n## 📊 Enhanced Dashboard\n\n### Launch\n\n```bash\nstreamlit run enhanced_truth_score_dashboard.py\n```\n\nAccess at: http://localhost:8501\n\n### Dashboard Sections\n\n#### 1. ⚖️ Justice Score\n\n**Main metric** showing overall case truth integrity.\n\n- **Gauge visualization** (0-100)\n- **Truth distribution** (Truthful / Questionable / False)\n- **Pie chart** breakdown\n- **Key statistics**\n\n#### 2. 📈 Truth Score Visualizations\n\nFour interactive tabs:\n\n**📊 Heatmap**\n- Categories (rows) × Time (columns)\n- Color-coded truth scores\n- Identify patterns and trends\n\n**📉 Trends**\n- Daily average truth scores\n- Activity volume overlay\n- Threshold lines (75% truthful, 25% false)\n\n**👥 By Actor**\n- Compare truth scores by person\n- Identify credible vs. non-credible actors\n- Sorted from lowest to highest truth\n\n**📅 Timeline**\n- Scatter plot: truth score over time\n- Color-coded by category\n- Size indicates importance\n- Interactive hover details\n\n#### 3. 🔍 5W+H Master Matrix\n\nComplete reference table with filters:\n\n- **Category filter** (Court Event, Document, Violation, etc.)\n- **Truth score range** slider\n- **Importance filter** (Critical, High, Medium, Low)\n- **Entry type filter** (Statement, Event, Action, Motion, Filing)\n\nDisplays:\n- When, Where, Who, What, Why, How\n- Truth score (color-coded)\n- Importance level\n- Category\n\n#### 4. 🚨 Lies & False Statements\n\nDedicated section for proven lies (truth score < 25):\n\n- **Count of false statements**\n- **Expandable details** for each lie\n- **Actor identification**\n- **Fraud and perjury scores**\n- **Timestamp and location**\n\n#### 5. 🚔 Police Reports Integration\n\nIf police reports table exists:\n\n- **Total reports count**\n- **Smoking gun count**\n- **Average truth score**\n- **High relevancy count**\n- **Full report list** with PX codes\n\n#### 6. 📥 Export & Reporting\n\nThree export options:\n\n1. **Full Justice Report** (TXT)\n   - Justice score\n   - Truth summary\n   - All proven lies\n   - Formatted for printing\n\n2. **Timeline CSV** (CSV)\n   - Complete timeline data\n   - All fields and scores\n   - For Excel analysis\n\n3. **Lies Only CSV** (CSV)\n   - Only false statements\n   - For targeted review\n\n---\n\n## 🎯 Truth Scoring Methodology\n\n### How Truth Scores Are Calculated\n\nEach timeline entry receives a truth score (0-100) based on:\n\n#### Base Score: 50 (Neutral)\n\n**Evidence of Truth** (adds points):\n- `+25` Has supporting evidence\n- `+25` Verified by official record (court order, transcript, etc.)\n- `+10` Witness corroboration\n- `+10` Timestamp verified\n\n**Evidence of Falsehood** (subtracts points):\n- `-40` Contradicted by evidence\n- `-20` Inconsistent statements\n- `-15` Missing required evidence\n- `0` Proven false (overrides to 0)\n\n**Fraud Indicators** (subtracts points):\n- `fraud_score > 70`: `-30`\n- `fraud_score 50-70`: `-15`\n\n#### Truth Score Categories\n\n| Score | Category | Meaning |\n|-------|----------|---------|\n| 90-100 | VERIFIED_TRUE | Confirmed by multiple sources |\n| 75-89 | LIKELY_TRUE | Strong evidence, few contradictions |\n| 50-74 | UNVERIFIED | Neutral, needs investigation |\n| 25-49 | QUESTIONABLE | Contradictions or inconsistencies |\n| 10-24 | LIKELY_FALSE | Strong contradicting evidence |\n| 0-9 | PROVEN_FALSE | Definitively disproven |\n\n### Truth Status Flags\n\n```python\ntruth_status IN (\n    'VERIFIED_TRUE',      # Confirmed by official records\n    'LIKELY_TRUE',        # Strong supporting evidence\n    'UNVERIFIED',         # No evidence either way\n    'QUESTIONABLE',       # Some contradictions\n    'LIKELY_FALSE',       # Probable lie\n    'PROVEN_FALSE'        # Definitively false\n)\n```\n\n---\n\n## ⚖️ Justice Score Calculation\n\n### Weighted Average Formula\n\nThe **Justice Score** is a weighted average of all truth scores, emphasizing critical items.\n\n```python\nweights = []\nscores = []\n\nfor item in timeline:\n    weight = 1.0  # Base weight\n\n    # Weight by importance\n    if item.importance == 'CRITICAL':\n        weight = 3.0\n    elif item.importance == 'HIGH':\n        weight = 2.0\n    elif item.importance == 'MEDIUM':\n        weight = 1.0\n    else:  # LOW\n        weight = 0.5\n\n    # Extra weight for court filings\n    if item.entry_type in ['MOTION', 'FILING', 'DECLARATION']:\n        weight *= 1.5\n\n    weights.append(weight)\n    scores.append(item.truth_score)\n\njustice_score = weighted_average(scores, weights)\n```\n\n### Interpretation\n\n| Justice Score | Assessment | Action |\n|---------------|------------|--------|\n| 85-100 | **Excellent** - High integrity case | Strong position |\n| 70-84 | **Good** - Mostly truthful with some issues | Address weaknesses |\n| 50-69 | **Fair** - Mixed truth and falsehoods | Investigation needed |\n| 25-49 | **Poor** - Significant dishonesty | Major concerns |\n| 0-24 | **Critical** - Widespread fraud/perjury | Urgent action required |\n\n---\n\n## 📚 Usage Guide\n\n### Step 1: Deploy Database Schema\n\n```bash\n# Connect to Supabase\n# Copy and run master_timeline_schema.sql in SQL Editor\n\n# Or use command line:\npsql -h db.xxx.supabase.co -U postgres -d postgres -f master_timeline_schema.sql\n```\n\n### Step 2: Populate Timeline Data\n\n#### Option A: Manual Entry\n\n```sql\nINSERT INTO master_absolute_timeline (\n    entry_id, entry_type, category,\n    when_datetime, where_location, who_primary,\n    what_title, what_description,\n    why_stated_reason, how_method,\n    truth_score, importance_level\n) VALUES (\n    'FILING-20240815-001',\n    'FILING',\n    'LEGAL_DOCUMENT',\n    '2024-08-15 14:30:00',\n    'Superior Court',\n    'Jane Doe',\n    'Motion to Dismiss',\n    'Motion filed requesting dismissal of case',\n    'Lack of jurisdiction',\n    'Court filing system',\n    75,\n    'HIGH'\n);\n```\n\n#### Option B: Import from Existing Tables\n\nThe dashboard automatically aggregates from:\n- `court_events`\n- `legal_documents`\n- `legal_violations`\n- `communications_matrix`\n\n### Step 3: Scan Police Reports\n\n```bash\n# Set API key\nexport ANTHROPIC_API_KEY='sk-ant-...'\n\n# Scan and rename police reports\npython3 police_report_scanner.py ~/evidence/police --rename --output-dir ~/evidence/organized\n```\n\n### Step 4: Bind Evidence to Timeline\n\n```sql\n-- Link police report to timeline entry\nINSERT INTO evidence_timeline_binding (\n    timeline_entry_id, police_report_id,\n    binding_type, binding_strength,\n    binding_description, truth_impact\n) VALUES (\n    123,  -- timeline entry ID\n    45,   -- police report ID\n    'CONTRADICTS',\n    'DEFINITIVE',\n    'Police report shows different timeline than stated in declaration',\n    -30   -- Reduces truth score by 30 points\n);\n```\n\n### Step 5: Launch Dashboard\n\n```bash\nstreamlit run enhanced_truth_score_dashboard.py\n```\n\n### Step 6: Analyze & Export\n\n1. **Review Justice Score** - Overall case integrity\n2. **Check Heatmaps** - Identify patterns\n3. **Review Lies Section** - Focus on proven false statements\n4. **Compare Actors** - Who is credible?\n5. **Export Reports** - Generate documentation\n\n---\n\n## 🔧 API Reference\n\n### Python Functions\n\n#### `calculate_truth_score(item_data: Dict) -> int`\n\nCalculate truth score for a timeline item.\n\n**Parameters:**\n```python\nitem_data = {\n    'has_supporting_evidence': bool,\n    'verified_by_official_record': bool,\n    'witness_corroboration': bool,\n    'timestamp_verified': bool,\n    'contradicted_by_evidence': bool,\n    'proven_false': bool,\n    'inconsistent_statements': bool,\n    'missing_required_evidence': bool,\n    'fraud_score': int (0-100)\n}\n```\n\n**Returns:** `int` (0-100)\n\n#### `calculate_justice_score(truth_scores: List[Dict]) -> float`\n\nCalculate weighted justice score from all truth scores.\n\n**Parameters:**\n```python\ntruth_scores = [\n    {\n        'truth_score': int,\n        'importance': str,  # CRITICAL, HIGH, MEDIUM, LOW\n        'category': str     # MOTION, FILING, etc.\n    },\n    ...\n]\n```\n\n**Returns:** `float` (rounded to 1 decimal)\n\n### SQL Views\n\n#### `v_timeline_truth_analysis`\n\nAll timeline entries with truth scores and evidence counts.\n\n```sql\nSELECT * FROM v_timeline_truth_analysis\nWHERE truth_score < 50\nORDER BY when_datetime DESC;\n```\n\n#### `v_proven_lies`\n\nOnly entries with truth score < 25.\n\n```sql\nSELECT * FROM v_proven_lies\nWHERE who_primary = 'John Doe';\n```\n\n#### `v_justice_score_calculation`\n\nOverall justice score and statistics.\n\n```sql\nSELECT * FROM v_justice_score_calculation;\n```\n\nOutput:\n```\ntotal_entries | simple_average | weighted_justice_score | truthful_count | false_count | questionable_count\n--------------|----------------|------------------------|----------------|-------------|-------------------\n247           | 67.3           | 71.8                   | 158            | 23          | 66\n```\n\n#### `v_truth_by_actor`\n\nTruth scores grouped by actor.\n\n```sql\nSELECT * FROM v_truth_by_actor\nORDER BY lies_count DESC;\n```\n\n---\n\n## 📝 Examples\n\n### Example 1: Add Court Event\n\n```sql\nINSERT INTO master_absolute_timeline (\n    entry_id, entry_type, category,\n    when_datetime, where_location, who_primary,\n    what_title, what_description,\n    how_method, truth_score, importance_level,\n    verified_by_official_record\n) VALUES (\n    'EVENT-20240820-001',\n    'EVENT',\n    'COURT_EVENT',\n    '2024-08-20 10:00:00',\n    'Superior Court, Dept 12',\n    'Judge Smith',\n    'Ex Parte Hearing',\n    'Emergency hearing on custody modification',\n    'In-person court proceeding',\n    95,\n    'CRITICAL',\n    true\n);\n```\n\n### Example 2: Record False Statement\n\n```sql\nINSERT INTO master_absolute_timeline (\n    entry_id, entry_type, category,\n    when_datetime, where_location, who_primary,\n    what_title, what_description,\n    is_under_oath, contains_false_statements,\n    false_statement_details,\n    truth_score, perjury_score, fraud_score,\n    importance_level, contradicted_by_evidence,\n    contradicting_evidence_ids\n) VALUES (\n    'STATEMENT-20240815-002',\n    'STATEMENT',\n    'VIOLATION',\n    '2024-08-15 14:30:00',\n    'Sworn Declaration',\n    'Jane Doe',\n    'False statement about income',\n    'Declared income as $30,000 when tax returns show $75,000',\n    true,  -- under oath\n    true,  -- contains false statements\n    'Understated income by $45,000 in sworn declaration',\n    0,     -- truth score: proven false\n    95,    -- perjury score\n    90,    -- fraud score\n    'CRITICAL',\n    true,  -- contradicted by evidence\n    ARRAY['TAX-2023-W2', 'TAX-2023-1040']\n);\n```\n\n### Example 3: Bind Police Report to Event\n\n```sql\n-- First, insert police report\nINSERT INTO police_reports (\n    px_code, report_number, report_type,\n    incident_date, total_pages, truth_score,\n    relevancy_score, is_smoking_gun\n) VALUES (\n    'PX06-P1-P6',\n    '2024-08-15-1234',\n    'Incident Report',\n    '2024-08-15 20:00:00',\n    6,\n    85,\n    950,\n    true\n) RETURNING id;\n\n-- Then bind to timeline\nINSERT INTO evidence_timeline_binding (\n    timeline_entry_id, police_report_id,\n    binding_type, binding_strength,\n    binding_description, truth_impact\n) VALUES (\n    456,  -- timeline entry about alleged incident\n    789,  -- police report ID from above\n    'CONTRADICTS',\n    'DEFINITIVE',\n    'Police report shows no evidence of alleged assault. Officer notes no visible injuries, no witnesses, conflicting statements.',\n    -50\n);\n```\n\n---\n\n## 🚀 Quick Start Checklist\n\n- [ ] Deploy `master_timeline_schema.sql` to Supabase\n- [ ] Set `ANTHROPIC_API_KEY` environment variable\n- [ ] Install Python dependencies: `pip install streamlit pandas plotly numpy supabase anthropic pillow PyPDF2`\n- [ ] Scan police reports: `python3 police_report_scanner.py /path/to/reports --rename`\n- [ ] Populate timeline data (manual or import)\n- [ ] Launch dashboard: `streamlit run enhanced_truth_score_dashboard.py`\n- [ ] Review justice score and lies\n- [ ] Bind evidence to timeline entries\n- [ ] Export reports\n\n---\n\n## 📞 Support\n\nFor issues or questions:\n\n1. Check the SQL views for data issues: `v_timeline_truth_analysis`\n2. Review the police scanner JSON report: `police_reports_scan_results.json`\n3. Check Streamlit logs for dashboard errors\n4. Verify Supabase connection and credentials\n\n---\n\n## 📄 License\n\nASEAGI System - Legal Case Intelligence Platform\nCopyright (c) 2025\n\n---\n\n**Last Updated:** 2025-11-05\n**Version:** 2.0.0\n**Status:** ✅ Production Ready\n",
+  "content_preview": "# Truth Score & Justice Analysis System\n**Complete Guide to Enhanced Truth Scoring, Timeline Analysis & Police Report Integration**\n\n---\n\n## 📋 Table of Contents\n\n1. [System Overview](#system-overview)\n2. [Core Components](#core-components)\n3. [Database Schema](#database-schema)\n4. [Police Report Scanner](#police-report-scanner)\n5. [Enhanced Dashboard](#enhanced-dashboard)\n6. [Truth Scoring Methodology](#truth-scoring-methodology)\n7. [Justice Score Calculation](#justice-score-calculation)\n8. [Usa...",
+  "sections": [
+    {
+      "title": "Truth Score & Justice Analysis System",
+      "content": "**Complete Guide to Enhanced Truth Scoring, Timeline Analysis & Police Report Integration**\n---"
+    },
+    {
+      "title": "📋 Table of Contents",
+      "content": "1. [System Overview](#system-overview)\n2. [Core Components](#core-components)\n3. [Database Schema](#database-schema)\n4. [Police Report Scanner](#police-report-scanner)\n5. [Enhanced Dashboard](#enhanced-dashboard)\n6. [Truth Scoring Methodology](#truth-scoring-methodology)\n7. [Justice Score Calculation](#justice-score-calculation)\n8. [Usage Guide](#usage-guide)\n9. [API Reference](#api-reference)\n---"
+    },
+    {
+      "title": "🎯 System Overview",
+      "content": "The Truth Score & Justice Analysis System provides comprehensive tracking and analysis of every statement, event, action, motion, and filing in your legal case. Each entry is scored for truthfulness (0-100) and rolls up into an overall **Justice Score** that represents the integrity of the entire case."
+    },
+    {
+      "title": "Key Features",
+      "content": "✅ **Truth Scoring** - Every timeline entry scored 0-100 (0=proven false, 100=verified true)\n✅ **Justice Score Rollup** - Weighted average of all truth scores\n✅ **5W+H Master Timeline** - Complete source of truth answering When, Where, Who, What, Why, How\n✅ **Police Report Integration** - Automated scanning and PX naming convention\n✅ **Enhanced Visualizations** - Heatmaps, trends, actor comparisons, timeline charts\n✅ **Evidence Binding** - Link police reports and evidence to timeline events\n✅ **Lie Detection** - Automatically identify and track proven false statements\n---"
+    },
+    {
+      "title": "🏗️ Core Components",
+      "content": ""
+    },
+    {
+      "title": "1. Master Absolute Timeline (`master_absolute_timeline` table)",
+      "content": "The **source of truth** for your case. Every event, statement, action, motion, and filing is recorded with:\n- **5W+H Analysis**: When, Where, Who, What, Why, How\n- **Truth Score**: 0-100 rating of truthfulness\n- **Evidence Links**: Supporting and contradicting evidence\n- **Fraud Detection**: Perjury and fraud scoring\n- **Importance Weighting**: CRITICAL, HIGH, MEDIUM, LOW"
+    },
+    {
+      "title": "2. Police Report Scanner (`police_report_scanner.py`)",
+      "content": "Automated system to:\n- Scan police report images/PDFs\n- Extract page numbers using Claude Vision AI\n- Apply PX naming convention\n- Tag and categorize reports\n- Extract case numbers and dates"
+    },
+    {
+      "title": "3. Enhanced Dashboard (`enhanced_truth_score_dashboard.py`)",
+      "content": "Interactive Streamlit dashboard with:\n- Justice Score gauge (main metric)\n- Truth score heatmaps\n- Timeline trend analysis\n- Actor comparison charts\n- 5W+H master matrix\n- Lies and false statements tracker\n- Export and reporting tools\n---"
+    },
+    {
+      "title": "🗄️ Database Schema",
+      "content": ""
+    },
+    {
+      "title": "Tables",
+      "content": ""
+    },
+    {
+      "title": "1. `master_absolute_timeline`",
+      "content": "Primary table storing all timeline entries with truth scores.\n**Key Fields:**\n```sql\n- entry_id (TEXT)           -- Unique ID: TYPE-YYYYMMDD-NNN\n- entry_type (TEXT)          -- STATEMENT, EVENT, ACTION, MOTION, FILING, etc.\n- category (TEXT)            -- COURT_EVENT, LEGAL_DOCUMENT, VIOLATION, etc.\n-- 5W+H Fields\n- when_datetime (TIMESTAMPTZ)     -- When did it happen?\n- where_location (TEXT)            -- Where did it occur?\n- who_primary (TEXT)               -- Who is the primary actor?\n- what_title (TEXT)                -- What happened (brief)?\n- what_description (TEXT)          -- What happened (detailed)?\n- why_stated_reason (TEXT)         -- Why did it happen?\n- how_method (TEXT)                -- How was it done?\n-- Truth Scoring\n- truth_score (INTEGER 0-100)      -- 0=False, 100=True\n- fraud_score (INTEGER 0-100)      -- 0=No fraud, 100=Definite fraud\n- perjury_score (INTEGER 0-100)    -- Perjury likelihood\n-- Evidence\n- has_supporting_evidence (BOOLEAN)\n- supporting_evidence_ids (TEXT[])\n- contradicted_by_evidence (BOOLEAN)\n- contradicting_evidence_ids (TEXT[])\n-- Verification\n- verified_by_official_record (BOOLEAN)\n- official_record_reference (TEXT)\n- witness_corroboration (BOOLEAN)\n-- Importance\n- importance_level (TEXT)          -- CRITICAL, HIGH, MEDIUM, LOW\n- relevancy_score (INTEGER 0-1000)\n```"
+    },
+    {
+      "title": "2. `police_reports`",
+      "content": "Police reports with PX naming convention and page tracking.\n**Key Fields:**\n```sql\n- id (BIGSERIAL PRIMARY KEY)\n- px_code (TEXT)                   -- PX0, PX01, PX06-P1-P6, etc.\n- report_number (TEXT)             -- Official report number\n- report_type (TEXT)               -- Incident, CAD, Arrest, etc.\n- incident_date (TIMESTAMPTZ)\n- total_pages (INTEGER)\n- current_page (INTEGER)\n- truth_score (INTEGER 0-100)\n- is_smoking_gun (BOOLEAN)\n- relevancy_score (INTEGER 0-1000)\n```"
+    },
+    {
+      "title": "3. `evidence_timeline_binding`",
+      "content": "Links police reports to timeline entries.\n**Key Fields:**\n```sql\n- timeline_entry_id (BIGINT)       -- FK to master_absolute_timeline\n- police_report_id (BIGINT)        -- FK to police_reports\n- binding_type (TEXT)              -- SUPPORTS, CONTRADICTS, NEUTRAL, CLARIFIES\n- binding_strength (TEXT)          -- DEFINITIVE, STRONG, MODERATE, WEAK\n- truth_impact (INTEGER)           -- Impact on truth score (+/- points)\n```"
+    },
+    {
+      "title": "4. `truth_score_history`",
+      "content": "Tracks changes to truth scores over time.\n**Key Fields:**\n```sql\n- timeline_entry_id (BIGINT)\n- old_truth_score (INTEGER)\n- new_truth_score (INTEGER)\n- score_change (INTEGER)\n- change_reason (TEXT)\n- changed_by (TEXT)\n- changed_at (TIMESTAMPTZ)\n```\n---"
+    },
+    {
+      "title": "🔍 Police Report Scanner",
+      "content": ""
+    },
+    {
+      "title": "PX Naming Convention",
+      "content": "The system automatically renames police report files using the PX convention:\n| Format | Meaning | Example |\n|--------|---------|---------|\n| `PX0` | No pages (0 pages) | `PX0_empty_report.pdf` |\n| `PX01` | Single page (1 page) | `PX01_incident_summary.pdf` |\n| `PX06-P1-P6` | 6 pages, showing page 1 | `PX06-P1-P6_arrest_report.pdf` |\n| `PX12-P5-P12` | 12 pages, showing page 5 | `PX12-P5-P12_full_investigation.pdf` |"
+    },
+    {
+      "title": "Usage",
+      "content": "```bash"
+    },
+    {
+      "title": "Set your Anthropic API key",
+      "content": "export ANTHROPIC_API_KEY='your-key-here'"
+    },
+    {
+      "title": "Scan a directory for police reports (dry run)",
+      "content": "python3 police_report_scanner.py /path/to/documents"
+    },
+    {
+      "title": "Actually rename files",
+      "content": "python3 police_report_scanner.py /path/to/documents --rename"
+    },
+    {
+      "title": "Move renamed files to output directory",
+      "content": "python3 police_report_scanner.py /path/to/documents --rename --output-dir /path/to/organized"
+    },
+    {
+      "title": "Non-recursive (current directory only)",
+      "content": "python3 police_report_scanner.py /path/to/documents --no-recursive\n```"
+    },
+    {
+      "title": "What It Does",
+      "content": "1. **Scans** directory for files matching police report patterns\n2. **Analyzes** each image/PDF using Claude Vision AI\n3. **Extracts**:\n   - Page numbers (current page / total pages)\n   - Report type (Incident, CAD, Arrest, etc.)\n   - Case/Incident number\n   - Report date\n   - Confidence score\n4. **Renames** files with PX convention\n5. **Generates** JSON report with all findings"
+    },
+    {
+      "title": "Example Output",
+      "content": "```"
+    },
+    {
+      "title": "🚔 POLICE REPORT SCANNER & LABELING SYSTEM",
+      "content": "══════════════════════════════════════════════════════════════════\nDirectory: /home/user/evidence/police_reports\nRecursive: True\nRename files: True\n══════════════════════════════════════════════════════════════════\n📂 Found 25 potential documents in /home/user/evidence/police_reports\n🚔 15 files match police report patterns\n[1/15] Processing: incident_report_aug2024.pdf\n  ✓ Confidence: 95%\n  ✓ Type: Incident Report\n  ✓ Case: 2024-12345\n  ✓ Pages: 6\n✅ Renamed: incident_report_aug2024.pdf → PX06-P1-P6_incident_report_aug2024.pdf\n...\n📊 Report saved to: police_reports_scan_results.json"
+    },
+    {
+      "title": "=== SUMMARY ===",
+      "content": "Total files processed: 15\nSuccessful scans: 15\nFiles renamed: 15\nPolice reports identified: 14\n```\n---"
+    },
+    {
+      "title": "📊 Enhanced Dashboard",
+      "content": ""
+    },
+    {
+      "title": "Launch",
+      "content": "```bash\nstreamlit run enhanced_truth_score_dashboard.py\n```\nAccess at: http://localhost:8501"
+    },
+    {
+      "title": "Dashboard Sections",
+      "content": ""
+    },
+    {
+      "title": "1. ⚖️ Justice Score",
+      "content": "**Main metric** showing overall case truth integrity.\n- **Gauge visualization** (0-100)\n- **Truth distribution** (Truthful / Questionable / False)\n- **Pie chart** breakdown\n- **Key statistics**"
+    },
+    {
+      "title": "2. 📈 Truth Score Visualizations",
+      "content": "Four interactive tabs:\n**📊 Heatmap**\n- Categories (rows) × Time (columns)\n- Color-coded truth scores\n- Identify patterns and trends\n**📉 Trends**\n- Daily average truth scores\n- Activity volume overlay\n- Threshold lines (75% truthful, 25% false)\n**👥 By Actor**\n- Compare truth scores by person\n- Identify credible vs. non-credible actors\n- Sorted from lowest to highest truth\n**📅 Timeline**\n- Scatter plot: truth score over time\n- Color-coded by category\n- Size indicates importance\n- Interactive hover details"
+    },
+    {
+      "title": "3. 🔍 5W+H Master Matrix",
+      "content": "Complete reference table with filters:\n- **Category filter** (Court Event, Document, Violation, etc.)\n- **Truth score range** slider\n- **Importance filter** (Critical, High, Medium, Low)\n- **Entry type filter** (Statement, Event, Action, Motion, Filing)\nDisplays:\n- When, Where, Who, What, Why, How\n- Truth score (color-coded)\n- Importance level\n- Category"
+    },
+    {
+      "title": "4. 🚨 Lies & False Statements",
+      "content": "Dedicated section for proven lies (truth score < 25):\n- **Count of false statements**\n- **Expandable details** for each lie\n- **Actor identification**\n- **Fraud and perjury scores**\n- **Timestamp and location**"
+    },
+    {
+      "title": "5. 🚔 Police Reports Integration",
+      "content": "If police reports table exists:\n- **Total reports count**\n- **Smoking gun count**\n- **Average truth score**\n- **High relevancy count**\n- **Full report list** with PX codes"
+    },
+    {
+      "title": "6. 📥 Export & Reporting",
+      "content": "Three export options:\n1. **Full Justice Report** (TXT)\n   - Justice score\n   - Truth summary\n   - All proven lies\n   - Formatted for printing\n2. **Timeline CSV** (CSV)\n   - Complete timeline data\n   - All fields and scores\n   - For Excel analysis\n3. **Lies Only CSV** (CSV)\n   - Only false statements\n   - For targeted review\n---"
+    },
+    {
+      "title": "🎯 Truth Scoring Methodology",
+      "content": ""
+    },
+    {
+      "title": "How Truth Scores Are Calculated",
+      "content": "Each timeline entry receives a truth score (0-100) based on:"
+    },
+    {
+      "title": "Base Score: 50 (Neutral)",
+      "content": "**Evidence of Truth** (adds points):\n- `+25` Has supporting evidence\n- `+25` Verified by official record (court order, transcript, etc.)\n- `+10` Witness corroboration\n- `+10` Timestamp verified\n**Evidence of Falsehood** (subtracts points):\n- `-40` Contradicted by evidence\n- `-20` Inconsistent statements\n- `-15` Missing required evidence\n- `0` Proven false (overrides to 0)\n**Fraud Indicators** (subtracts points):\n- `fraud_score > 70`: `-30`\n- `fraud_score 50-70`: `-15`"
+    },
+    {
+      "title": "Truth Score Categories",
+      "content": "| Score | Category | Meaning |\n|-------|----------|---------|\n| 90-100 | VERIFIED_TRUE | Confirmed by multiple sources |\n| 75-89 | LIKELY_TRUE | Strong evidence, few contradictions |\n| 50-74 | UNVERIFIED | Neutral, needs investigation |\n| 25-49 | QUESTIONABLE | Contradictions or inconsistencies |\n| 10-24 | LIKELY_FALSE | Strong contradicting evidence |\n| 0-9 | PROVEN_FALSE | Definitively disproven |"
+    },
+    {
+      "title": "Truth Status Flags",
+      "content": "```python\ntruth_status IN (\n    'VERIFIED_TRUE',      # Confirmed by official records\n    'LIKELY_TRUE',        # Strong supporting evidence\n    'UNVERIFIED',         # No evidence either way\n    'QUESTIONABLE',       # Some contradictions\n    'LIKELY_FALSE',       # Probable lie\n    'PROVEN_FALSE'        # Definitively false\n)\n```\n---"
+    },
+    {
+      "title": "⚖️ Justice Score Calculation",
+      "content": ""
+    },
+    {
+      "title": "Weighted Average Formula",
+      "content": "The **Justice Score** is a weighted average of all truth scores, emphasizing critical items.\n```python\nweights = []\nscores = []\nfor item in timeline:\n    weight = 1.0  # Base weight"
+    },
+    {
+      "title": "Weight by importance",
+      "content": "if item.importance == 'CRITICAL':\n        weight = 3.0\n    elif item.importance == 'HIGH':\n        weight = 2.0\n    elif item.importance == 'MEDIUM':\n        weight = 1.0\n    else:  # LOW\n        weight = 0.5"
+    },
+    {
+      "title": "Extra weight for court filings",
+      "content": "if item.entry_type in ['MOTION', 'FILING', 'DECLARATION']:\n        weight *= 1.5\n    weights.append(weight)\n    scores.append(item.truth_score)\njustice_score = weighted_average(scores, weights)\n```"
+    },
+    {
+      "title": "Interpretation",
+      "content": "| Justice Score | Assessment | Action |\n|---------------|------------|--------|\n| 85-100 | **Excellent** - High integrity case | Strong position |\n| 70-84 | **Good** - Mostly truthful with some issues | Address weaknesses |\n| 50-69 | **Fair** - Mixed truth and falsehoods | Investigation needed |\n| 25-49 | **Poor** - Significant dishonesty | Major concerns |\n| 0-24 | **Critical** - Widespread fraud/perjury | Urgent action required |\n---"
+    },
+    {
+      "title": "📚 Usage Guide",
+      "content": ""
+    },
+    {
+      "title": "Step 1: Deploy Database Schema",
+      "content": "```bash"
+    },
+    {
+      "title": "Connect to Supabase",
+      "content": ""
+    },
+    {
+      "title": "Copy and run master_timeline_schema.sql in SQL Editor",
+      "content": ""
+    },
+    {
+      "title": "Or use command line:",
+      "content": "psql -h db.xxx.supabase.co -U postgres -d postgres -f master_timeline_schema.sql\n```"
+    },
+    {
+      "title": "Step 2: Populate Timeline Data",
+      "content": ""
+    },
+    {
+      "title": "Option A: Manual Entry",
+      "content": "```sql\nINSERT INTO master_absolute_timeline (\n    entry_id, entry_type, category,\n    when_datetime, where_location, who_primary,\n    what_title, what_description,\n    why_stated_reason, how_method,\n    truth_score, importance_level"
+    },
+    {
+      "title": ") VALUES (",
+      "content": ""
+    },
+    {
+      "title": "'FILING-20240815-001',",
+      "content": ""
+    },
+    {
+      "title": "'FILING',",
+      "content": ""
+    },
+    {
+      "title": "'LEGAL_DOCUMENT',",
+      "content": "'2024-08-15 14:30:00',\n    'Superior Court',\n    'Jane Doe',\n    'Motion to Dismiss',\n    'Motion filed requesting dismissal of case',\n    'Lack of jurisdiction',\n    'Court filing system',\n    75,"
+    },
+    {
+      "title": "'HIGH'",
+      "content": ");\n```"
+    },
+    {
+      "title": "Option B: Import from Existing Tables",
+      "content": "The dashboard automatically aggregates from:\n- `court_events`\n- `legal_documents`\n- `legal_violations`\n- `communications_matrix`"
+    },
+    {
+      "title": "Step 3: Scan Police Reports",
+      "content": "```bash"
+    },
+    {
+      "title": "Set API key",
+      "content": "export ANTHROPIC_API_KEY='sk-ant-...'"
+    },
+    {
+      "title": "Scan and rename police reports",
+      "content": "python3 police_report_scanner.py ~/evidence/police --rename --output-dir ~/evidence/organized\n```"
+    },
+    {
+      "title": "Step 4: Bind Evidence to Timeline",
+      "content": "```sql\n-- Link police report to timeline entry\nINSERT INTO evidence_timeline_binding (\n    timeline_entry_id, police_report_id,\n    binding_type, binding_strength,\n    binding_description, truth_impact"
+    },
+    {
+      "title": ") VALUES (",
+      "content": "123,  -- timeline entry ID\n    45,   -- police report ID"
+    },
+    {
+      "title": "'CONTRADICTS',",
+      "content": ""
+    },
+    {
+      "title": "'DEFINITIVE',",
+      "content": "'Police report shows different timeline than stated in declaration',\n    -30   -- Reduces truth score by 30 points\n);\n```"
+    },
+    {
+      "title": "Step 5: Launch Dashboard",
+      "content": "```bash\nstreamlit run enhanced_truth_score_dashboard.py\n```"
+    },
+    {
+      "title": "Step 6: Analyze & Export",
+      "content": "1. **Review Justice Score** - Overall case integrity\n2. **Check Heatmaps** - Identify patterns\n3. **Review Lies Section** - Focus on proven false statements\n4. **Compare Actors** - Who is credible?\n5. **Export Reports** - Generate documentation\n---"
+    },
+    {
+      "title": "🔧 API Reference",
+      "content": ""
+    },
+    {
+      "title": "Python Functions",
+      "content": ""
+    },
+    {
+      "title": "`calculate_truth_score(item_data: Dict) -> int`",
+      "content": "Calculate truth score for a timeline item.\n**Parameters:**\n```python\nitem_data = {\n    'has_supporting_evidence': bool,\n    'verified_by_official_record': bool,\n    'witness_corroboration': bool,\n    'timestamp_verified': bool,\n    'contradicted_by_evidence': bool,\n    'proven_false': bool,\n    'inconsistent_statements': bool,\n    'missing_required_evidence': bool,\n    'fraud_score': int (0-100)\n}\n```\n**Returns:** `int` (0-100)"
+    },
+    {
+      "title": "`calculate_justice_score(truth_scores: List[Dict]) -> float`",
+      "content": "Calculate weighted justice score from all truth scores.\n**Parameters:**\n```python\ntruth_scores = [\n    {\n        'truth_score': int,\n        'importance': str,  # CRITICAL, HIGH, MEDIUM, LOW\n        'category': str     # MOTION, FILING, etc.\n    },\n    ...\n]\n```\n**Returns:** `float` (rounded to 1 decimal)"
+    },
+    {
+      "title": "SQL Views",
+      "content": ""
+    },
+    {
+      "title": "`v_timeline_truth_analysis`",
+      "content": "All timeline entries with truth scores and evidence counts.\n```sql\nSELECT * FROM v_timeline_truth_analysis\nWHERE truth_score < 50\nORDER BY when_datetime DESC;\n```"
+    },
+    {
+      "title": "`v_proven_lies`",
+      "content": "Only entries with truth score < 25.\n```sql\nSELECT * FROM v_proven_lies\nWHERE who_primary = 'John Doe';\n```"
+    },
+    {
+      "title": "`v_justice_score_calculation`",
+      "content": "Overall justice score and statistics.\n```sql\nSELECT * FROM v_justice_score_calculation;\n```\nOutput:\n```\ntotal_entries | simple_average | weighted_justice_score | truthful_count | false_count | questionable_count\n--------------|----------------|------------------------|----------------|-------------|-------------------\n247           | 67.3           | 71.8                   | 158            | 23          | 66\n```"
+    },
+    {
+      "title": "`v_truth_by_actor`",
+      "content": "Truth scores grouped by actor.\n```sql\nSELECT * FROM v_truth_by_actor\nORDER BY lies_count DESC;\n```\n---"
+    },
+    {
+      "title": "📝 Examples",
+      "content": ""
+    },
+    {
+      "title": "Example 1: Add Court Event",
+      "content": "```sql\nINSERT INTO master_absolute_timeline (\n    entry_id, entry_type, category,\n    when_datetime, where_location, who_primary,\n    what_title, what_description,\n    how_method, truth_score, importance_level,\n    verified_by_official_record"
+    },
+    {
+      "title": ") VALUES (",
+      "content": ""
+    },
+    {
+      "title": "'EVENT-20240820-001',",
+      "content": ""
+    },
+    {
+      "title": "'EVENT',",
+      "content": ""
+    },
+    {
+      "title": "'COURT_EVENT',",
+      "content": "'2024-08-20 10:00:00',\n    'Superior Court, Dept 12',\n    'Judge Smith',\n    'Ex Parte Hearing',\n    'Emergency hearing on custody modification',\n    'In-person court proceeding',\n    95,"
+    },
+    {
+      "title": "'CRITICAL',",
+      "content": "true\n);\n```"
+    },
+    {
+      "title": "Example 2: Record False Statement",
+      "content": "```sql\nINSERT INTO master_absolute_timeline (\n    entry_id, entry_type, category,\n    when_datetime, where_location, who_primary,\n    what_title, what_description,\n    is_under_oath, contains_false_statements,\n    false_statement_details,\n    truth_score, perjury_score, fraud_score,\n    importance_level, contradicted_by_evidence,\n    contradicting_evidence_ids"
+    },
+    {
+      "title": ") VALUES (",
+      "content": ""
+    },
+    {
+      "title": "'STATEMENT-20240815-002',",
+      "content": ""
+    },
+    {
+      "title": "'STATEMENT',",
+      "content": ""
+    },
+    {
+      "title": "'VIOLATION',",
+      "content": "'2024-08-15 14:30:00',\n    'Sworn Declaration',\n    'Jane Doe',\n    'False statement about income',\n    'Declared income as $30,000 when tax returns show $75,000',\n    true,  -- under oath\n    true,  -- contains false statements\n    'Understated income by $45,000 in sworn declaration',\n    0,     -- truth score: proven false\n    95,    -- perjury score\n    90,    -- fraud score"
+    },
+    {
+      "title": "'CRITICAL',",
+      "content": "true,  -- contradicted by evidence"
+    },
+    {
+      "title": "ARRAY['TAX-2023-W2', 'TAX-2023-1040']",
+      "content": ");\n```"
+    },
+    {
+      "title": "Example 3: Bind Police Report to Event",
+      "content": "```sql\n-- First, insert police report\nINSERT INTO police_reports (\n    px_code, report_number, report_type,\n    incident_date, total_pages, truth_score,\n    relevancy_score, is_smoking_gun"
+    },
+    {
+      "title": ") VALUES (",
+      "content": ""
+    },
+    {
+      "title": "'PX06-P1-P6',",
+      "content": "'2024-08-15-1234',\n    'Incident Report',\n    '2024-08-15 20:00:00',\n    6,\n    85,\n    950,\n    true\n) RETURNING id;\n-- Then bind to timeline\nINSERT INTO evidence_timeline_binding (\n    timeline_entry_id, police_report_id,\n    binding_type, binding_strength,\n    binding_description, truth_impact"
+    },
+    {
+      "title": ") VALUES (",
+      "content": "456,  -- timeline entry about alleged incident\n    789,  -- police report ID from above"
+    },
+    {
+      "title": "'CONTRADICTS',",
+      "content": ""
+    },
+    {
+      "title": "'DEFINITIVE',",
+      "content": "'Police report shows no evidence of alleged assault. Officer notes no visible injuries, no witnesses, conflicting statements.',\n    -50\n);\n```\n---"
+    },
+    {
+      "title": "🚀 Quick Start Checklist",
+      "content": "- [ ] Deploy `master_timeline_schema.sql` to Supabase\n- [ ] Set `ANTHROPIC_API_KEY` environment variable\n- [ ] Install Python dependencies: `pip install streamlit pandas plotly numpy supabase anthropic pillow PyPDF2`\n- [ ] Scan police reports: `python3 police_report_scanner.py /path/to/reports --rename`\n- [ ] Populate timeline data (manual or import)\n- [ ] Launch dashboard: `streamlit run enhanced_truth_score_dashboard.py`\n- [ ] Review justice score and lies\n- [ ] Bind evidence to timeline entries\n- [ ] Export reports\n---"
+    },
+    {
+      "title": "📞 Support",
+      "content": "For issues or questions:\n1. Check the SQL views for data issues: `v_timeline_truth_analysis`\n2. Review the police scanner JSON report: `police_reports_scan_results.json`\n3. Check Streamlit logs for dashboard errors\n4. Verify Supabase connection and credentials\n---"
+    },
+    {
+      "title": "📄 License",
+      "content": "ASEAGI System - Legal Case Intelligence Platform\nCopyright (c) 2025\n---\n**Last Updated:** 2025-11-05\n**Version:** 2.0.0\n**Status:** ✅ Production Ready"
+    }
+  ],
+  "extraction_success": true,
+  "extraction_error": null
+}

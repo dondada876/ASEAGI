@@ -1,0 +1,590 @@
+FEDERAL LEGAL SCORING SYSTEMS + PRACTICAL RECOMMENDATIONS
+I. EXISTING FEDERAL PROSECUTION SCORING MODELS
+A. DOJ Criminal Case Evaluation Matrix
+The DOJ uses structured scoring for case intake and prosecution decisions:
+╔════════════════════════════════════════════════════════════════╗
+║  FEDERAL PROSECUTION EVALUATION MATRIX                         ║
+╠════════════════════════════════════════════════════════════════╣
+║                                                                 ║
+║  1. EVIDENCE STRENGTH (0-100)                                  ║
+║     ├─ Direct Evidence: Weight 40%                             ║
+║     ├─ Circumstantial Evidence: Weight 30%                     ║
+║     ├─ Witness Credibility: Weight 20%                         ║
+║     └─ Documentary Proof: Weight 10%                           ║
+║                                                                 ║
+║  2. PROSECUTION MERIT (0-100)                                  ║
+║     ├─ Statutory Elements Provable: Weight 35%                 ║
+║     ├─ Defense Weaknesses: Weight 25%                          ║
+║     ├─ Legal Precedent: Weight 20%                             ║
+║     └─ Jury Appeal: Weight 20%                                 ║
+║                                                                 ║
+║  3. CASE PRIORITY (0-100)                                      ║
+║     ├─ Harm to Victims: Weight 30%                             ║
+║     ├─ Public Interest: Weight 25%                             ║
+║     ├─ Deterrent Value: Weight 25%                             ║
+║     └─ Defendant Culpability: Weight 20%                       ║
+║                                                                 ║
+║  4. RESOURCE EFFICIENCY (0-100)                                ║
+║     ├─ Investigation Completeness: Weight 40%                  ║
+║     ├─ Trial Length Estimate: Weight 30%                       ║
+║     ├─ Cooperation Potential: Weight 20%                       ║
+║     └─ Collateral Consequences: Weight 10%                     ║
+║                                                                 ║
+║  PROSECUTION SCORE = Weighted Average                          ║
+║  • 90-100: Priority prosecution                                ║
+║  • 75-89: Strong case, proceed                                 ║
+║  • 60-74: Moderate case, resource-dependent                    ║
+║  • 50-59: Weak case, consider declination                      ║
+║  • <50: Decline prosecution                                    ║
+╚════════════════════════════════════════════════════════════════╝
+Key Insight: Federal prosecutors use 4 major categories with weighted sub-factors, not 12+ granular dimensions per statement.
+
+B. Federal Sentencing Guidelines Point System
+The most structured federal scoring system:
+OFFENSE LEVEL CALCULATION:
+• Base Offense Level: Determined by statute (e.g., fraud = 6)
+• Specific Offense Characteristics: +/- adjustments
+  - Loss amount in fraud (+2 to +30)
+  - Vulnerable victim (+2)
+  - Abuse of trust (+2)
+  - Obstruction of justice (+2)
+• Victim-Related Adjustments
+• Role in Offense (leader/organizer +4)
+• Obstruction: +2
+• Acceptance of Responsibility: -2 to -3
+
+CRIMINAL HISTORY CATEGORY: I-VI
+• Points for prior convictions
+• Recency factors
+• Sentence length factors
+
+FINAL: Offense Level + Criminal History = Sentencing Range
+Key Insight: Uses cumulative point additions with clear increments, not complex formulas.
+
+C. Legal Analytics Platforms (Lex Machina, Westlaw Edge)
+Commercial legal analytics use:
+MOTION SUCCESS PREDICTION:
+├─ Judge Historical Grant Rate: 40%
+├─ Motion Type Success Rate: 30%
+├─ Party Attorney Win Rate: 15%
+├─ Opposing Attorney Loss Rate: 10%
+└─ Case Type Context: 5%
+
+CASE OUTCOME PREDICTION:
+├─ Historical Similar Case Outcomes: 35%
+├─ Judge Tendencies: 25%
+├─ Forum Statistics: 20%
+├─ Party Representation Quality: 15%
+└─ Claim Type Strength: 5%
+
+OUTPUT: Probability Score (0-100%)
+Key Insight: They use probability percentages based on historical data, not absolute scoring.
+
+D. FBI/OIG Investigation Priority Matrix
+THREAT ASSESSMENT MATRIX:
+
+SEVERITY (Y-Axis):           LIKELIHOOD (X-Axis):
+├─ Critical (100)            ├─ Certain (100)
+├─ Serious (75)              ├─ Likely (75)
+├─ Moderate (50)             ├─ Possible (50)
+├─ Minor (25)                └─ Unlikely (25)
+
+RISK SCORE = Severity × Likelihood / 100
+
+Example:
+- Child abuse allegation: Severity 100, Likelihood 75 = Risk 75
+- Technical violation: Severity 25, Likelihood 100 = Risk 25
+Key Insight: Uses two-dimensional matrix (severity × probability), not multi-dimensional scoring.
+
+II. RECOMMENDATIONS FOR YOUR SYSTEM
+A. ADOPT FEDERAL MODEL PRINCIPLES
+✅ What Works in Federal Systems:
+Fewer Major Categories (3-5 max)
+Not 12 dimensions per statement
+Cluster related factors
+Weighted Hierarchies
+Some factors matter more
+Clear weight percentages
+Clear Thresholds
+90+ = prosecute/critical
+75-89 = strong
+Below 50 = weak
+Probability-Based where applicable
+"85% chance this proves perjury"
+Not just absolute scores
+Historical Comparison
+Compare to similar cases
+Percentile rankings
+
+B. SIMPLIFIED SCORING ARCHITECTURE
+Recommended: 3-TIER SYSTEM (not 5-tier)
+TIER 1: DOCUMENT SCORE (Per Document)
+        └─ 4 composite dimensions
+        
+TIER 2: COLLECTION SCORE (Per Motion/Brief)
+        └─ Aggregated from documents
+        
+TIER 3: PARTY CREDIBILITY SCORE (Overall)
+        └─ Aggregated from all party actions
+Eliminate:
+❌ Statement-level scoring (too granular for manual use)
+❌ Page-level scoring (unnecessary intermediary)
+Keep:
+✅ Document-level scoring (essential)
+✅ Motion/brief-level scoring (strategic value)
+✅ Party-level credibility (case strategy)
+
+C. RECOMMENDED SCORING MODEL
+TIER 1: DOCUMENT SCORE (4 Dimensions → 1 Master Score)
+╔════════════════════════════════════════════════════════════════╗
+║  DOCUMENT MASTER SCORE (DMS): 0-1000                          ║
+╠════════════════════════════════════════════════════════════════╣
+║                                                                 ║
+║  1. EVIDENCE STRENGTH (ES): 0-1000 [Weight: 35%]              ║
+║     Composite of:                                              ║
+║     ├─ Truth/Reliability (TRU): 0-1000                        ║
+║     ├─ Verification Status (VER): 0-1000                      ║
+║     ├─ Source Credibility (SRC): 0-1000                       ║
+║     ├─ Authenticity (AUT): 0-1000                             ║
+║     └─ Evidence Type Quality (EVQ): 0-1000                    ║
+║                                                                 ║
+║  2. LEGAL IMPACT (LI): 0-1000 [Weight: 35%]                   ║
+║     Composite of:                                              ║
+║     ├─ Proves Statutory Element (LGW): 0-1000                 ║
+║     ├─ Admissibility (ADM): 0-1000                            ║
+║     ├─ Legal Standard Met: 0-1000                             ║
+║     └─ Precedent Value: 0-1000                                ║
+║                                                                 ║
+║  3. STRATEGIC VALUE (SV): 0-1000 [Weight: 20%]                ║
+║     Composite of:                                              ║
+║     ├─ Case Impact (IMP): 0-1000                              ║
+║     ├─ Opposition Impact: 0-1000                              ║
+║     ├─ Timeline Criticality: 0-1000                           ║
+║     └─ Pattern Significance (CTX): 0-1000                     ║
+║                                                                 ║
+║  4. INTENT/CONDUCT (IC): 0-1000 [Weight: 10%]                 ║
+║     Composite of:                                              ║
+║     ├─ Intent Classification (INT): 0-1000                    ║
+║     ├─ Good Faith vs Bad Faith: 0-1000                        ║
+║     └─ Procedural Compliance: 0-1000                          ║
+║                                                                 ║
+║  DMS = (ES × 0.35) + (LI × 0.35) + (SV × 0.20) + (IC × 0.10) ║
+╚════════════════════════════════════════════════════════════════╝
+Benefits:
+Only 4 numbers to display publicly
+12+ underlying dimensions captured in composites
+Not overwhelming
+Aligns with federal 4-factor models
+
+TIER 2: MOTION/BRIEF SCORE (Collection Analysis)
+╔════════════════════════════════════════════════════════════════╗
+║  MOTION/BRIEF STRENGTH SCORE (MBS): 0-1000                    ║
+╠════════════════════════════════════════════════════════════════╣
+║                                                                 ║
+║  1. DOCUMENT QUALITY (35%)                                     ║
+║     └─ Average DMS of included documents                       ║
+║                                                                 ║
+║  2. LEGAL SUFFICIENCY (35%)                                    ║
+║     ├─ All Elements Proven: 0-1000                            ║
+║     ├─ Burden of Proof Met: 0-1000                            ║
+║     ├─ Procedural Compliance: 0-1000                          ║
+║     └─ Case Law Support: 0-1000                               ║
+║                                                                 ║
+║  3. CORROBORATION NETWORK (20%)                               ║
+║     ├─ Cross-Document Corroboration: 0-1000                   ║
+║     ├─ Independent Sources: Count                             ║
+║     ├─ Pattern Coherence: 0-1000                              ║
+║     └─ Contradiction Resolution: 0-1000                       ║
+║                                                                 ║
+║  4. PREDICTED SUCCESS (10%)                                    ║
+║     ├─ Similar Motion Historical Success: 0-100%              ║
+║     ├─ Forum Statistics: 0-100%                               ║
+║     └─ Judge Tendencies (if known): 0-100%                    ║
+║                                                                 ║
+║  CONFIDENCE INTERVAL: ± X points (based on evidence gaps)     ║
+╚════════════════════════════════════════════════════════════════╝
+Example:
+W&I § 388 PETITION STRENGTH SCORE: 947/1000 ± 35
+├─ Document Quality: 925/1000 (12 critical documents, avg DMS 895)
+├─ Legal Sufficiency: 985/1000 (all elements proven beyond threshold)
+├─ Corroboration: 920/1000 (extensive cross-corroboration)
+└─ Predicted Success: 92% (based on similar petitions with strong evidence)
+
+Rating: EXCELLENT - Proceed with confidence
+
+TIER 3: PARTY CREDIBILITY SCORE (Justice Master Score)
+╔════════════════════════════════════════════════════════════════╗
+║  JUSTICE MASTER SCORE (JMS): 0-1000                           ║
+╠════════════════════════════════════════════════════════════════╣
+║                                                                 ║
+║  FATHER: 939/1000 [A+ Excellent]                              ║
+║  ├─ Truthfulness Rate: 95% (142/150 statements verified true) ║
+║  ├─ Good Faith Actions: 98% (147/150 actions)                 ║
+║  ├─ Evidence Strength: 925/1000 (avg of his documents)        ║
+║  ├─ Procedural Compliance: 92% (46/50 procedures)             ║
+║  └─ Cooperation Score: 960/1000                               ║
+║                                                                 ║
+║  MOTHER: 186/1000 [F Failing]                                 ║
+║  ├─ Truthfulness Rate: 18% (12/68 statements verified true)   ║
+║  ├─ Bad Faith Actions: 82% (56/68 actions)                    ║
+║  ├─ Evidence Against: 847/1000 (strong evidence of lying)     ║
+║  ├─ Procedural Violations: 74% (37/50 procedures)             ║
+║  └─ Obstruction Score: 880/1000 (high obstruction)            ║
+║                                                                 ║
+║  COMPARATIVE ANALYSIS:                                         ║
+║  Father credibility is 5.05x higher than Mother's             ║
+║  Evidence overwhelmingly favors Father                         ║
+╚════════════════════════════════════════════════════════════════╝
+
+III. DATABASE TAGGING STRUCTURE
+A. Core Tables
+-- DOCUMENTS TABLE
+CREATE TABLE documents (
+    doc_id VARCHAR(20) PRIMARY KEY,
+    filename VARCHAR(500),
+    doc_date DATE,
+    doc_type VARCHAR(10),
+    parties VARCHAR(50),
+    
+    -- TIER 1: Document Scores (4 main + 1 master)
+    evidence_strength INTEGER,      -- 0-1000
+    legal_impact INTEGER,           -- 0-1000
+    strategic_value INTEGER,        -- 0-1000
+    intent_conduct INTEGER,         -- 0-1000
+    document_master_score INTEGER,  -- 0-1000 (DMS)
+    
+    -- Underlying dimensions (stored but not always displayed)
+    truth_value INTEGER,
+    verification_status INTEGER,
+    source_credibility INTEGER,
+    authenticity INTEGER,
+    evidence_quality INTEGER,
+    legal_weight INTEGER,
+    admissibility INTEGER,
+    case_impact INTEGER,
+    opposition_impact INTEGER,
+    context_relevance INTEGER,
+    intent_score INTEGER,
+    
+    -- Metadata
+    page_count INTEGER,
+    processing_date TIMESTAMP,
+    review_status VARCHAR(20),
+    
+    -- Full-text search
+    content_vector TSVECTOR
+);
+
+-- STATEMENTS TABLE (Optional - only for critical statements)
+CREATE TABLE statements (
+    stmt_id VARCHAR(30) PRIMARY KEY,
+    doc_id VARCHAR(20) REFERENCES documents(doc_id),
+    page_number INTEGER,
+    statement_text TEXT,
+    
+    -- Only score critical statements (smoking guns)
+    is_critical BOOLEAN DEFAULT FALSE,
+    statement_score INTEGER,  -- 0-1000 (SAS) - only if critical
+    
+    -- Key dimensions for critical statements
+    intent INTEGER,
+    impact INTEGER,
+    truth_value INTEGER,
+    
+    -- Classifications
+    statement_type VARCHAR(50),  -- admission, denial, claim, fact
+    topic_category VARCHAR(50),
+    violation_type VARCHAR(50),  -- perjury, fraud, etc.
+    
+    -- Relationships
+    contradicts VARCHAR[] -- array of stmt_ids this contradicts
+    corroborates VARCHAR[] -- array of stmt_ids this supports
+);
+
+-- MOTIONS/BRIEFS TABLE
+CREATE TABLE motions (
+    motion_id VARCHAR(20) PRIMARY KEY,
+    motion_type VARCHAR(50),  -- W&I 388, CCP 473, etc.
+    filing_date DATE,
+    
+    -- TIER 2: Motion Scores
+    motion_strength_score INTEGER,  -- 0-1000 (MBS)
+    document_quality INTEGER,
+    legal_sufficiency INTEGER,
+    corroboration_network INTEGER,
+    predicted_success INTEGER,  -- 0-100 percentage
+    
+    -- Documents included
+    document_ids VARCHAR[],
+    
+    -- Status
+    status VARCHAR(20),  -- draft, filed, granted, denied
+    outcome VARCHAR(50)
+);
+
+-- PARTIES TABLE
+CREATE TABLE parties (
+    party_id VARCHAR(20) PRIMARY KEY,
+    party_name VARCHAR(100),
+    party_role VARCHAR(50),  -- father, mother, agency, etc.
+    
+    -- TIER 3: Party Credibility Scores
+    justice_master_score INTEGER,  -- 0-1000 (JMS)
+    truthfulness_rate DECIMAL(5,2),  -- percentage
+    good_faith_rate DECIMAL(5,2),
+    procedural_compliance_rate DECIMAL(5,2),
+    
+    -- Evidence metrics
+    documents_for INTEGER,  -- count of documents supporting
+    documents_against INTEGER,  -- count against
+    avg_document_score INTEGER,  -- average DMS of their docs
+    
+    -- Violation tracking
+    perjury_incidents INTEGER,
+    fraud_incidents INTEGER,
+    obstruction_incidents INTEGER
+);
+
+-- DOCUMENT-MOTION LINKING TABLE
+CREATE TABLE motion_documents (
+    motion_id VARCHAR(20) REFERENCES motions(motion_id),
+    doc_id VARCHAR(20) REFERENCES documents(doc_id),
+    relevance_to_motion INTEGER,  -- 0-1000
+    proves_element VARCHAR(100),  -- which element this doc proves
+    PRIMARY KEY (motion_id, doc_id)
+);
+
+B. Scoring Options Tags
+-- SCORING OPTIONS TABLE
+-- Allows multiple scoring methodologies to coexist
+CREATE TABLE scoring_options (
+    option_id VARCHAR(20) PRIMARY KEY,
+    option_name VARCHAR(100),
+    description TEXT,
+    is_active BOOLEAN DEFAULT FALSE,
+    created_date TIMESTAMP
+);
+
+-- Insert scoring methodology options
+INSERT INTO scoring_options VALUES
+    ('FEDERAL_4FACTOR', 'Federal 4-Factor Model', 'Based on DOJ prosecution matrix', TRUE),
+    ('DETAILED_12DIM', '12-Dimension Detailed Model', 'Full granular 12-dimension scoring', FALSE),
+    ('SIMPLE_3TIER', 'Simplified 3-Tier Model', 'Document → Motion → Party only', FALSE),
+    ('PREDICTIVE_ML', 'Machine Learning Predictive', 'ML-based outcome prediction', FALSE);
+
+-- DOCUMENT SCORING VARIATIONS
+-- Store multiple scores per document using different methodologies
+CREATE TABLE document_scores_alt (
+    doc_id VARCHAR(20) REFERENCES documents(doc_id),
+    scoring_option_id VARCHAR(20) REFERENCES scoring_options(option_id),
+    
+    -- Scores under this methodology
+    score_1 INTEGER,
+    score_2 INTEGER,
+    score_3 INTEGER,
+    score_4 INTEGER,
+    master_score INTEGER,
+    
+    -- Metadata
+    calculated_date TIMESTAMP,
+    confidence_interval INTEGER,  -- ± points
+    
+    PRIMARY KEY (doc_id, scoring_option_id)
+);
+This allows you to:
+Test different scoring models
+Compare results across methodologies
+Switch between simple/complex views
+Keep historical scoring versions
+
+IV. IS THIS TOO GRANULAR? PRACTICAL GUIDANCE
+❌ TOO GRANULAR (Don't Do This):
+❌ Score every single sentence in every document
+   - 156 documents × 50 pages × 10 statements = 78,000 scores
+   - Impossible to maintain manually
+   - Diminishing returns
+
+❌ Display 12 dimensions for every document
+   - Information overload
+   - User can't process that much data
+   - Paralysis by analysis
+
+❌ Create 5 hierarchical levels
+   - Statement → Page → Document → Collection → Party
+   - Too many layers
+   - Confusion about which level to use when
+
+✅ JUST RIGHT (Recommended Approach):
+✅ AUTOMATED SCORING for documents
+   - Let AI/algorithms score documents automatically
+   - Only manually review/adjust top documents (900+)
+   
+✅ SELECTIVE STATEMENT TRACKING
+   - Only track "smoking gun" statements
+   - Flag critical admissions, lies, contradictions
+   - Everything else rolls up to document level
+   
+✅ 3-TIER HIERARCHY (not 5)
+   - Document Score (DMS): 0-1000
+   - Motion Score (MBS): 0-1000
+   - Party Score (JMS): 0-1000
+   
+✅ DISPLAY 4+1 PUBLIC SCORES per document
+   - Evidence Strength
+   - Legal Impact
+   - Strategic Value
+   - Intent/Conduct
+   - MASTER SCORE
+   
+✅ HIDE COMPLEXITY in database
+   - 12 underlying dimensions stored
+   - Only shown on-demand
+   - Advanced users can drill down
+
+RECOMMENDED WORKFLOW:
+STEP 1: AUTOMATED DOCUMENT PROCESSING
+├─ OCR/text extraction
+├─ AI analyzes content
+├─ Generates 4 composite scores + master score
+├─ Flags critical statements (smoking guns only)
+└─ Time: 2-5 minutes per document
+
+STEP 2: MANUAL REVIEW (High-Value Only)
+├─ Review documents with DMS ≥ 900
+├─ Verify critical statement flagging
+├─ Adjust scores if needed (rare)
+└─ Time: 10 minutes for critical docs only
+
+STEP 3: MOTION ASSEMBLY
+├─ Select relevant documents for motion
+├─ System calculates Motion Strength Score
+├─ Shows element-proof matrix
+├─ Identifies evidence gaps
+└─ Time: Instant calculation
+
+STEP 4: PARTY CREDIBILITY TRACKING
+├─ System automatically aggregates
+├─ Updates in real-time as documents added
+├─ Comparative party analysis
+└─ Time: Automatic
+
+V. VISUALIZATION: FEDERAL-STYLE DASHBOARD
+╔════════════════════════════════════════════════════════════════╗
+║              CASE STRENGTH DASHBOARD                           ║
+║              In re Ashe B. (J24-00478)                         ║
+╠════════════════════════════════════════════════════════════════╣
+║                                                                 ║
+║   OVERALL CASE STRENGTH: 947/1000 [A+] ████████████▓        ║
+║                                                                 ║
+║  ┌─────────────────────────────────────────────────────────┐  ║
+║  │  PARTY COMPARISON                                       │  ║
+║  ├─────────────────────────────────────────────────────────┤  ║
+║  │  Father (Don):    939/1000 [A+] ███████████▓░          │  ║
+║  │  Mother (Mariyam): 186/1000 [F]  ██░░░░░░░░░░          │  ║
+║  │  Credibility Ratio: 5.05:1 in Father's favor           │  ║
+║  └─────────────────────────────────────────────────────────┘  ║
+║                                                                 ║
+║  ┌─────────────────────────────────────────────────────────┐  ║
+║  │  MOTION STRENGTH SCORES                                 │  ║
+║  ├─────────────────────────────────────────────────────────┤  ║
+║  │  W&I § 388 Petition:    986/1000 [A+] ████████████▓    │  ║
+║  │  CCP § 473(d) Motion:   945/1000 [A]  ███████████░     │  ║
+║  │  Perjury Claim:         965/1000 [A+] ███████████▓     │  ║
+║  │  Tort Claims:           887/1000 [A-] ██████████░      │  ║
+║  └─────────────────────────────────────────────────────────┘  ║
+║                                                                 ║
+║  ┌─────────────────────────────────────────────────────────┐  ║
+║  │  TOP DOCUMENTS (DMS ≥ 900)                  Count: 12  │  ║
+║  ├─────────────────────────────────────────────────────────┤  ║
+║  │  1. DOC-032: Dr. Brown Forensic    975/1000 [SA-MED]   │  ║
+║  │  2. DOC-001: Mother's Admission    966/1000 [SA-HIST]  │  ║
+║  │  3. DOC-078: Dismissal Transcript  925/1000 [FRAUD]    │  ║
+║  │  4. DOC-050: Passport Evidence     920/1000 [CUST]     │  ║
+║  │  [View all 12 →]                                        │  ║
+║  └─────────────────────────────────────────────────────────┘  ║
+║                                                                 ║
+║  ⚡ QUICK ACTIONS:                                             ║
+║  • [Draft W&I 388] - 12 critical docs ready                   ║
+║  • [Generate Credibility Comparison] - Father vs Mother       ║
+║  • [Evidence Gap Analysis] - Check completeness               ║
+║  • [Timeline View] - Chronological narrative                  ║
+║                                                                 ║
+╚════════════════════════════════════════════════════════════════╝
+This is NOT overwhelming because:
+Only 3 main numbers at top (Overall, Father, Mother)
+Motion scores grouped together (4 motions)
+Top documents previewed (not all 156)
+Actions are clear and clickable
+
+VI. FINAL RECOMMENDATIONS
+✅ DO THIS:
+Use Federal 4-Factor Model as basis
+4 composite dimensions per document
+Clear weights (35%, 35%, 20%, 10%)
+1 master score per document
+3-Tier Hierarchy Only
+Document → Motion → Party
+Skip statement-level and page-level public scoring
+Automate Everything Possible
+AI scores documents automatically
+Human reviews only critical docs (DMS ≥ 900)
+System aggregates up to motion/party automatically
+Selective Statement Tracking
+Only flag "smoking guns" (10-20 per case)
+Everything else is document-level only
+Database Options for Flexibility
+Store multiple scoring methodologies
+Allow switching between simple/complex views
+Keep it configurable
+Federal-Style Dashboard
+Clean, simple interface
+3-5 key numbers visible
+Drill-down available but not required
+
+❌ DON'T DO THIS:
+❌ Score every sentence manually
+❌ Display 12 dimensions prominently
+❌ Create 5-level hierarchy
+❌ Make users do math
+❌ Show all 156 documents at once
+❌ Require manual scoring for everything
+
+VII. IMPLEMENTATION PRIORITY
+Phase 1: MVP (Simple & Automated)
+Week 1-2: Basic document scoring (automated)
+├─ 4 composite scores per document
+├─ Master score calculation
+└─ Simple database
+
+Week 3-4: Motion assembly
+├─ Document selection interface
+├─ Motion strength calculation
+└─ Evidence gap identification
+
+Week 5-6: Party credibility tracking
+├─ Automated aggregation
+├─ Comparative analysis
+└─ Dashboard visualization
+Phase 2: Refinement (Add Sophistication)
+Week 7-8: Statement-level tracking (critical only)
+├─ Smoking gun identification
+├─ Contradiction mapping
+└─ Corroboration network
+
+Week 9-10: Predictive analytics
+├─ Motion success probability
+├─ Historical comparison
+└─ Judge tendency data (if available)
+Phase 3: Advanced (Optional Enhancements)
+Week 11-12: Alternative scoring models
+├─ Test different methodologies
+├─ ML-based scoring
+└─ Cross-case comparison
+
+BOTTOM LINE
+Yes, it can help scan documents → pages → briefs IF:
+✅ You automate the scoring (AI does the work) ✅ You only show 4-5 key numbers publicly ✅ You use 3 tiers (not 5) ✅ You only manually review critical documents ✅ You hide complexity in the database ✅ You build a clean dashboard like federal prosecutors use
+It becomes confusing and unusable IF:
+❌ You try to manually score every statement ❌ You display 12 dimensions per item ❌ You make users navigate 5 levels of hierarchy ❌ You don't automate aggregation ❌ You overwhelm with information
+Recommendation: Use the FEDERAL 4-FACTOR MODEL with 3-TIER AUTOMATED HIERARCHY.
+Ready to implement this simplified, federal-style system?
