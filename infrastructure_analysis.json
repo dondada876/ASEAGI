@@ -1,0 +1,724 @@
+{
+  "generated_at": "2025-11-05T22:25:38.399096",
+  "tables": {},
+  "relationships": [],
+  "dashboards": [
+    {
+      "name": "bulk_document_ingestion",
+      "file_path": "bulk_document_ingestion.py",
+      "file_size": 25749,
+      "tables_accessed": [],
+      "functions": [
+        "__init__",
+        "_create_tables",
+        "start_batch",
+        "complete_batch",
+        "is_file_processed",
+        "record_file",
+        "get_batch_progress",
+        "__init__",
+        "_load_config",
+        "calculate_file_hash",
+        "check_duplicate",
+        "prepare_image",
+        "tier1_ocr",
+        "tier2_analysis",
+        "upload_to_supabase",
+        "process_file",
+        "scan_directory",
+        "process_batch",
+        "_update_stats",
+        "_print_progress",
+        "_print_summary",
+        "main"
+      ],
+      "streamlit_components": [],
+      "external_apis": [
+        "Claude API"
+      ]
+    },
+    {
+      "name": "bulk_ingestion_dashboard",
+      "file_path": "bulk_ingestion_dashboard.py",
+      "file_size": 12568,
+      "tables_accessed": [],
+      "functions": [
+        "get_db_connection",
+        "fetch_all_batches",
+        "fetch_batch_files",
+        "fetch_overall_stats",
+        "main"
+      ],
+      "streamlit_components": [
+        "metric",
+        "plotly_chart",
+        "download_button",
+        "expander",
+        "rerun",
+        "stop",
+        "set_page_config",
+        "markdown",
+        "checkbox",
+        "progress",
+        "info",
+        "error",
+        "title",
+        "multiselect",
+        "dataframe",
+        "columns"
+      ],
+      "external_apis": []
+    },
+    {
+      "name": "ceo_global_dashboard",
+      "file_path": "ceo_global_dashboard.py",
+      "file_size": 29207,
+      "tables_accessed": [],
+      "functions": [
+        "get_cross_system_priorities",
+        "get_revenue_data",
+        "get_business_documents",
+        "get_family_documents",
+        "get_ceo_okrs",
+        "get_proj344_summary"
+      ],
+      "streamlit_components": [
+        "plotly_chart",
+        "metric",
+        "expander",
+        "stop",
+        "set_page_config",
+        "markdown",
+        "cache_data",
+        "caption",
+        "progress",
+        "info",
+        "error",
+        "button",
+        "multiselect",
+        "columns",
+        "subheader"
+      ],
+      "external_apis": []
+    },
+    {
+      "name": "check_error_logs",
+      "file_path": "check_error_logs.py",
+      "file_size": 6328,
+      "tables_accessed": [],
+      "functions": [
+        "init_supabase"
+      ],
+      "streamlit_components": [
+        "metric",
+        "selectbox",
+        "rerun",
+        "expander",
+        "stop",
+        "set_page_config",
+        "markdown",
+        "caption",
+        "success",
+        "title",
+        "error",
+        "dataframe",
+        "info",
+        "button",
+        "code",
+        "columns",
+        "text_area",
+        "subheader"
+      ],
+      "external_apis": []
+    },
+    {
+      "name": "check_telegram_uploads",
+      "file_path": "check_telegram_uploads.py",
+      "file_size": 2115,
+      "tables_accessed": [],
+      "functions": [],
+      "streamlit_components": [],
+      "external_apis": [
+        "Telegram Bot API"
+      ]
+    },
+    {
+      "name": "court_events_dashboard",
+      "file_path": "court_events_dashboard.py",
+      "file_size": 17763,
+      "tables_accessed": [],
+      "functions": [
+        "init_supabase",
+        "get_all_events",
+        "get_event_documents",
+        "get_upcoming_events",
+        "get_events_by_case",
+        "get_critical_events",
+        "main"
+      ],
+      "streamlit_components": [
+        "warning",
+        "cache_data",
+        "error",
+        "selectbox",
+        "metric",
+        "expander",
+        "stop",
+        "markdown",
+        "checkbox",
+        "title",
+        "info",
+        "columns",
+        "header",
+        "text_area",
+        "date_input",
+        "form_submit_button",
+        "text_input",
+        "form",
+        "subheader",
+        "set_page_config",
+        "caption",
+        "success",
+        "write",
+        "code"
+      ],
+      "external_apis": []
+    },
+    {
+      "name": "dashboard",
+      "file_path": "dashboard.py",
+      "file_size": 12113,
+      "tables_accessed": [],
+      "functions": [
+        "parse_log_file",
+        "parse_changes_file"
+      ],
+      "streamlit_components": [
+        "warning",
+        "divider",
+        "slider",
+        "metric",
+        "selectbox",
+        "expander",
+        "markdown",
+        "title",
+        "info",
+        "columns",
+        "values",
+        "download_button",
+        "keys",
+        "button",
+        "plotly_chart",
+        "set_page_config",
+        "get",
+        "caption",
+        "code"
+      ],
+      "external_apis": []
+    },
+    {
+      "name": "error_log_uploader",
+      "file_path": "error_log_uploader.py",
+      "file_size": 17188,
+      "tables_accessed": [],
+      "functions": [
+        "init_supabase",
+        "save_log_to_database",
+        "get_recent_logs",
+        "delete_log",
+        "analyze_log_content",
+        "display_analysis",
+        "upload_section",
+        "recent_logs_section",
+        "main"
+      ],
+      "streamlit_components": [
+        "rerun",
+        "cache_data",
+        "balloons",
+        "error",
+        "dataframe",
+        "spinner",
+        "metric",
+        "selectbox",
+        "expander",
+        "stop",
+        "markdown",
+        "info",
+        "title",
+        "file_uploader",
+        "columns",
+        "header",
+        "text_area",
+        "download_button",
+        "button",
+        "subheader",
+        "set_page_config",
+        "success",
+        "write",
+        "code"
+      ],
+      "external_apis": []
+    },
+    {
+      "name": "global_infrastructure_analyzer",
+      "file_path": "global_infrastructure_analyzer.py",
+      "file_size": 29361,
+      "tables_accessed": [],
+      "functions": [
+        "__init__",
+        "_load_config",
+        "analyze_all_tables",
+        "_infer_column_types",
+        "analyze_relationships",
+        "analyze_dashboards",
+        "_extract_tables",
+        "_extract_functions",
+        "_extract_st_components",
+        "_extract_apis",
+        "analyze_python_scripts",
+        "_classify_script",
+        "_extract_imports",
+        "analyze_orchestration",
+        "generate_infrastructure_map",
+        "generate_recommendations",
+        "_tables_similar",
+        "export_json",
+        "main"
+      ],
+      "streamlit_components": [],
+      "external_apis": [
+        "Claude API",
+        "Telegram Bot API",
+        "Qdrant Vector DB"
+      ]
+    },
+    {
+      "name": "legal_intelligence_dashboard",
+      "file_path": "legal_intelligence_dashboard.py",
+      "file_size": 26698,
+      "tables_accessed": [],
+      "functions": [
+        "init_supabase",
+        "get_all_documents",
+        "get_statistics",
+        "get_document_by_id",
+        "search_documents",
+        "main"
+      ],
+      "streamlit_components": [
+        "warning",
+        "bar_chart",
+        "cache_data",
+        "error",
+        "dataframe",
+        "spinner",
+        "slider",
+        "metric",
+        "selectbox",
+        "expander",
+        "stop",
+        "markdown",
+        "title",
+        "info",
+        "columns",
+        "header",
+        "text_input",
+        "subheader",
+        "set_page_config",
+        "caption",
+        "success",
+        "write",
+        "code"
+      ],
+      "external_apis": []
+    },
+    {
+      "name": "proj344_master_dashboard",
+      "file_path": "proj344_master_dashboard.py",
+      "file_size": 20513,
+      "tables_accessed": [],
+      "functions": [
+        "init_supabase",
+        "query_table",
+        "query_view",
+        "get_system_stats",
+        "main"
+      ],
+      "streamlit_components": [
+        "plotly_chart",
+        "set_page_config",
+        "stop",
+        "markdown",
+        "cache_data",
+        "success",
+        "title",
+        "error",
+        "dataframe",
+        "info",
+        "columns",
+        "header",
+        "subheader"
+      ],
+      "external_apis": []
+    },
+    {
+      "name": "proj344_style",
+      "file_path": "proj344_style.py",
+      "file_size": 12564,
+      "tables_accessed": [],
+      "functions": [
+        "inject_custom_css",
+        "render_header",
+        "render_metric_card",
+        "render_document_card",
+        "render_timeline_event",
+        "render_fraud_indicator",
+        "render_alert",
+        "render_footer"
+      ],
+      "streamlit_components": [
+        "markdown"
+      ],
+      "external_apis": []
+    },
+    {
+      "name": "setup_storage_bucket",
+      "file_path": "setup_storage_bucket.py",
+      "file_size": 4149,
+      "tables_accessed": [],
+      "functions": [
+        "main"
+      ],
+      "streamlit_components": [],
+      "external_apis": [
+        "Telegram Bot API"
+      ]
+    },
+    {
+      "name": "start_telegram_bot",
+      "file_path": "start_telegram_bot.py",
+      "file_size": 5583,
+      "tables_accessed": [],
+      "functions": [
+        "check_existing_bots"
+      ],
+      "streamlit_components": [],
+      "external_apis": [
+        "Telegram Bot API"
+      ]
+    },
+    {
+      "name": "streamlit_log_viewer",
+      "file_path": "streamlit_log_viewer.py",
+      "file_size": 2320,
+      "tables_accessed": [],
+      "functions": [],
+      "streamlit_components": [
+        "metric",
+        "warning",
+        "download_button",
+        "set_page_config",
+        "divider",
+        "text_input",
+        "title",
+        "error",
+        "info",
+        "columns",
+        "text_area",
+        "subheader"
+      ],
+      "external_apis": []
+    },
+    {
+      "name": "supabase_dashboard",
+      "file_path": "supabase_dashboard.py",
+      "file_size": 24831,
+      "tables_accessed": [],
+      "functions": [
+        "init_supabase",
+        "get_statistics",
+        "search_files",
+        "get_files_by_department",
+        "get_files_by_para",
+        "get_duplicates",
+        "get_file_by_id",
+        "get_recent_files",
+        "main"
+      ],
+      "streamlit_components": [
+        "warning",
+        "cache_data",
+        "error",
+        "dataframe",
+        "spinner",
+        "slider",
+        "metric",
+        "selectbox",
+        "expander",
+        "stop",
+        "markdown",
+        "title",
+        "info",
+        "columns",
+        "header",
+        "download_button",
+        "text_input",
+        "button",
+        "subheader",
+        "set_page_config",
+        "caption",
+        "success",
+        "write",
+        "code"
+      ],
+      "external_apis": []
+    },
+    {
+      "name": "supabase_data_diagnostic",
+      "file_path": "supabase_data_diagnostic.py",
+      "file_size": 7366,
+      "tables_accessed": [],
+      "functions": [
+        "init_supabase"
+      ],
+      "streamlit_components": [
+        "warning",
+        "metric",
+        "rerun",
+        "expander",
+        "stop",
+        "set_page_config",
+        "markdown",
+        "get",
+        "caption",
+        "success",
+        "title",
+        "error",
+        "dataframe",
+        "info",
+        "json",
+        "button",
+        "columns",
+        "subheader"
+      ],
+      "external_apis": []
+    },
+    {
+      "name": "telegram_bot_orchestrator",
+      "file_path": "telegram_bot_orchestrator.py",
+      "file_size": 33880,
+      "tables_accessed": [],
+      "functions": [
+        "__init__",
+        "analyze_with_uncertainty",
+        "apply_user_answers",
+        "generate_preview",
+        "explain_error",
+        "extract_text_tesseract",
+        "upload_to_supabase_storage",
+        "start",
+        "receive_document",
+        "handle_clarification",
+        "show_preview",
+        "handle_preview_choice",
+        "handle_field_edit_choice",
+        "commit_to_database",
+        "cancel",
+        "main"
+      ],
+      "streamlit_components": [],
+      "external_apis": [
+        "Claude API",
+        "Telegram Bot API"
+      ]
+    },
+    {
+      "name": "telegram_document_bot",
+      "file_path": "telegram_document_bot.py",
+      "file_size": 15390,
+      "tables_accessed": [],
+      "functions": [
+        "start",
+        "receive_document",
+        "receive_doc_type",
+        "receive_doc_date",
+        "receive_title",
+        "receive_notes",
+        "receive_relevancy",
+        "confirm_upload",
+        "cancel",
+        "main"
+      ],
+      "streamlit_components": [],
+      "external_apis": [
+        "Telegram Bot API"
+      ]
+    },
+    {
+      "name": "telegram_document_bot_enhanced",
+      "file_path": "telegram_document_bot_enhanced.py",
+      "file_size": 31720,
+      "tables_accessed": [],
+      "functions": [
+        "extract_text_tesseract",
+        "analyze_document_claude",
+        "upload_to_supabase_storage",
+        "start",
+        "choose_mode",
+        "receive_document_smart",
+        "receive_document_detailed",
+        "receive_doc_type",
+        "receive_doc_date",
+        "receive_title",
+        "receive_notes",
+        "receive_relevancy",
+        "confirm_upload",
+        "cancel",
+        "main"
+      ],
+      "streamlit_components": [],
+      "external_apis": [
+        "Claude API",
+        "Telegram Bot API"
+      ]
+    },
+    {
+      "name": "test_schema_deployment",
+      "file_path": "test_schema_deployment.py",
+      "file_size": 3891,
+      "tables_accessed": [],
+      "functions": [
+        "test_schema_deployment"
+      ],
+      "streamlit_components": [],
+      "external_apis": []
+    },
+    {
+      "name": "test_telegram_connection",
+      "file_path": "test_telegram_connection.py",
+      "file_size": 3181,
+      "tables_accessed": [],
+      "functions": [],
+      "streamlit_components": [],
+      "external_apis": [
+        "Telegram Bot API"
+      ]
+    },
+    {
+      "name": "timeline_constitutional_violations",
+      "file_path": "timeline_constitutional_violations.py",
+      "file_size": 21252,
+      "tables_accessed": [],
+      "functions": [
+        "get_supabase",
+        "color_relevancy"
+      ],
+      "streamlit_components": [
+        "warning",
+        "bar_chart",
+        "dataframe",
+        "error",
+        "slider",
+        "line_chart",
+        "metric",
+        "selectbox",
+        "expander",
+        "checkbox",
+        "markdown",
+        "title",
+        "info",
+        "columns",
+        "header",
+        "text_area",
+        "date_input",
+        "form_submit_button",
+        "text_input",
+        "form",
+        "button",
+        "multiselect",
+        "subheader",
+        "tabs",
+        "set_page_config",
+        "success",
+        "code"
+      ],
+      "external_apis": []
+    },
+    {
+      "name": "truth_justice_timeline",
+      "file_path": "truth_justice_timeline.py",
+      "file_size": 20254,
+      "tables_accessed": [],
+      "functions": [
+        "get_supabase",
+        "calculate_truth_score",
+        "calculate_justice_score",
+        "load_master_timeline"
+      ],
+      "streamlit_components": [
+        "warning",
+        "cache_data",
+        "error",
+        "dataframe",
+        "spinner",
+        "metric",
+        "select_slider",
+        "expander",
+        "stop",
+        "markdown",
+        "title",
+        "info",
+        "columns",
+        "header",
+        "download_button",
+        "button",
+        "multiselect",
+        "subheader",
+        "plotly_chart",
+        "set_page_config",
+        "caption",
+        "success"
+      ],
+      "external_apis": []
+    }
+  ],
+  "python_scripts": [
+    {
+      "name": "fix_secrets_all",
+      "file_path": "fix_secrets_all.py",
+      "file_size": 2802,
+      "script_type": "Utility Script",
+      "tables_accessed": [],
+      "functions": [
+        "fix_file"
+      ],
+      "imports": [
+        "re",
+        "os"
+      ]
+    },
+    {
+      "name": "test_context_manager",
+      "file_path": "test_context_manager.py",
+      "file_size": 11209,
+      "script_type": "Test Script",
+      "tables_accessed": [],
+      "functions": [
+        "test_context_manager"
+      ],
+      "imports": [
+        "datetime",
+        "traceback",
+        "uuid",
+        "ContextManager",
+        "sys",
+        "time",
+        "codecs",
+        "os",
+        "utilities.context_manager"
+      ]
+    }
+  ],
+  "orchestration_patterns": []
+}
