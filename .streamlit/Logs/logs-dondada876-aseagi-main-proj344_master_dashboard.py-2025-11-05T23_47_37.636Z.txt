@@ -1,0 +1,1211 @@
+
+[     UTC     ] Logs for aseagilive.streamlit.app/
+────────────────────────────────────────────────────────────────────────────────────────
+[21:11:32] 🚀 Starting up repository: 'aseagi', branch: 'main', main module: 'proj344_master_dashboard.py'
+[21:11:32] 🐙 Cloning repository...
+[21:11:34] 🐙 Cloning into '/mount/src/aseagi'...
+
+[21:11:34] 🐙 Cloned repository!
+[21:11:34] 🐙 Pulling code changes from Github...
+[21:11:35] 📦 Processing dependencies...
+
+──────────────────────────────────────── uv ───────────────────────────────────────────
+
+Using uv pip install.
+Using Python 3.13.9 environment at /home/adminuser/venv
+Resolved 67 packages in 759ms
+Prepared 67 packages in 1.82s
+Installed 67 packages in 114ms
+ + altair==5.5.0
+ + annotated-types==0.7.0
+ + anyio==4.11.0
+ + attrs==25.4.0
+ + blinker==1.9.0
+ + cachetools==6.2.1
+ + certifi==2025.10.5
+ + cffi==2.0.0
+ + charset-normalizer==3.4.4
+ + [2025-11-05 21:11:38.786144] click==8.3.0
+ + cryptography==46.0.3
+ + deprecation==2.1.0
+ + gitdb==4.0.12
+ + gitpython==3.1.45
+ + h11==0.16.0
+ + h2==4.3.0
+ + hpack==4.1.0
+ + httpcore==1.0.9[2025-11-05 21:11:38.786412] 
+ + httpx==0.28.1
+ + hyperframe==6.1.0
+ + idna==3.11
+ + jinja2==3.1.6
+ + jsonschema==4.25.1
+ + jsonschema-specifications==2025.9.1
+ + markupsafe[2025-11-05 21:11:38.786737] ==3.0.3
+ + multidict==6.7.0
+ + narwhals==2.10.2
+ + numpy==2.3.4
+ + packaging==25.0
+ + pandas==2.3.3
+ + pillow==12.0.0[2025-11-05 21:11:38.787079] 
+ + plotly==6.4.0
+ + postgrest==2.23.2
+ + propcache==0.4.1
+ + protobuf==6.33.0
+ + pyarrow==21.0.0
+ + pycparser==2.23
+ + [2025-11-05 21:11:38.787288] pydantic==2.12.4
+ + pydantic-core==2.41.5
+ + pydeck==0.9.1
+ + pyjwt==2.10.1
+ + python-dateutil==2.9.0.post0
+ + python-dotenv==1.2.1[2025-11-05 21:11:38.787500] 
+ + pytz==2025.2
+ + realtime==2.23.2
+ + referencing==0.37.0
+ + requests==2.32.5
+ + rpds-py==0.28.0
+ [2025-11-05 21:11:38.787692] + six==1.17.0
+ + smmap==5.0.2
+ + sniffio==1.3.1
+ + storage3==2.23.2
+ + streamlit==1.51.0
+ + strenum==0.4.15
+ + supabase==2.23.2[2025-11-05 21:11:38.787880] 
+ + supabase-auth==2.23.2
+ + supabase-functions==2.23.2
+ + tenacity==9.1.2
+ + toml==0.10.2
+ + tornado==6.5.2
+ + [2025-11-05 21:11:38.788040] typing-extensions==4.15.0
+ + typing-inspection==0.4.2
+ + tzdata==2025.2
+ + urllib3==2.5.0
+ + watchdog==6.0.0
+ + websockets==15.0.1
+ + [2025-11-05 21:11:38.788216] yarl==1.22.0
+Checking if Streamlit is installed
+Found Streamlit version 1.51.0 in the environment
+Installing rich for an improved exception logging
+Using uv pip install.
+Using Python 3.13.9 environment at /home/adminuser/venv
+Resolved 4 packages in 143ms
+Prepared 4 packages in 118ms
+Installed 4 packages in 12ms
+ + markdown-it-py==4.0.0
+ + mdurl==0.1.2
+ + pygments[2025-11-05 21:11:40.684834] ==2.19.2
+ + rich==14.2.0
+
+────────────────────────────────────────────────────────────────────────────────────────
+
+[21:11:41] 🐍 Python dependencies were installed from /mount/src/aseagi/requirements.txt using uv.
+Check if streamlit is installed
+Streamlit is already installed
+[21:11:42] 📦 Processed dependencies!
+
+
+
+[21:31:51] 🐙 Pulling code changes from Github...
+[21:31:53] 📦 Processing dependencies...
+[21:31:53] 📦 Processed dependencies!
+[21:31:54] 🔄 Updated app!
+2025-11-05 21:31:54.555 Please replace `use_container_width` with `width`.
+
+`use_container_width` will be removed after 2025-12-31.
+
+For `use_container_width=True`, use `width='stretch'`. For `use_container_width=False`, use `width='content'`.
+2025-11-05 21:31:54.558 Please replace `use_container_width` with `width`.
+
+`use_container_width` will be removed after 2025-12-31.
+
+For `use_container_width=True`, use `width='stretch'`. For `use_container_width=False`, use `width='content'`.
+2025-11-05 21:31:54.560 Please replace `use_container_width` with `width`.
+
+`use_container_width` will be removed after 2025-12-31.
+
+For `use_container_width=True`, use `width='stretch'`. For `use_container_width=False`, use `width='content'`.
+2025-11-05 21:35:54.173 Please replace `use_container_width` with `width`.
+
+`use_container_width` will be removed after 2025-12-31.
+
+For `use_container_width=True`, use `width='stretch'`. For `use_container_width=False`, use `width='content'`.
+2025-11-05 21:35:54.177 Please replace `use_container_width` with `width`.
+
+`use_container_width` will be removed after 2025-12-31.
+
+For `use_container_width=True`, use `width='stretch'`. For `use_container_width=False`, use `width='content'`.
+2025-11-05 21:35:54.181 Please replace `use_container_width` with `width`.
+
+`use_container_width` will be removed after 2025-12-31.
+
+For `use_container_width=True`, use `width='stretch'`. For `use_container_width=False`, use `width='content'`.
+2025-11-05 21:36:20.956 Please replace `use_container_width` with `width`.
+
+`use_container_width` will be removed after 2025-12-31.
+
+For `use_container_width=True`, use `width='stretch'`. For `use_container_width=False`, use `width='content'`.
+2025-11-05 21:36:27.979 Please replace `use_container_width` with `width`.
+
+`use_container_width` will be removed after 2025-12-31.
+
+For `use_container_width=True`, use `width='stretch'`. For `use_container_width=False`, use `width='content'`.
+2025-11-05 21:36:28.097 Please replace `use_container_width` with `width`.
+
+`use_container_width` will be removed after 2025-12-31.
+
+For `use_container_width=True`, use `width='stretch'`. For `use_container_width=False`, use `width='content'`.
+2025-11-05 21:36:28.269 Please replace `use_container_width` with `width`.
+
+`use_container_width` will be removed after 2025-12-31.
+
+For `use_container_width=True`, use `width='stretch'`. For `use_container_width=False`, use `width='content'`.
+2025-11-05 21:36:33.553 Please replace `use_container_width` with `width`.
+
+`use_container_width` will be removed after 2025-12-31.
+
+For `use_container_width=True`, use `width='stretch'`. For `use_container_width=False`, use `width='content'`.
+2025-11-05 21:36:33.576 Please replace `use_container_width` with `width`.
+
+`use_container_width` will be removed after 2025-12-31.
+
+For `use_container_width=True`, use `width='stretch'`. For `use_container_width=False`, use `width='content'`.
+2025-11-05 21:36:33.607 Please replace `use_container_width` with `width`.
+
+`use_container_width` will be removed after 2025-12-31.
+
+For `use_container_width=True`, use `width='stretch'`. For `use_container_width=False`, use `width='content'`.
+2025-11-05 21:36:33.612 Please replace `use_container_width` with `width`.
+
+`use_container_width` will be removed after 2025-12-31.
+
+For `use_container_width=True`, use `width='stretch'`. For `use_container_width=False`, use `width='content'`.
+2025-11-05 21:36:35.536 Please replace `use_container_width` with `width`.
+
+`use_container_width` will be removed after 2025-12-31.
+
+For `use_container_width=True`, use `width='stretch'`. For `use_container_width=False`, use `width='content'`.
+[21:38:26] 🐙 Pulling code changes from Github...
+[21:38:28] 📦 Processing dependencies...
+[21:38:28] 📦 Processed dependencies!
+[21:38:29] 🔄 Updated app!
+2025-11-05 21:41:36.437 Please replace `use_container_width` with `width`.
+
+`use_container_width` will be removed after 2025-12-31.
+
+For `use_container_width=True`, use `width='stretch'`. For `use_container_width=False`, use `width='content'`.
+[21:41:53] 🐙 Pulling code changes from Github...
+[21:41:55] 📦 Processing dependencies...
+[21:41:55] 📦 Processed dependencies!
+[21:41:56] 🔄 Updated app!
+2025-11-05 21:46:37.424 Please replace `use_container_width` with `width`.
+
+`use_container_width` will be removed after 2025-12-31.
+
+For `use_container_width=True`, use `width='stretch'`. For `use_container_width=False`, use `width='content'`.
+[21:50:32] 🐙 Pulling code changes from Github...
+[21:50:33] 📦 Processing dependencies...
+[21:50:33] 📦 Processed dependencies!
+[21:50:34] 🔄 Updated app!
+2025-11-05 21:51:36.402 Please replace `use_container_width` with `width`.
+
+`use_container_width` will be removed after 2025-12-31.
+
+For `use_container_width=True`, use `width='stretch'`. For `use_container_width=False`, use `width='content'`.
+[21:56:27] 🐙 Pulling code changes from Github...
+[21:56:28] 📦 Processing dependencies...
+[21:56:28] 📦 Processed dependencies!
+[21:56:29] 🔄 Updated app!
+2025-11-05 21:56:36.260 Please replace `use_container_width` with `width`.
+
+`use_container_width` will be removed after 2025-12-31.
+
+For `use_container_width=True`, use `width='stretch'`. For `use_container_width=False`, use `width='content'`.
+2025-11-05 22:00:32.151 Please replace `use_container_width` with `width`.
+
+`use_container_width` will be removed after 2025-12-31.
+
+For `use_container_width=True`, use `width='stretch'`. For `use_container_width=False`, use `width='content'`.
+2025-11-05 22:01:02.314 Please replace `use_container_width` with `width`.
+
+`use_container_width` will be removed after 2025-12-31.
+
+For `use_container_width=True`, use `width='stretch'`. For `use_container_width=False`, use `width='content'`.
+2025-11-05 22:01:02.405 Please replace `use_container_width` with `width`.
+
+`use_container_width` will be removed after 2025-12-31.
+
+For `use_container_width=True`, use `width='stretch'`. For `use_container_width=False`, use `width='content'`.
+2025-11-05 22:01:02.531 Please replace `use_container_width` with `width`.
+
+`use_container_width` will be removed after 2025-12-31.
+
+For `use_container_width=True`, use `width='stretch'`. For `use_container_width=False`, use `width='content'`.
+2025-11-05 22:01:36.365 Please replace `use_container_width` with `width`.
+
+`use_container_width` will be removed after 2025-12-31.
+
+For `use_container_width=True`, use `width='stretch'`. For `use_container_width=False`, use `width='content'`.
+2025-11-05 22:06:37.138 Please replace `use_container_width` with `width`.
+
+`use_container_width` will be removed after 2025-12-31.
+
+For `use_container_width=True`, use `width='stretch'`. For `use_container_width=False`, use `width='content'`.
+2025-11-05 22:11:36.408 Please replace `use_container_width` with `width`.
+
+`use_container_width` will be removed after 2025-12-31.
+
+For `use_container_width=True`, use `width='stretch'`. For `use_container_width=False`, use `width='content'`.
+2025-11-05 22:16:37.171 Please replace `use_container_width` with `width`.
+
+`use_container_width` will be removed after 2025-12-31.
+
+For `use_container_width=True`, use `width='stretch'`. For `use_container_width=False`, use `width='content'`.
+2025-11-05 22:21:37.037 Please replace `use_container_width` with `width`.
+
+`use_container_width` will be removed after 2025-12-31.
+
+For `use_container_width=True`, use `width='stretch'`. For `use_container_width=False`, use `width='content'`.
+[22:25:51] 🐙 Pulling code changes from Github...
+[22:25:52] 📦 Processing dependencies...
+[22:25:52] 📦 Processed dependencies!
+[22:25:54] 🔄 Updated app!
+2025-11-05 22:26:36.426 Please replace `use_container_width` with `width`.
+
+`use_container_width` will be removed after 2025-12-31.
+
+For `use_container_width=True`, use `width='stretch'`. For `use_container_width=False`, use `width='content'`.
+2025-11-05 22:31:36.339 Please replace `use_container_width` with `width`.
+
+`use_container_width` will be removed after 2025-12-31.
+
+For `use_container_width=True`, use `width='stretch'`. For `use_container_width=False`, use `width='content'`.
+[22:34:52] 🐙 Pulling code changes from Github...
+[22:34:53] 📦 Processing dependencies...
+[22:34:53] 📦 Processed dependencies!
+[22:34:54] 🔄 Updated app!
+2025-11-05 22:36:36.651 Please replace `use_container_width` with `width`.
+
+`use_container_width` will be removed after 2025-12-31.
+
+For `use_container_width=True`, use `width='stretch'`. For `use_container_width=False`, use `width='content'`.
+2025-11-05 22:39:08.750 Please replace `use_container_width` with `width`.
+
+`use_container_width` will be removed after 2025-12-31.
+
+For `use_container_width=True`, use `width='stretch'`. For `use_container_width=False`, use `width='content'`.
+2025-11-05 22:39:15.159 Please replace `use_container_width` with `width`.
+
+`use_container_width` will be removed after 2025-12-31.
+
+For `use_container_width=True`, use `width='stretch'`. For `use_container_width=False`, use `width='content'`.
+2025-11-05 22:39:18.566 Please replace `use_container_width` with `width`.
+
+`use_container_width` will be removed after 2025-12-31.
+
+For `use_container_width=True`, use `width='stretch'`. For `use_container_width=False`, use `width='content'`.
+2025-11-05 22:39:18.594 Please replace `use_container_width` with `width`.
+
+`use_container_width` will be removed after 2025-12-31.
+
+For `use_container_width=True`, use `width='stretch'`. For `use_container_width=False`, use `width='content'`.
+2025-11-05 22:39:18.618 Please replace `use_container_width` with `width`.
+
+`use_container_width` will be removed after 2025-12-31.
+
+For `use_container_width=True`, use `width='stretch'`. For `use_container_width=False`, use `width='content'`.
+2025-11-05 22:39:18.623 Please replace `use_container_width` with `width`.
+
+`use_container_width` will be removed after 2025-12-31.
+
+For `use_container_width=True`, use `width='stretch'`. For `use_container_width=False`, use `width='content'`.
+2025-11-05 22:41:36.535 Please replace `use_container_width` with `width`.
+
+`use_container_width` will be removed after 2025-12-31.
+
+For `use_container_width=True`, use `width='stretch'`. For `use_container_width=False`, use `width='content'`.
+[22:42:48] 🐙 Pulling code changes from Github...
+[22:42:49] 📦 Processing dependencies...
+[22:42:49] 📦 Processed dependencies!
+[22:42:50] 🔄 Updated app!
+[22:44:03] 🐙 Pulling code changes from Github...
+[22:44:04] 📦 Processing dependencies...
+[22:44:04] 📦 Processed dependencies!
+[22:44:06] 🔄 Updated app!
+2025-11-05 22:46:37.095 Please replace `use_container_width` with `width`.
+
+`use_container_width` will be removed after 2025-12-31.
+
+For `use_container_width=True`, use `width='stretch'`. For `use_container_width=False`, use `width='content'`.
+2025-11-05 22:51:37.114 Please replace `use_container_width` with `width`.
+
+`use_container_width` will be removed after 2025-12-31.
+
+For `use_container_width=True`, use `width='stretch'`. For `use_container_width=False`, use `width='content'`.
+2025-11-05 22:56:36.457 Please replace `use_container_width` with `width`.
+
+`use_container_width` will be removed after 2025-12-31.
+
+For `use_container_width=True`, use `width='stretch'`. For `use_container_width=False`, use `width='content'`.
+2025-11-05 23:01:36.478 Please replace `use_container_width` with `width`.
+
+`use_container_width` will be removed after 2025-12-31.
+
+For `use_container_width=True`, use `width='stretch'`. For `use_container_width=False`, use `width='content'`.
+2025-11-05 23:06:36.913 Please replace `use_container_width` with `width`.
+
+`use_container_width` will be removed after 2025-12-31.
+
+For `use_container_width=True`, use `width='stretch'`. For `use_container_width=False`, use `width='content'`.
+[21:11:32] 🚀 Starting up repository: 'aseagi', branch: 'main', main module: 'proj344_master_dashboard.py'
+[21:11:32] 🐙 Cloning repository...
+[21:11:34] 🐙 Cloning into '/mount/src/aseagi'...
+
+[21:11:34] 🐙 Cloned repository!
+[21:11:34] 🐙 Pulling code changes from Github...
+[21:11:35] 📦 Processing dependencies...
+
+──────────────────────────────────────── uv ───────────────────────────────────────────
+
+Using uv pip install.
+Using Python 3.13.9 environment at /home/adminuser/venv
+Resolved 67 packages in 759ms
+Prepared 67 packages in 1.82s
+Installed 67 packages in 114ms
+ + altair==5.5.0
+ + annotated-types==0.7.0
+ + anyio==4.11.0
+ + attrs==25.4.0
+ + blinker==1.9.0
+ + cachetools==6.2.1
+ + certifi==2025.10.5
+ + cffi==2.0.0
+ + charset-normalizer==3.4.4
+ + [2025-11-05 21:11:38.786144] click==8.3.0
+ + cryptography==46.0.3
+ + deprecation==2.1.0
+ + gitdb==4.0.12
+ + gitpython==3.1.45
+ + h11==0.16.0
+ + h2==4.3.0
+ + hpack==4.1.0
+ + httpcore==1.0.9[2025-11-05 21:11:38.786412] 
+ + httpx==0.28.1
+ + hyperframe==6.1.0
+ + idna==3.11
+ + jinja2==3.1.6
+ + jsonschema==4.25.1
+ + jsonschema-specifications==2025.9.1
+ + markupsafe[2025-11-05 21:11:38.786737] ==3.0.3
+ + multidict==6.7.0
+ + narwhals==2.10.2
+ + numpy==2.3.4
+ + packaging==25.0
+ + pandas==2.3.3
+ + pillow==12.0.0[2025-11-05 21:11:38.787079] 
+ + plotly==6.4.0
+ + postgrest==2.23.2
+ + propcache==0.4.1
+ + protobuf==6.33.0
+ + pyarrow==21.0.0
+ + pycparser==2.23
+ + [2025-11-05 21:11:38.787288] pydantic==2.12.4
+ + pydantic-core==2.41.5
+ + pydeck==0.9.1
+ + pyjwt==2.10.1
+ + python-dateutil==2.9.0.post0
+ + python-dotenv==1.2.1[2025-11-05 21:11:38.787500] 
+ + pytz==2025.2
+ + realtime==2.23.2
+ + referencing==0.37.0
+ + requests==2.32.5
+ + rpds-py==0.28.0
+ [2025-11-05 21:11:38.787692] + six==1.17.0
+ + smmap==5.0.2
+ + sniffio==1.3.1
+ + storage3==2.23.2
+ + streamlit==1.51.0
+ + strenum==0.4.15
+ + supabase==2.23.2[2025-11-05 21:11:38.787880] 
+ + supabase-auth==2.23.2
+ + supabase-functions==2.23.2
+ + tenacity==9.1.2
+ + toml==0.10.2
+ + tornado==6.5.2
+ + [2025-11-05 21:11:38.788040] typing-extensions==4.15.0
+ + typing-inspection==0.4.2
+ + tzdata==2025.2
+ + urllib3==2.5.0
+ + watchdog==6.0.0
+ + websockets==15.0.1
+ + [2025-11-05 21:11:38.788216] yarl==1.22.0
+Checking if Streamlit is installed
+Found Streamlit version 1.51.0 in the environment
+Installing rich for an improved exception logging
+Using uv pip install.
+Using Python 3.13.9 environment at /home/adminuser/venv
+Resolved 4 packages in 143ms
+Prepared 4 packages in 118ms
+Installed 4 packages in 12ms
+ + markdown-it-py==4.0.0
+ + mdurl==0.1.2
+ + pygments[2025-11-05 21:11:40.684834] ==2.19.2
+ + rich==14.2.0
+
+────────────────────────────────────────────────────────────────────────────────────────
+
+[21:11:41] 🐍 Python dependencies were installed from /mount/src/aseagi/requirements.txt using uv.
+Check if streamlit is installed
+Streamlit is already installed
+[21:11:42] 📦 Processed dependencies!
+
+
+
+[21:31:51] 🐙 Pulling code changes from Github...
+[21:31:53] 📦 Processing dependencies...
+[21:31:53] 📦 Processed dependencies!
+[21:31:54] 🔄 Updated app!
+2025-11-05 21:31:54.555 Please replace `use_container_width` with `width`.
+
+`use_container_width` will be removed after 2025-12-31.
+
+For `use_container_width=True`, use `width='stretch'`. For `use_container_width=False`, use `width='content'`.
+2025-11-05 21:31:54.558 Please replace `use_container_width` with `width`.
+
+`use_container_width` will be removed after 2025-12-31.
+
+For `use_container_width=True`, use `width='stretch'`. For `use_container_width=False`, use `width='content'`.
+2025-11-05 21:31:54.560 Please replace `use_container_width` with `width`.
+
+`use_container_width` will be removed after 2025-12-31.
+
+For `use_container_width=True`, use `width='stretch'`. For `use_container_width=False`, use `width='content'`.
+2025-11-05 21:35:54.173 Please replace `use_container_width` with `width`.
+
+`use_container_width` will be removed after 2025-12-31.
+
+For `use_container_width=True`, use `width='stretch'`. For `use_container_width=False`, use `width='content'`.
+2025-11-05 21:35:54.177 Please replace `use_container_width` with `width`.
+
+`use_container_width` will be removed after 2025-12-31.
+
+For `use_container_width=True`, use `width='stretch'`. For `use_container_width=False`, use `width='content'`.
+2025-11-05 21:35:54.181 Please replace `use_container_width` with `width`.
+
+`use_container_width` will be removed after 2025-12-31.
+
+For `use_container_width=True`, use `width='stretch'`. For `use_container_width=False`, use `width='content'`.
+2025-11-05 21:36:20.956 Please replace `use_container_width` with `width`.
+
+`use_container_width` will be removed after 2025-12-31.
+
+For `use_container_width=True`, use `width='stretch'`. For `use_container_width=False`, use `width='content'`.
+2025-11-05 21:36:27.979 Please replace `use_container_width` with `width`.
+
+`use_container_width` will be removed after 2025-12-31.
+
+For `use_container_width=True`, use `width='stretch'`. For `use_container_width=False`, use `width='content'`.
+2025-11-05 21:36:28.097 Please replace `use_container_width` with `width`.
+
+`use_container_width` will be removed after 2025-12-31.
+
+For `use_container_width=True`, use `width='stretch'`. For `use_container_width=False`, use `width='content'`.
+2025-11-05 21:36:28.269 Please replace `use_container_width` with `width`.
+
+`use_container_width` will be removed after 2025-12-31.
+
+For `use_container_width=True`, use `width='stretch'`. For `use_container_width=False`, use `width='content'`.
+2025-11-05 21:36:33.553 Please replace `use_container_width` with `width`.
+
+`use_container_width` will be removed after 2025-12-31.
+
+For `use_container_width=True`, use `width='stretch'`. For `use_container_width=False`, use `width='content'`.
+2025-11-05 21:36:33.576 Please replace `use_container_width` with `width`.
+
+`use_container_width` will be removed after 2025-12-31.
+
+For `use_container_width=True`, use `width='stretch'`. For `use_container_width=False`, use `width='content'`.
+2025-11-05 21:36:33.607 Please replace `use_container_width` with `width`.
+
+`use_container_width` will be removed after 2025-12-31.
+
+For `use_container_width=True`, use `width='stretch'`. For `use_container_width=False`, use `width='content'`.
+2025-11-05 21:36:33.612 Please replace `use_container_width` with `width`.
+
+`use_container_width` will be removed after 2025-12-31.
+
+For `use_container_width=True`, use `width='stretch'`. For `use_container_width=False`, use `width='content'`.
+2025-11-05 21:36:35.536 Please replace `use_container_width` with `width`.
+
+`use_container_width` will be removed after 2025-12-31.
+
+For `use_container_width=True`, use `width='stretch'`. For `use_container_width=False`, use `width='content'`.
+[21:38:26] 🐙 Pulling code changes from Github...
+[21:38:28] 📦 Processing dependencies...
+[21:38:28] 📦 Processed dependencies!
+[21:38:29] 🔄 Updated app!
+2025-11-05 21:41:36.437 Please replace `use_container_width` with `width`.
+
+`use_container_width` will be removed after 2025-12-31.
+
+For `use_container_width=True`, use `width='stretch'`. For `use_container_width=False`, use `width='content'`.
+[21:41:53] 🐙 Pulling code changes from Github...
+[21:41:55] 📦 Processing dependencies...
+[21:41:55] 📦 Processed dependencies!
+[21:41:56] 🔄 Updated app!
+2025-11-05 21:46:37.424 Please replace `use_container_width` with `width`.
+
+`use_container_width` will be removed after 2025-12-31.
+
+For `use_container_width=True`, use `width='stretch'`. For `use_container_width=False`, use `width='content'`.
+[21:50:32] 🐙 Pulling code changes from Github...
+[21:50:33] 📦 Processing dependencies...
+[21:50:33] 📦 Processed dependencies!
+[21:50:34] 🔄 Updated app!
+2025-11-05 21:51:36.402 Please replace `use_container_width` with `width`.
+
+`use_container_width` will be removed after 2025-12-31.
+
+For `use_container_width=True`, use `width='stretch'`. For `use_container_width=False`, use `width='content'`.
+[21:56:27] 🐙 Pulling code changes from Github...
+[21:56:28] 📦 Processing dependencies...
+[21:56:28] 📦 Processed dependencies!
+[21:56:29] 🔄 Updated app!
+2025-11-05 21:56:36.260 Please replace `use_container_width` with `width`.
+
+`use_container_width` will be removed after 2025-12-31.
+
+For `use_container_width=True`, use `width='stretch'`. For `use_container_width=False`, use `width='content'`.
+2025-11-05 22:00:32.151 Please replace `use_container_width` with `width`.
+
+`use_container_width` will be removed after 2025-12-31.
+
+For `use_container_width=True`, use `width='stretch'`. For `use_container_width=False`, use `width='content'`.
+2025-11-05 22:01:02.314 Please replace `use_container_width` with `width`.
+
+`use_container_width` will be removed after 2025-12-31.
+
+For `use_container_width=True`, use `width='stretch'`. For `use_container_width=False`, use `width='content'`.
+2025-11-05 22:01:02.405 Please replace `use_container_width` with `width`.
+
+`use_container_width` will be removed after 2025-12-31.
+
+For `use_container_width=True`, use `width='stretch'`. For `use_container_width=False`, use `width='content'`.
+2025-11-05 22:01:02.531 Please replace `use_container_width` with `width`.
+
+`use_container_width` will be removed after 2025-12-31.
+
+For `use_container_width=True`, use `width='stretch'`. For `use_container_width=False`, use `width='content'`.
+2025-11-05 22:01:36.365 Please replace `use_container_width` with `width`.
+
+`use_container_width` will be removed after 2025-12-31.
+
+For `use_container_width=True`, use `width='stretch'`. For `use_container_width=False`, use `width='content'`.
+2025-11-05 22:06:37.138 Please replace `use_container_width` with `width`.
+
+`use_container_width` will be removed after 2025-12-31.
+
+For `use_container_width=True`, use `width='stretch'`. For `use_container_width=False`, use `width='content'`.
+2025-11-05 22:11:36.408 Please replace `use_container_width` with `width`.
+
+`use_container_width` will be removed after 2025-12-31.
+
+For `use_container_width=True`, use `width='stretch'`. For `use_container_width=False`, use `width='content'`.
+2025-11-05 22:16:37.171 Please replace `use_container_width` with `width`.
+
+`use_container_width` will be removed after 2025-12-31.
+
+For `use_container_width=True`, use `width='stretch'`. For `use_container_width=False`, use `width='content'`.
+2025-11-05 22:21:37.037 Please replace `use_container_width` with `width`.
+
+`use_container_width` will be removed after 2025-12-31.
+
+For `use_container_width=True`, use `width='stretch'`. For `use_container_width=False`, use `width='content'`.
+[22:25:51] 🐙 Pulling code changes from Github...
+[22:25:52] 📦 Processing dependencies...
+[22:25:52] 📦 Processed dependencies!
+[22:25:54] 🔄 Updated app!
+2025-11-05 22:26:36.426 Please replace `use_container_width` with `width`.
+
+`use_container_width` will be removed after 2025-12-31.
+
+For `use_container_width=True`, use `width='stretch'`. For `use_container_width=False`, use `width='content'`.
+2025-11-05 22:31:36.339 Please replace `use_container_width` with `width`.
+
+`use_container_width` will be removed after 2025-12-31.
+
+For `use_container_width=True`, use `width='stretch'`. For `use_container_width=False`, use `width='content'`.
+[22:34:52] 🐙 Pulling code changes from Github...
+[22:34:53] 📦 Processing dependencies...
+[22:34:53] 📦 Processed dependencies!
+[22:34:54] 🔄 Updated app!
+2025-11-05 22:36:36.651 Please replace `use_container_width` with `width`.
+
+`use_container_width` will be removed after 2025-12-31.
+
+For `use_container_width=True`, use `width='stretch'`. For `use_container_width=False`, use `width='content'`.
+2025-11-05 22:39:08.750 Please replace `use_container_width` with `width`.
+
+`use_container_width` will be removed after 2025-12-31.
+
+For `use_container_width=True`, use `width='stretch'`. For `use_container_width=False`, use `width='content'`.
+2025-11-05 22:39:15.159 Please replace `use_container_width` with `width`.
+
+`use_container_width` will be removed after 2025-12-31.
+
+For `use_container_width=True`, use `width='stretch'`. For `use_container_width=False`, use `width='content'`.
+2025-11-05 22:39:18.566 Please replace `use_container_width` with `width`.
+
+`use_container_width` will be removed after 2025-12-31.
+
+For `use_container_width=True`, use `width='stretch'`. For `use_container_width=False`, use `width='content'`.
+2025-11-05 22:39:18.594 Please replace `use_container_width` with `width`.
+
+`use_container_width` will be removed after 2025-12-31.
+
+For `use_container_width=True`, use `width='stretch'`. For `use_container_width=False`, use `width='content'`.
+2025-11-05 22:39:18.618 Please replace `use_container_width` with `width`.
+
+`use_container_width` will be removed after 2025-12-31.
+
+For `use_container_width=True`, use `width='stretch'`. For `use_container_width=False`, use `width='content'`.
+2025-11-05 22:39:18.623 Please replace `use_container_width` with `width`.
+
+`use_container_width` will be removed after 2025-12-31.
+
+For `use_container_width=True`, use `width='stretch'`. For `use_container_width=False`, use `width='content'`.
+2025-11-05 22:41:36.535 Please replace `use_container_width` with `width`.
+
+`use_container_width` will be removed after 2025-12-31.
+
+For `use_container_width=True`, use `width='stretch'`. For `use_container_width=False`, use `width='content'`.
+[22:42:48] 🐙 Pulling code changes from Github...
+[22:42:49] 📦 Processing dependencies...
+[22:42:49] 📦 Processed dependencies!
+[22:42:50] 🔄 Updated app!
+[22:44:03] 🐙 Pulling code changes from Github...
+[22:44:04] 📦 Processing dependencies...
+[22:44:04] 📦 Processed dependencies!
+[22:44:06] 🔄 Updated app!
+2025-11-05 22:46:37.095 Please replace `use_container_width` with `width`.
+
+`use_container_width` will be removed after 2025-12-31.
+
+For `use_container_width=True`, use `width='stretch'`. For `use_container_width=False`, use `width='content'`.
+2025-11-05 22:51:37.114 Please replace `use_container_width` with `width`.
+
+`use_container_width` will be removed after 2025-12-31.
+
+For `use_container_width=True`, use `width='stretch'`. For `use_container_width=False`, use `width='content'`.
+2025-11-05 22:56:36.457 Please replace `use_container_width` with `width`.
+
+`use_container_width` will be removed after 2025-12-31.
+
+For `use_container_width=True`, use `width='stretch'`. For `use_container_width=False`, use `width='content'`.
+2025-11-05 23:01:36.478 Please replace `use_container_width` with `width`.
+
+`use_container_width` will be removed after 2025-12-31.
+
+For `use_container_width=True`, use `width='stretch'`. For `use_container_width=False`, use `width='content'`.
+2025-11-05 23:06:36.913 Please replace `use_container_width` with `width`.
+
+`use_container_width` will be removed after 2025-12-31.
+
+For `use_container_width=True`, use `width='stretch'`. For `use_container_width=False`, use `width='content'`.
+2025-11-05 23:11:37.278 Please replace `use_container_width` with `width`.
+
+`use_container_width` will be removed after 2025-12-31.
+
+For `use_container_width=True`, use `width='stretch'`. For `use_container_width=False`, use `width='content'`.
+2025-11-05 23:16:36.472 Please replace `use_container_width` with `width`.
+
+`use_container_width` will be removed after 2025-12-31.
+
+For `use_container_width=True`, use `width='stretch'`. For `use_container_width=False`, use `width='content'`.
+2025-11-05 23:21:36.400 Please replace `use_container_width` with `width`.
+
+`use_container_width` will be removed after 2025-12-31.
+
+For `use_container_width=True`, use `width='stretch'`. For `use_container_width=False`, use `width='content'`.
+2025-11-05 23:26:36.500 Please replace `use_container_width` with `width`.
+
+`use_container_width` will be removed after 2025-12-31.
+
+For `use_container_width=True`, use `width='stretch'`. For `use_container_width=False`, use `width='content'`.
+[23:26:51] 🐙 Pulling code changes from Github...
+[23:26:52] 📦 Processing dependencies...
+[23:26:52] 📦 Processed dependencies!
+[23:26:53] 🔄 Updated app!
+2025-11-05 23:31:36.299 Please replace `use_container_width` with `width`.
+
+`use_container_width` will be removed after 2025-12-31.
+
+For `use_container_width=True`, use `width='stretch'`. For `use_container_width=False`, use `width='content'`.
+2025-11-05 23:36:37.093 Please replace `use_container_width` with `width`.
+
+`use_container_width` will be removed after 2025-12-31.
+
+For `use_container_width=True`, use `width='stretch'`. For `use_container_width=False`, use `width='content'`.
+[21:11:32] 🚀 Starting up repository: 'aseagi', branch: 'main', main module: 'proj344_master_dashboard.py'
+[21:11:32] 🐙 Cloning repository...
+[21:11:34] 🐙 Cloning into '/mount/src/aseagi'...
+
+[21:11:34] 🐙 Cloned repository!
+[21:11:34] 🐙 Pulling code changes from Github...
+[21:11:35] 📦 Processing dependencies...
+
+──────────────────────────────────────── uv ───────────────────────────────────────────
+
+Using uv pip install.
+Using Python 3.13.9 environment at /home/adminuser/venv
+Resolved 67 packages in 759ms
+Prepared 67 packages in 1.82s
+Installed 67 packages in 114ms
+ + altair==5.5.0
+ + annotated-types==0.7.0
+ + anyio==4.11.0
+ + attrs==25.4.0
+ + blinker==1.9.0
+ + cachetools==6.2.1
+ + certifi==2025.10.5
+ + cffi==2.0.0
+ + charset-normalizer==3.4.4
+ + [2025-11-05 21:11:38.786144] click==8.3.0
+ + cryptography==46.0.3
+ + deprecation==2.1.0
+ + gitdb==4.0.12
+ + gitpython==3.1.45
+ + h11==0.16.0
+ + h2==4.3.0
+ + hpack==4.1.0
+ + httpcore==1.0.9[2025-11-05 21:11:38.786412] 
+ + httpx==0.28.1
+ + hyperframe==6.1.0
+ + idna==3.11
+ + jinja2==3.1.6
+ + jsonschema==4.25.1
+ + jsonschema-specifications==2025.9.1
+ + markupsafe[2025-11-05 21:11:38.786737] ==3.0.3
+ + multidict==6.7.0
+ + narwhals==2.10.2
+ + numpy==2.3.4
+ + packaging==25.0
+ + pandas==2.3.3
+ + pillow==12.0.0[2025-11-05 21:11:38.787079] 
+ + plotly==6.4.0
+ + postgrest==2.23.2
+ + propcache==0.4.1
+ + protobuf==6.33.0
+ + pyarrow==21.0.0
+ + pycparser==2.23
+ + [2025-11-05 21:11:38.787288] pydantic==2.12.4
+ + pydantic-core==2.41.5
+ + pydeck==0.9.1
+ + pyjwt==2.10.1
+ + python-dateutil==2.9.0.post0
+ + python-dotenv==1.2.1[2025-11-05 21:11:38.787500] 
+ + pytz==2025.2
+ + realtime==2.23.2
+ + referencing==0.37.0
+ + requests==2.32.5
+ + rpds-py==0.28.0
+ [2025-11-05 21:11:38.787692] + six==1.17.0
+ + smmap==5.0.2
+ + sniffio==1.3.1
+ + storage3==2.23.2
+ + streamlit==1.51.0
+ + strenum==0.4.15
+ + supabase==2.23.2[2025-11-05 21:11:38.787880] 
+ + supabase-auth==2.23.2
+ + supabase-functions==2.23.2
+ + tenacity==9.1.2
+ + toml==0.10.2
+ + tornado==6.5.2
+ + [2025-11-05 21:11:38.788040] typing-extensions==4.15.0
+ + typing-inspection==0.4.2
+ + tzdata==2025.2
+ + urllib3==2.5.0
+ + watchdog==6.0.0
+ + websockets==15.0.1
+ + [2025-11-05 21:11:38.788216] yarl==1.22.0
+Checking if Streamlit is installed
+Found Streamlit version 1.51.0 in the environment
+Installing rich for an improved exception logging
+Using uv pip install.
+Using Python 3.13.9 environment at /home/adminuser/venv
+Resolved 4 packages in 143ms
+Prepared 4 packages in 118ms
+Installed 4 packages in 12ms
+ + markdown-it-py==4.0.0
+ + mdurl==0.1.2
+ + pygments[2025-11-05 21:11:40.684834] ==2.19.2
+ + rich==14.2.0
+
+────────────────────────────────────────────────────────────────────────────────────────
+
+[21:11:41] 🐍 Python dependencies were installed from /mount/src/aseagi/requirements.txt using uv.
+Check if streamlit is installed
+Streamlit is already installed
+[21:11:42] 📦 Processed dependencies!
+
+
+
+[21:31:51] 🐙 Pulling code changes from Github...
+[21:31:53] 📦 Processing dependencies...
+[21:31:53] 📦 Processed dependencies!
+[21:31:54] 🔄 Updated app!
+2025-11-05 21:31:54.555 Please replace `use_container_width` with `width`.
+
+`use_container_width` will be removed after 2025-12-31.
+
+For `use_container_width=True`, use `width='stretch'`. For `use_container_width=False`, use `width='content'`.
+2025-11-05 21:31:54.558 Please replace `use_container_width` with `width`.
+
+`use_container_width` will be removed after 2025-12-31.
+
+For `use_container_width=True`, use `width='stretch'`. For `use_container_width=False`, use `width='content'`.
+2025-11-05 21:31:54.560 Please replace `use_container_width` with `width`.
+
+`use_container_width` will be removed after 2025-12-31.
+
+For `use_container_width=True`, use `width='stretch'`. For `use_container_width=False`, use `width='content'`.
+2025-11-05 21:35:54.173 Please replace `use_container_width` with `width`.
+
+`use_container_width` will be removed after 2025-12-31.
+
+For `use_container_width=True`, use `width='stretch'`. For `use_container_width=False`, use `width='content'`.
+2025-11-05 21:35:54.177 Please replace `use_container_width` with `width`.
+
+`use_container_width` will be removed after 2025-12-31.
+
+For `use_container_width=True`, use `width='stretch'`. For `use_container_width=False`, use `width='content'`.
+2025-11-05 21:35:54.181 Please replace `use_container_width` with `width`.
+
+`use_container_width` will be removed after 2025-12-31.
+
+For `use_container_width=True`, use `width='stretch'`. For `use_container_width=False`, use `width='content'`.
+2025-11-05 21:36:20.956 Please replace `use_container_width` with `width`.
+
+`use_container_width` will be removed after 2025-12-31.
+
+For `use_container_width=True`, use `width='stretch'`. For `use_container_width=False`, use `width='content'`.
+2025-11-05 21:36:27.979 Please replace `use_container_width` with `width`.
+
+`use_container_width` will be removed after 2025-12-31.
+
+For `use_container_width=True`, use `width='stretch'`. For `use_container_width=False`, use `width='content'`.
+2025-11-05 21:36:28.097 Please replace `use_container_width` with `width`.
+
+`use_container_width` will be removed after 2025-12-31.
+
+For `use_container_width=True`, use `width='stretch'`. For `use_container_width=False`, use `width='content'`.
+2025-11-05 21:36:28.269 Please replace `use_container_width` with `width`.
+
+`use_container_width` will be removed after 2025-12-31.
+
+For `use_container_width=True`, use `width='stretch'`. For `use_container_width=False`, use `width='content'`.
+2025-11-05 21:36:33.553 Please replace `use_container_width` with `width`.
+
+`use_container_width` will be removed after 2025-12-31.
+
+For `use_container_width=True`, use `width='stretch'`. For `use_container_width=False`, use `width='content'`.
+2025-11-05 21:36:33.576 Please replace `use_container_width` with `width`.
+
+`use_container_width` will be removed after 2025-12-31.
+
+For `use_container_width=True`, use `width='stretch'`. For `use_container_width=False`, use `width='content'`.
+2025-11-05 21:36:33.607 Please replace `use_container_width` with `width`.
+
+`use_container_width` will be removed after 2025-12-31.
+
+For `use_container_width=True`, use `width='stretch'`. For `use_container_width=False`, use `width='content'`.
+2025-11-05 21:36:33.612 Please replace `use_container_width` with `width`.
+
+`use_container_width` will be removed after 2025-12-31.
+
+For `use_container_width=True`, use `width='stretch'`. For `use_container_width=False`, use `width='content'`.
+2025-11-05 21:36:35.536 Please replace `use_container_width` with `width`.
+
+`use_container_width` will be removed after 2025-12-31.
+
+For `use_container_width=True`, use `width='stretch'`. For `use_container_width=False`, use `width='content'`.
+[21:38:26] 🐙 Pulling code changes from Github...
+[21:38:28] 📦 Processing dependencies...
+[21:38:28] 📦 Processed dependencies!
+[21:38:29] 🔄 Updated app!
+2025-11-05 21:41:36.437 Please replace `use_container_width` with `width`.
+
+`use_container_width` will be removed after 2025-12-31.
+
+For `use_container_width=True`, use `width='stretch'`. For `use_container_width=False`, use `width='content'`.
+[21:41:53] 🐙 Pulling code changes from Github...
+[21:41:55] 📦 Processing dependencies...
+[21:41:55] 📦 Processed dependencies!
+[21:41:56] 🔄 Updated app!
+2025-11-05 21:46:37.424 Please replace `use_container_width` with `width`.
+
+`use_container_width` will be removed after 2025-12-31.
+
+For `use_container_width=True`, use `width='stretch'`. For `use_container_width=False`, use `width='content'`.
+[21:50:32] 🐙 Pulling code changes from Github...
+[21:50:33] 📦 Processing dependencies...
+[21:50:33] 📦 Processed dependencies!
+[21:50:34] 🔄 Updated app!
+2025-11-05 21:51:36.402 Please replace `use_container_width` with `width`.
+
+`use_container_width` will be removed after 2025-12-31.
+
+For `use_container_width=True`, use `width='stretch'`. For `use_container_width=False`, use `width='content'`.
+[21:56:27] 🐙 Pulling code changes from Github...
+[21:56:28] 📦 Processing dependencies...
+[21:56:28] 📦 Processed dependencies!
+[21:56:29] 🔄 Updated app!
+2025-11-05 21:56:36.260 Please replace `use_container_width` with `width`.
+
+`use_container_width` will be removed after 2025-12-31.
+
+For `use_container_width=True`, use `width='stretch'`. For `use_container_width=False`, use `width='content'`.
+2025-11-05 22:00:32.151 Please replace `use_container_width` with `width`.
+
+`use_container_width` will be removed after 2025-12-31.
+
+For `use_container_width=True`, use `width='stretch'`. For `use_container_width=False`, use `width='content'`.
+2025-11-05 22:01:02.314 Please replace `use_container_width` with `width`.
+
+`use_container_width` will be removed after 2025-12-31.
+
+For `use_container_width=True`, use `width='stretch'`. For `use_container_width=False`, use `width='content'`.
+2025-11-05 22:01:02.405 Please replace `use_container_width` with `width`.
+
+`use_container_width` will be removed after 2025-12-31.
+
+For `use_container_width=True`, use `width='stretch'`. For `use_container_width=False`, use `width='content'`.
+2025-11-05 22:01:02.531 Please replace `use_container_width` with `width`.
+
+`use_container_width` will be removed after 2025-12-31.
+
+For `use_container_width=True`, use `width='stretch'`. For `use_container_width=False`, use `width='content'`.
+2025-11-05 22:01:36.365 Please replace `use_container_width` with `width`.
+
+`use_container_width` will be removed after 2025-12-31.
+
+For `use_container_width=True`, use `width='stretch'`. For `use_container_width=False`, use `width='content'`.
+2025-11-05 22:06:37.138 Please replace `use_container_width` with `width`.
+
+`use_container_width` will be removed after 2025-12-31.
+
+For `use_container_width=True`, use `width='stretch'`. For `use_container_width=False`, use `width='content'`.
+2025-11-05 22:11:36.408 Please replace `use_container_width` with `width`.
+
+`use_container_width` will be removed after 2025-12-31.
+
+For `use_container_width=True`, use `width='stretch'`. For `use_container_width=False`, use `width='content'`.
+2025-11-05 22:16:37.171 Please replace `use_container_width` with `width`.
+
+`use_container_width` will be removed after 2025-12-31.
+
+For `use_container_width=True`, use `width='stretch'`. For `use_container_width=False`, use `width='content'`.
+2025-11-05 22:21:37.037 Please replace `use_container_width` with `width`.
+
+`use_container_width` will be removed after 2025-12-31.
+
+For `use_container_width=True`, use `width='stretch'`. For `use_container_width=False`, use `width='content'`.
+[22:25:51] 🐙 Pulling code changes from Github...
+[22:25:52] 📦 Processing dependencies...
+[22:25:52] 📦 Processed dependencies!
+[22:25:54] 🔄 Updated app!
+2025-11-05 22:26:36.426 Please replace `use_container_width` with `width`.
+
+`use_container_width` will be removed after 2025-12-31.
+
+For `use_container_width=True`, use `width='stretch'`. For `use_container_width=False`, use `width='content'`.
+2025-11-05 22:31:36.339 Please replace `use_container_width` with `width`.
+
+`use_container_width` will be removed after 2025-12-31.
+
+For `use_container_width=True`, use `width='stretch'`. For `use_container_width=False`, use `width='content'`.
+[22:34:52] 🐙 Pulling code changes from Github...
+[22:34:53] 📦 Processing dependencies...
+[22:34:53] 📦 Processed dependencies!
+[22:34:54] 🔄 Updated app!
+2025-11-05 22:36:36.651 Please replace `use_container_width` with `width`.
+
+`use_container_width` will be removed after 2025-12-31.
+
+For `use_container_width=True`, use `width='stretch'`. For `use_container_width=False`, use `width='content'`.
+2025-11-05 22:39:08.750 Please replace `use_container_width` with `width`.
+
+`use_container_width` will be removed after 2025-12-31.
+
+For `use_container_width=True`, use `width='stretch'`. For `use_container_width=False`, use `width='content'`.
+2025-11-05 22:39:15.159 Please replace `use_container_width` with `width`.
+
+`use_container_width` will be removed after 2025-12-31.
+
+For `use_container_width=True`, use `width='stretch'`. For `use_container_width=False`, use `width='content'`.
+2025-11-05 22:39:18.566 Please replace `use_container_width` with `width`.
+
+`use_container_width` will be removed after 2025-12-31.
+
+For `use_container_width=True`, use `width='stretch'`. For `use_container_width=False`, use `width='content'`.
+2025-11-05 22:39:18.594 Please replace `use_container_width` with `width`.
+
+`use_container_width` will be removed after 2025-12-31.
+
+For `use_container_width=True`, use `width='stretch'`. For `use_container_width=False`, use `width='content'`.
+2025-11-05 22:39:18.618 Please replace `use_container_width` with `width`.
+
+`use_container_width` will be removed after 2025-12-31.
+
+For `use_container_width=True`, use `width='stretch'`. For `use_container_width=False`, use `width='content'`.
+2025-11-05 22:39:18.623 Please replace `use_container_width` with `width`.
+
+`use_container_width` will be removed after 2025-12-31.
+
+For `use_container_width=True`, use `width='stretch'`. For `use_container_width=False`, use `width='content'`.
+2025-11-05 22:41:36.535 Please replace `use_container_width` with `width`.
+
+`use_container_width` will be removed after 2025-12-31.
+
+For `use_container_width=True`, use `width='stretch'`. For `use_container_width=False`, use `width='content'`.
+[22:42:48] 🐙 Pulling code changes from Github...
+[22:42:49] 📦 Processing dependencies...
+[22:42:49] 📦 Processed dependencies!
+[22:42:50] 🔄 Updated app!
+[22:44:03] 🐙 Pulling code changes from Github...
+[22:44:04] 📦 Processing dependencies...
+[22:44:04] 📦 Processed dependencies!
+[22:44:06] 🔄 Updated app!
+2025-11-05 22:46:37.095 Please replace `use_container_width` with `width`.
+
+`use_container_width` will be removed after 2025-12-31.
+
+For `use_container_width=True`, use `width='stretch'`. For `use_container_width=False`, use `width='content'`.
+2025-11-05 22:51:37.114 Please replace `use_container_width` with `width`.
+
+`use_container_width` will be removed after 2025-12-31.
+
+For `use_container_width=True`, use `width='stretch'`. For `use_container_width=False`, use `width='content'`.
+2025-11-05 22:56:36.457 Please replace `use_container_width` with `width`.
+
+`use_container_width` will be removed after 2025-12-31.
+
+For `use_container_width=True`, use `width='stretch'`. For `use_container_width=False`, use `width='content'`.
+2025-11-05 23:01:36.478 Please replace `use_container_width` with `width`.
+
+`use_container_width` will be removed after 2025-12-31.
+
+For `use_container_width=True`, use `width='stretch'`. For `use_container_width=False`, use `width='content'`.
+2025-11-05 23:06:36.913 Please replace `use_container_width` with `width`.
+
+`use_container_width` will be removed after 2025-12-31.
+
+For `use_container_width=True`, use `width='stretch'`. For `use_container_width=False`, use `width='content'`.
+2025-11-05 23:11:37.278 Please replace `use_container_width` with `width`.
+
+`use_container_width` will be removed after 2025-12-31.
+
+For `use_container_width=True`, use `width='stretch'`. For `use_container_width=False`, use `width='content'`.
+2025-11-05 23:16:36.472 Please replace `use_container_width` with `width`.
+
+`use_container_width` will be removed after 2025-12-31.
+
+For `use_container_width=True`, use `width='stretch'`. For `use_container_width=False`, use `width='content'`.
+2025-11-05 23:21:36.400 Please replace `use_container_width` with `width`.
+
+`use_container_width` will be removed after 2025-12-31.
+
+For `use_container_width=True`, use `width='stretch'`. For `use_container_width=False`, use `width='content'`.
+2025-11-05 23:26:36.500 Please replace `use_container_width` with `width`.
+
+`use_container_width` will be removed after 2025-12-31.
+
+For `use_container_width=True`, use `width='stretch'`. For `use_container_width=False`, use `width='content'`.
+[23:26:51] 🐙 Pulling code changes from Github...
+[23:26:52] 📦 Processing dependencies...
+[23:26:52] 📦 Processed dependencies!
+[23:26:53] 🔄 Updated app!
+2025-11-05 23:31:36.299 Please replace `use_container_width` with `width`.
+
+`use_container_width` will be removed after 2025-12-31.
+
+For `use_container_width=True`, use `width='stretch'`. For `use_container_width=False`, use `width='content'`.
+2025-11-05 23:36:37.093 Please replace `use_container_width` with `width`.
+
+`use_container_width` will be removed after 2025-12-31.
+
+For `use_container_width=True`, use `width='stretch'`. For `use_container_width=False`, use `width='content'`.
+2025-11-05 23:41:37.217 Please replace `use_container_width` with `width`.
+
+`use_container_width` will be removed after 2025-12-31.
+
+For `use_container_width=True`, use `width='stretch'`. For `use_container_width=False`, use `width='content'`.
+2025-11-05 23:44:27.926 Please replace `use_container_width` with `width`.
+
+`use_container_width` will be removed after 2025-12-31.
+
+For `use_container_width=True`, use `width='stretch'`. For `use_container_width=False`, use `width='content'`.
+2025-11-05 23:44:34.066 Please replace `use_container_width` with `width`.
+
+`use_container_width` will be removed after 2025-12-31.
+
+For `use_container_width=True`, use `width='stretch'`. For `use_container_width=False`, use `width='content'`.
+2025-11-05 23:44:34.090 Please replace `use_container_width` with `width`.
+
+`use_container_width` will be removed after 2025-12-31.
+
+For `use_container_width=True`, use `width='stretch'`. For `use_container_width=False`, use `width='content'`.
+2025-11-05 23:44:34.120 Please replace `use_container_width` with `width`.
+
+`use_container_width` will be removed after 2025-12-31.
+
+For `use_container_width=True`, use `width='stretch'`. For `use_container_width=False`, use `width='content'`.
+2025-11-05 23:44:34.125 Please replace `use_container_width` with `width`.
+
+`use_container_width` will be removed after 2025-12-31.
+
+For `use_container_width=True`, use `width='stretch'`. For `use_container_width=False`, use `width='content'`.
+2025-11-05 23:44:45.559 Please replace `use_container_width` with `width`.
+
+`use_container_width` will be removed after 2025-12-31.
+
+For `use_container_width=True`, use `width='stretch'`. For `use_container_width=False`, use `width='content'`.
+2025-11-05 23:44:45.644 Please replace `use_container_width` with `width`.
+
+`use_container_width` will be removed after 2025-12-31.
+
+For `use_container_width=True`, use `width='stretch'`. For `use_container_width=False`, use `width='content'`.
+2025-11-05 23:44:45.742 Please replace `use_container_width` with `width`.
+
+`use_container_width` will be removed after 2025-12-31.
+
+For `use_container_width=True`, use `width='stretch'`. For `use_container_width=False`, use `width='content'`.
+2025-11-05 23:44:47.193 Please replace `use_container_width` with `width`.
+
+`use_container_width` will be removed after 2025-12-31.
+
+For `use_container_width=True`, use `width='stretch'`. For `use_container_width=False`, use `width='content'`.
+2025-11-05 23:44:47.376 Please replace `use_container_width` with `width`.
+
+`use_container_width` will be removed after 2025-12-31.
+
+For `use_container_width=True`, use `width='stretch'`. For `use_container_width=False`, use `width='content'`.
+2025-11-05 23:44:49.595 Please replace `use_container_width` with `width`.
+
+`use_container_width` will be removed after 2025-12-31.
+
+For `use_container_width=True`, use `width='stretch'`. For `use_container_width=False`, use `width='content'`.
+2025-11-05 23:44:49.597 Please replace `use_container_width` with `width`.
+
+`use_container_width` will be removed after 2025-12-31.
+
+For `use_container_width=True`, use `width='stretch'`. For `use_container_width=False`, use `width='content'`.
+2025-11-05 23:44:49.622 Please replace `use_container_width` with `width`.
+
+`use_container_width` will be removed after 2025-12-31.
+
+For `use_container_width=True`, use `width='stretch'`. For `use_container_width=False`, use `width='content'`.
+2025-11-05 23:46:36.338 Please replace `use_container_width` with `width`.
+
+`use_container_width` will be removed after 2025-12-31.
+
+For `use_container_width=True`, use `width='stretch'`. For `use_container_width=False`, use `width='content'`.

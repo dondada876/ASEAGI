@@ -68,24 +68,38 @@ class ContextManager:
             if cache_type:
                 query = query.eq('cache_type', cache_type)
 
-            response = query.single().execute()
+            response = query.execute()
 
-            if response.data:
+            # Check if we got any data
+            if response.data and len(response.data) > 0:
+                cache_entry = response.data[0]
+
                 # Check expiration
-                if response.data.get('expires_at'):
-                    expires_at = datetime.fromisoformat(response.data['expires_at'].replace('Z', '+00:00'))
-                    if datetime.now(expires_at.tzinfo) > expires_at:
+                if cache_entry.get('expires_at'):
+                    from datetime import timezone
+                    expires_at_str = cache_entry['expires_at']
+                    # Handle both with and without timezone
+                    if 'Z' in expires_at_str or '+' in expires_at_str:
+                        expires_at = datetime.fromisoformat(expires_at_str.replace('Z', '+00:00'))
+                        now = datetime.now(timezone.utc)
+                    else:
+                        expires_at = datetime.fromisoformat(expires_at_str)
+                        now = datetime.now()
+
+                    if now > expires_at:
                         return None
 
                 # Increment hit count
                 self._increment_cache_hit(cache_key)
 
-                return response.data['result_data']
+                return cache_entry['result_data']
 
             return None
 
         except Exception as e:
+            import traceback
             print(f"Cache retrieval error: {e}")
+            print(traceback.format_exc())
             return None
 
     def set_cache(
@@ -118,7 +132,8 @@ class ContextManager:
             # Calculate expiration
             expires_at = None
             if expires_in_hours:
-                expires_at = (datetime.now() + timedelta(hours=expires_in_hours)).isoformat()
+                from datetime import timezone
+                expires_at = (datetime.now(timezone.utc) + timedelta(hours=expires_in_hours)).isoformat()
 
             cache_data = {
                 'cache_key': cache_key,
