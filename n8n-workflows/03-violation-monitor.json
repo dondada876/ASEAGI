@@ -1,0 +1,142 @@
+{
+  "name": "ASEAGI Critical Violation Monitor",
+  "nodes": [
+    {
+      "parameters": {
+        "rule": {
+          "interval": [
+            {
+              "field": "hours",
+              "hoursInterval": 4
+            }
+          ]
+        }
+      },
+      "name": "Every 4 Hours",
+      "type": "n8n-nodes-base.scheduleTrigger",
+      "typeVersion": 1,
+      "position": [250, 300]
+    },
+    {
+      "parameters": {
+        "url": "http://api:8000/telegram/violations",
+        "authentication": "none",
+        "sendQuery": true,
+        "queryParameters": {
+          "parameters": [
+            {
+              "name": "severity",
+              "value": "critical"
+            }
+          ]
+        },
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": [
+            {
+              "name": "Content-Type",
+              "value": "application/json"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "name": "Check Critical Violations",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 3,
+      "position": [450, 300]
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "number": [
+            {
+              "value1": "={{$json[\"data\"][\"critical_count\"]}}",
+              "operation": "larger",
+              "value2": 0
+            }
+          ]
+        }
+      },
+      "name": "Has Critical Violations",
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 1,
+      "position": [650, 300]
+    },
+    {
+      "parameters": {
+        "chatId": "YOUR_TELEGRAM_USER_ID",
+        "text": "=🚨 **CRITICAL VIOLATION ALERT**\n\n{{$json[\"data\"][\"critical_count\"]}} CRITICAL violations detected!\n\n{{$json[\"data\"][\"results\"].filter(v => v.severity === 'critical').map(item => `⚠️ ${item.type.toUpperCase()}\\n   ${item.description.substring(0, 100)}...\\n   Detected: ${item.detected_date}`).join('\\n\\n')}}\n\nType /violations in your bot for full details.",
+        "additionalFields": {
+          "parse_mode": "Markdown"
+        }
+      },
+      "name": "Send URGENT Alert",
+      "type": "n8n-nodes-base.telegram",
+      "typeVersion": 1,
+      "position": [850, 250],
+      "credentials": {
+        "telegramApi": {
+          "id": "1",
+          "name": "Telegram account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "message": "No critical violations - monitoring continues"
+      },
+      "name": "No Action",
+      "type": "n8n-nodes-base.noOp",
+      "typeVersion": 1,
+      "position": [850, 400]
+    }
+  ],
+  "connections": {
+    "Every 4 Hours": {
+      "main": [
+        [
+          {
+            "node": "Check Critical Violations",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Check Critical Violations": {
+      "main": [
+        [
+          {
+            "node": "Has Critical Violations",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Has Critical Violations": {
+      "main": [
+        [
+          {
+            "node": "Send URGENT Alert",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "No Action",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "settings": {},
+  "staticData": null,
+  "tags": ["ASEAGI", "Violations", "Critical", "Monitoring"],
+  "pinData": {},
+  "versionId": "1"
+}
