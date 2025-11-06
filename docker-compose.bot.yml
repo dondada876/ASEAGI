@@ -1,0 +1,89 @@
+version: '3.8'
+
+# ============================================================================
+# TELEGRAM BOT ONLY - Quick Deployment
+# Gets @aseagi_legal_bot responding to messages immediately
+# ============================================================================
+
+services:
+  # ==========================================================================
+  # FASTAPI BACKEND - Minimal API for bot
+  # ==========================================================================
+  api:
+    build:
+      context: ./api-service
+      dockerfile: Dockerfile
+    container_name: aseagi-api
+    ports:
+      - "8000:8000"
+    environment:
+      # Supabase (you already have this)
+      - SUPABASE_URL=${SUPABASE_URL}
+      - SUPABASE_KEY=${SUPABASE_KEY}
+
+      # Telegram
+      - TELEGRAM_BOT_TOKEN=${TELEGRAM_BOT_TOKEN}
+
+      # API Config
+      - API_HOST=0.0.0.0
+      - API_PORT=8000
+      - API_BASE_URL=http://api:8000
+      - CORS_ORIGINS=*
+    restart: unless-stopped
+    networks:
+      - aseagi-network
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:8000/health"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+
+  # ==========================================================================
+  # TELEGRAM BOT - Responds to messages
+  # ==========================================================================
+  telegram:
+    build:
+      context: ./api-service
+      dockerfile: Dockerfile
+    container_name: aseagi-telegram
+    command: ["python", "telegram_bot.py"]
+    environment:
+      - TELEGRAM_BOT_TOKEN=${TELEGRAM_BOT_TOKEN}
+      - API_BASE_URL=http://api:8000
+      - SUPABASE_URL=${SUPABASE_URL}
+      - SUPABASE_KEY=${SUPABASE_KEY}
+    depends_on:
+      - api
+    restart: unless-stopped
+    networks:
+      - aseagi-network
+
+# ==============================================================================
+# NETWORKS
+# ==============================================================================
+networks:
+  aseagi-network:
+    driver: bridge
+
+# ==============================================================================
+# NOTES
+# ==============================================================================
+
+# This is a MINIMAL deployment to get your Telegram bot working quickly.
+#
+# Deploys:
+#   - FastAPI backend (port 8000)
+#   - Telegram bot (@aseagi_legal_bot)
+#
+# Requirements:
+#   - SUPABASE_URL (you have this)
+#   - SUPABASE_KEY (you have this)
+#   - TELEGRAM_BOT_TOKEN (you have this)
+#
+# Deploy:
+#   docker-compose -f docker-compose.bot.yml up -d --build
+#
+# Test:
+#   Open Telegram → Search @aseagi_legal_bot → Send: /start
+#
+# For Ashe. For Justice. For All Children. 🛡️
