@@ -37,6 +37,7 @@ except ImportError:
     exit(1)
 
 from tiered_deduplicator import TieredDeduplicator
+from queue_manager import QueueManager, DocumentSubmission
 
 
 # Initialize FastAPI
@@ -63,6 +64,7 @@ OPENAI_KEY = os.environ.get('OPENAI_API_KEY', '')
 # Initialize services
 supabase = create_client(SUPABASE_URL, SUPABASE_KEY) if SUPABASE_KEY else None
 deduplicator = TieredDeduplicator(SUPABASE_URL, SUPABASE_KEY, OPENAI_KEY) if SUPABASE_KEY else None
+queue_manager = QueueManager(SUPABASE_URL, SUPABASE_KEY, OPENAI_KEY) if SUPABASE_KEY else None
 
 # Temp directory for uploads
 UPLOAD_DIR = Path("mobile_uploads")
@@ -96,6 +98,7 @@ async def health_check():
         "status": "healthy",
         "supabase": "connected" if supabase else "not configured",
         "deduplicator": "ready" if deduplicator else "not configured",
+        "queue_manager": "ready" if queue_manager else "not configured",
         "openai": "configured" if OPENAI_KEY else "not configured"
     }
 
@@ -103,90 +106,77 @@ async def health_check():
 @app.post("/api/upload")
 async def upload_document(
     file: UploadFile = File(...),
-    source: str = Form("mobile")
+    source: str = Form("mobile"),
+    source_device: Optional[str] = Form(None),
+    source_user_id: Optional[str] = Form(None)
 ):
     """
     Upload document from mobile phone
-    - Extracts text with OCR
-    - Checks for duplicates (tiered)
-    - Uploads to Supabase if new
+    - Adds to universal journal
+    - Runs assessment phase (duplicate detection, type detection, rules)
+    - Queues for processing if approved
+    - Returns assessment result
     """
 
-    if not supabase or not deduplicator:
-        raise HTTPException(status_code=500, detail="Service not configured")
+    if not queue_manager:
+        raise HTTPException(status_code=500, detail="Queue Manager not configured")
 
     # Read file
     contents = await file.read()
 
-    # Save temporarily
+    # Save to permanent storage (not temp - needed for processing)
     timestamp = datetime.now().strftime("%Y%m%d_%H%M%S")
-    temp_path = UPLOAD_DIR / f"{source}_{timestamp}_{file.filename}"
-    temp_path.write_bytes(contents)
+    upload_path = UPLOAD_DIR / f"{source}_{timestamp}_{file.filename}"
+    upload_path.write_bytes(contents)
 
     try:
-        # Calculate hash
-        file_hash = hashlib.md5(contents).hexdigest()
-
-        # Extract text with OCR
-        image = Image.open(io.BytesIO(contents))
-        text = pytesseract.image_to_string(image)
-
-        # Check for duplicates (tiered)
-        duplicate_check = deduplicator.check_duplicate(
-            filename=file.filename,
-            file_path=str(temp_path),
-            text=text
+        # Create document submission
+        submission = DocumentSubmission(
+            file_path=str(upload_path),
+            original_filename=file.filename,
+            source_type=source,
+            source_device=source_device,
+            source_user_id=source_user_id
         )
 
-        if duplicate_check.is_duplicate:
-            # Duplicate found
-            return JSONResponse({
-                "status": "duplicate",
-                "message": f"Duplicate detected ({duplicate_check.match_type})",
-                "similarity": duplicate_check.similarity,
-                "matched_document": {
-                    "file_name": duplicate_check.matched_document.get('file_name'),
-                    "id": duplicate_check.matched_document.get('id')
-                },
-                "tier": duplicate_check.tier
-            })
+        # Submit to queue manager (runs assessment phase)
+        assessment = queue_manager.submit_document(submission)
 
-        # New document - upload to Supabase
-        doc_data = {
-            'file_hash': file_hash,
-            'file_name': file.filename,
-            'file_type': file.filename.split('.')[-1].lower(),
-            'file_size': len(contents),
-            'primary_location': source,
-            'source_locations': [{
-                'source': source,
-                'path': str(temp_path),
-                'discovered': datetime.now().isoformat()
-            }],
-            'processing_status': 'pending',
-            'content_preview': text[:500] if text else None
+        # Build response based on assessment
+        response_data = {
+            "journal_id": assessment.journal_id,
+            "should_process": assessment.should_process,
+            "reason": assessment.reason,
+            "document_type": assessment.document_type,
+            "priority": assessment.priority
         }
 
-        # Insert into master registry
-        result = supabase.table('master_document_registry')\
-            .insert(doc_data)\
-            .execute()
+        # If duplicate, include duplicate info
+        if assessment.is_duplicate:
+            response_data.update({
+                "status": "duplicate",
+                "is_duplicate": True,
+                "duplicate_tier": assessment.duplicate_tier,
+                "duplicate_of": assessment.duplicate_of,
+                "message": f"⚠️ Duplicate detected: {assessment.reason}"
+            })
+        elif assessment.should_process:
+            response_data.update({
+                "status": "queued",
+                "is_duplicate": False,
+                "message": f"✅ Added to processing queue (priority {assessment.priority})"
+            })
+        else:
+            response_data.update({
+                "status": "skipped",
+                "is_duplicate": False,
+                "message": f"⏭️ Skipped: {assessment.reason}"
+            })
 
-        return JSONResponse({
-            "status": "success",
-            "message": "Document uploaded successfully",
-            "document_id": result.data[0]['id'],
-            "file_hash": file_hash,
-            "text_extracted": len(text) if text else 0
-        })
+        return JSONResponse(response_data)
 
     except Exception as e:
         raise HTTPException(status_code=500, detail=str(e))
-
-    finally:
-        # Clean up temp file (optional - keep for processing)
-        # temp_path.unlink()
-        pass
 
 
 @app.post("/api/check-duplicate")
@@ -269,6 +259,82 @@ async def list_documents(
         return {
             "documents": result.data,
             "count": len(result.data)
+        }
+
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=str(e))
+
+
+@app.get("/api/queue/stats")
+async def get_queue_stats():
+    """Get queue statistics from journal and processing queue"""
+
+    if not queue_manager:
+        raise HTTPException(status_code=500, detail="Queue Manager not configured")
+
+    try:
+        # Get queue stats
+        stats = queue_manager.get_queue_stats()
+
+        # Get processing performance
+        performance = queue_manager.get_processing_performance()
+
+        return {
+            "queue_stats": stats,
+            "processing_performance": performance,
+            "timestamp": datetime.now().isoformat()
+        }
+
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=str(e))
+
+
+@app.get("/api/queue/items")
+async def get_queue_items(
+    status: Optional[str] = None,
+    limit: int = 50
+):
+    """Get items from document journal"""
+
+    if not supabase:
+        raise HTTPException(status_code=500, detail="Supabase not configured")
+
+    try:
+        query = supabase.table('document_journal')\
+            .select('*')
+
+        if status:
+            query = query.eq('queue_status', status)
+
+        result = query.order('date_logged', desc=True)\
+            .limit(limit)\
+            .execute()
+
+        return {
+            "items": result.data,
+            "count": len(result.data)
+        }
+
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=str(e))
+
+
+@app.get("/api/queue/dashboard")
+async def get_queue_dashboard():
+    """Get dashboard view of queue"""
+
+    if not supabase:
+        raise HTTPException(status_code=500, detail="Supabase not configured")
+
+    try:
+        # Use the view created in schema
+        result = supabase.table('queue_dashboard')\
+            .select('*')\
+            .execute()
+
+        return {
+            "dashboard": result.data,
+            "timestamp": datetime.now().isoformat()
         }
 
     except Exception as e:
