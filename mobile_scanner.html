@@ -1,0 +1,502 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    <meta name="apple-mobile-web-app-title" content="ASEAGI Scanner">
+    <title>🛡️ ASEAGI Document Scanner</title>
+    <link rel="manifest" href="/manifest.json">
+    <meta name="theme-color" content="#007AFF">
+
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            background: #000;
+            color: #fff;
+            overflow-x: hidden;
+        }
+
+        .container {
+            max-width: 600px;
+            margin: 0 auto;
+            padding: env(safe-area-inset-top) 20px 20px;
+        }
+
+        .header {
+            text-align: center;
+            padding: 30px 0;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            margin: -20px -20px 20px -20px;
+            border-radius: 0 0 20px 20px;
+        }
+
+        .header h1 {
+            font-size: 28px;
+            margin-bottom: 8px;
+            text-shadow: 0 2px 4px rgba(0,0,0,0.2);
+        }
+
+        .header p {
+            color: rgba(255,255,255,0.9);
+            font-size: 15px;
+        }
+
+        .camera-container {
+            width: 100%;
+            background: #1a1a1a;
+            border-radius: 15px;
+            overflow: hidden;
+            position: relative;
+            box-shadow: 0 8px 32px rgba(0,0,0,0.5);
+        }
+
+        #video {
+            width: 100%;
+            height: auto;
+            display: block;
+        }
+
+        #canvas {
+            display: none;
+        }
+
+        .camera-overlay {
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            pointer-events: none;
+        }
+
+        .scan-frame {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            width: 85%;
+            height: 60%;
+            border: 3px solid #007AFF;
+            border-radius: 10px;
+            box-shadow: 0 0 0 2000px rgba(0,0,0,0.5);
+        }
+
+        .controls {
+            margin-top: 20px;
+            display: flex;
+            gap: 12px;
+            flex-wrap: wrap;
+        }
+
+        button {
+            flex: 1;
+            min-width: 150px;
+            padding: 16px;
+            font-size: 17px;
+            font-weight: 600;
+            border: none;
+            border-radius: 12px;
+            cursor: pointer;
+            transition: all 0.2s;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.3);
+        }
+
+        button:active {
+            transform: scale(0.97);
+        }
+
+        .btn-primary {
+            background: linear-gradient(135deg, #007AFF 0%, #0051D5 100%);
+            color: white;
+        }
+
+        .btn-success {
+            background: linear-gradient(135deg, #34C759 0%, #28A745 100%);
+            color: white;
+        }
+
+        .btn-secondary {
+            background: #333;
+            color: white;
+        }
+
+        .status-card {
+            margin-top: 20px;
+            padding: 20px;
+            border-radius: 15px;
+            background: #1a1a1a;
+            border-left: 4px solid #007AFF;
+        }
+
+        .status-card.success {
+            border-left-color: #34C759;
+            background: linear-gradient(135deg, rgba(52, 199, 89, 0.1) 0%, rgba(52, 199, 89, 0.05) 100%);
+        }
+
+        .status-card.warning {
+            border-left-color: #FF9500;
+            background: linear-gradient(135deg, rgba(255, 149, 0, 0.1) 0%, rgba(255, 149, 0, 0.05) 100%);
+        }
+
+        .status-card.error {
+            border-left-color: #FF3B30;
+            background: linear-gradient(135deg, rgba(255, 59, 48, 0.1) 0%, rgba(255, 59, 48, 0.05) 100%);
+        }
+
+        .status-card h3 {
+            margin-bottom: 8px;
+            font-size: 18px;
+        }
+
+        .status-card p {
+            color: rgba(255,255,255,0.8);
+            line-height: 1.5;
+        }
+
+        .preview-container {
+            margin-top: 20px;
+            border-radius: 15px;
+            overflow: hidden;
+            background: #1a1a1a;
+        }
+
+        .preview-container h3 {
+            padding: 15px;
+            background: #2a2a2a;
+        }
+
+        .preview-container img {
+            width: 100%;
+            display: block;
+        }
+
+        .spinner {
+            border: 3px solid #f3f3f3;
+            border-top: 3px solid #007AFF;
+            border-radius: 50%;
+            width: 40px;
+            height: 40px;
+            animation: spin 1s linear infinite;
+            margin: 20px auto;
+        }
+
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+
+        .duplicate-info {
+            background: rgba(255, 149, 0, 0.2);
+            color: #FF9500;
+            padding: 15px;
+            border-radius: 10px;
+            margin-top: 12px;
+            border: 1px solid rgba(255, 149, 0, 0.3);
+        }
+
+        .duplicate-info strong {
+            display: block;
+            margin-bottom: 8px;
+        }
+
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 12px;
+            margin-top: 20px;
+        }
+
+        .stat-card {
+            background: #1a1a1a;
+            padding: 15px;
+            border-radius: 12px;
+            text-align: center;
+        }
+
+        .stat-value {
+            font-size: 28px;
+            font-weight: bold;
+            color: #007AFF;
+        }
+
+        .stat-label {
+            font-size: 13px;
+            color: rgba(255,255,255,0.6);
+            margin-top: 5px;
+        }
+
+        .hidden {
+            display: none !important;
+        }
+
+        @media (prefers-color-scheme: light) {
+            /* Add light mode support if needed */
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>🛡️ ASEAGI Scanner</h1>
+            <p>Smart Document Capture & Deduplication</p>
+        </div>
+
+        <div class="camera-container">
+            <video id="video" autoplay playsinline></video>
+            <canvas id="canvas"></canvas>
+            <div class="camera-overlay">
+                <div class="scan-frame"></div>
+            </div>
+        </div>
+
+        <div class="controls">
+            <button id="start-camera" class="btn-primary">
+                📷 Start Camera
+            </button>
+            <button id="capture" class="btn-success hidden">
+                ✅ Capture Document
+            </button>
+            <button id="upload-file" class="btn-secondary">
+                📁 Upload File
+            </button>
+            <input type="file" id="file-input" accept="image/*,application/pdf" capture="environment" class="hidden">
+        </div>
+
+        <div id="stats" class="stats-grid hidden">
+            <div class="stat-card">
+                <div class="stat-value" id="stat-scanned">0</div>
+                <div class="stat-label">Scanned</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-value" id="stat-duplicates">0</div>
+                <div class="stat-label">Duplicates</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-value" id="stat-new">0</div>
+                <div class="stat-label">New Docs</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-value" id="stat-saved">$0.00</div>
+                <div class="stat-label">Cost Saved</div>
+            </div>
+        </div>
+
+        <div id="status" class="hidden"></div>
+
+        <div id="preview" class="preview-container hidden">
+            <h3>📄 Preview</h3>
+            <img id="preview-img" src="" alt="Captured document">
+        </div>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/tesseract.js@4/dist/tesseract.min.js"></script>
+    <script>
+        // Configuration
+        const API_BASE = window.location.origin;
+
+        // Elements
+        const video = document.getElementById('video');
+        const canvas = document.getElementById('canvas');
+        const ctx = canvas.getContext('2d');
+        const startCameraBtn = document.getElementById('start-camera');
+        const captureBtn = document.getElementById('capture');
+        const uploadFileBtn = document.getElementById('upload-file');
+        const fileInput = document.getElementById('file-input');
+        const statusDiv = document.getElementById('status');
+        const previewDiv = document.getElementById('preview');
+        const previewImg = document.getElementById('preview-img');
+        const statsDiv = document.getElementById('stats');
+
+        // Stats
+        let stats = {
+            scanned: 0,
+            duplicates: 0,
+            new: 0,
+            costSaved: 0
+        };
+
+        // Start camera
+        startCameraBtn.addEventListener('click', async () => {
+            try {
+                const stream = await navigator.mediaDevices.getUserMedia({
+                    video: {
+                        facingMode: 'environment',  // Back camera
+                        width: { ideal: 1920 },
+                        height: { ideal: 1080 }
+                    }
+                });
+
+                video.srcObject = stream;
+                startCameraBtn.classList.add('hidden');
+                captureBtn.classList.remove('hidden');
+                showStatus('Camera ready 📷', 'success');
+            } catch (error) {
+                showStatus('Camera access denied. Please enable camera permissions.', 'error');
+                console.error(error);
+            }
+        });
+
+        // Capture photo
+        captureBtn.addEventListener('click', () => {
+            canvas.width = video.videoWidth;
+            canvas.height = video.videoHeight;
+            ctx.drawImage(video, 0, 0);
+
+            canvas.toBlob(async (blob) => {
+                await processDocument(blob, 'camera_capture.jpg');
+            }, 'image/jpeg', 0.95);
+        });
+
+        // Upload file
+        uploadFileBtn.addEventListener('click', () => {
+            fileInput.click();
+        });
+
+        fileInput.addEventListener('change', async (e) => {
+            const file = e.target.files[0];
+            if (file) {
+                await processDocument(file, file.name);
+            }
+        });
+
+        // Process document
+        async function processDocument(blob, filename) {
+            stats.scanned++;
+            updateStats();
+
+            showStatus('<div class="spinner"></div><p>Processing document...</p>', 'info');
+
+            try {
+                // Show preview
+                const url = URL.createObjectURL(blob);
+                previewImg.src = url;
+                previewDiv.classList.remove('hidden');
+
+                // Step 1: Extract text with Tesseract (client-side)
+                showStatus('<div class="spinner"></div><p>Extracting text with OCR...</p>', 'info');
+
+                const { data: { text } } = await Tesseract.recognize(blob, 'eng', {
+                    logger: m => {
+                        if (m.status === 'recognizing text') {
+                            const progress = Math.round(m.progress * 100);
+                            showStatus(`<div class="spinner"></div><p>OCR Progress: ${progress}%</p>`, 'info');
+                        }
+                    }
+                });
+
+                console.log('Extracted text:', text.substring(0, 200));
+
+                // Step 2: Upload to backend (handles tiered deduplication)
+                showStatus('<div class="spinner"></div><p>Checking for duplicates...</p>', 'info');
+
+                const formData = new FormData();
+                formData.append('file', blob, filename);
+                formData.append('source', 'mobile');
+
+                const response = await fetch(`${API_BASE}/api/upload`, {
+                    method: 'POST',
+                    body: formData
+                });
+
+                const result = await response.json();
+
+                if (result.status === 'duplicate') {
+                    // Duplicate found
+                    stats.duplicates++;
+                    stats.costSaved += 0.01; // Saved $0.01 processing cost
+                    updateStats();
+
+                    const tierNames = ['Filename Match', 'OCR Content Match', 'Semantic Match'];
+
+                    showStatus(`
+                        <h3>⚠️ Duplicate Detected</h3>
+                        <p>${result.message}</p>
+                        <div class="duplicate-info">
+                            <strong>Match Details:</strong>
+                            <p>Type: ${tierNames[result.tier]}</p>
+                            <p>Similarity: ${(result.similarity * 100).toFixed(0)}%</p>
+                            <p>Original: ${result.matched_document.file_name}</p>
+                        </div>
+                        <p style="margin-top: 15px; color: #34C759;">✅ Skipped processing - $0.01 saved!</p>
+                    `, 'warning');
+
+                } else if (result.status === 'success') {
+                    // New document
+                    stats.new++;
+                    updateStats();
+
+                    showStatus(`
+                        <h3>✅ New Document Uploaded</h3>
+                        <p>Document ID: ${result.document_id}</p>
+                        <p>Text extracted: ${result.text_extracted} characters</p>
+                        <p style="margin-top: 10px; color: rgba(255,255,255,0.6);">Document will be processed and indexed.</p>
+                    `, 'success');
+
+                } else {
+                    throw new Error(result.message || 'Unknown error');
+                }
+
+                statsDiv.classList.remove('hidden');
+
+            } catch (error) {
+                showStatus(`❌ Error: ${error.message}`, 'error');
+                console.error(error);
+            }
+        }
+
+        // Update stats display
+        function updateStats() {
+            document.getElementById('stat-scanned').textContent = stats.scanned;
+            document.getElementById('stat-duplicates').textContent = stats.duplicates;
+            document.getElementById('stat-new').textContent = stats.new;
+            document.getElementById('stat-saved').textContent = '$' + stats.costSaved.toFixed(2);
+        }
+
+        // Show status message
+        function showStatus(html, type) {
+            statusDiv.innerHTML = html;
+            statusDiv.className = `status-card ${type}`;
+            statusDiv.classList.remove('hidden');
+        }
+
+        // Register service worker for offline support
+        if ('serviceWorker' in navigator) {
+            navigator.serviceWorker.register('/sw.js').catch(err => {
+                console.log('Service worker registration failed:', err);
+            });
+        }
+
+        // Add to home screen prompt
+        let deferredPrompt;
+        window.addEventListener('beforeinstallprompt', (e) => {
+            e.preventDefault();
+            deferredPrompt = e;
+
+            showStatus(`
+                <h3>📱 Install App</h3>
+                <p>Add ASEAGI Scanner to your home screen for quick access!</p>
+                <button onclick="installApp()" class="btn-primary" style="margin-top: 10px;">Install Now</button>
+            `, 'info');
+        });
+
+        window.installApp = async () => {
+            if (deferredPrompt) {
+                deferredPrompt.prompt();
+                const { outcome } = await deferredPrompt.userChoice;
+                if (outcome === 'accepted') {
+                    showStatus('✅ App installed successfully!', 'success');
+                }
+                deferredPrompt = null;
+            }
+        };
+    </script>
+</body>
+</html>

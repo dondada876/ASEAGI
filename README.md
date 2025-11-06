@@ -1,322 +1,222 @@
-# ⚖️ PROJ344: Legal Case Intelligence Dashboards
+# PROJ344 Dashboard
 
-AI-powered legal document intelligence system with multi-dimensional scoring for child protection cases.
+Legal Case Intelligence Dashboard for custody case D22-03244 (MARIYAM YONAS RUFAEL vs DON BUCKNOR).
 
-[![Streamlit](https://img.shields.io/badge/Streamlit-FF4B4B?style=for-the-badge&logo=Streamlit&logoColor=white)](https://streamlit.io)
-[![Python](https://img.shields.io/badge/Python-3.9+-3776AB?style=for-the-badge&logo=python&logoColor=white)](https://python.org)
-[![Supabase](https://img.shields.io/badge/Supabase-3ECF8E?style=for-the-badge&logo=supabase&logoColor=white)](https://supabase.com)
+## Overview
 
-## 🎯 Overview
+PROJ344 is a comprehensive legal case intelligence system designed to track, analyze, and visualize custody case documentation. The system provides:
 
-**PROJ344** is a comprehensive legal intelligence system that uses AI to analyze legal documents with multi-dimensional scoring (Micro, Macro, Legal, Relevancy) to identify smoking gun evidence, detect perjury, and track constitutional violations.
+- **Document Intelligence**: Automatic scoring (Micro, Macro, Legal, Relevancy)
+- **Timeline Analysis**: Complete event timeline across all cases
+- **Constitutional Violations Tracking**: Due process violation monitoring
+- **Evidence Cross-Reference**: Find contradictions and patterns
+- **Multi-Jurisdiction Support**: Track forum shopping across courts
 
-**Built For:** Child protection cases, custody litigation, dependency proceedings
+## Features
 
-### Key Features
+### Core Dashboards
 
-- 📊 **Multi-Dimensional Scoring** (0-999 scale)
-  - Micro: Detail-level importance
-  - Macro: Case-wide significance
-  - Legal: Legal weight & admissibility
-  - Relevancy: Weighted composite score
+1. **PROJ344 Master Dashboard** (`proj344_master_dashboard.py`)
+   - Document registry with intelligence scores
+   - Timeline analysis
+   - Constitutional violations tracker
+   - Evidence cross-reference
 
-- 🔥 **Smoking Gun Detection** (900+ relevancy)
-  - Automatic identification of critical evidence
-  - Perjury indicator tracking
-  - Constitutional violation detection
+2. **CEO Global Dashboard** (`ceo_global_dashboard.py`)
+   - Executive overview with unified priorities
+   - Business operations tracking
+   - Legal matters summary (links to PROJ344)
+   - Family & daughter documents
+   - Personal development tracking
+   - Task management
 
-- 📈 **Interactive Dashboards**
-  - Master Dashboard: Complete case overview
-  - Legal Intelligence: Document-by-document analysis
-  - CEO Dashboard: File organization & system health
+3. **Timeline & Violations Dashboard** (`timeline_constitutional_violations.py`)
+   - Detailed timeline visualization
+   - August 2024 incident analysis
+   - Constitutional violations detailed view
 
-- 🤖 **AI-Powered Analysis**
-  - Claude Sonnet 4.5 for document intelligence
-  - Automatic summarization & key quote extraction
-  - Fraud/perjury indicator detection
-
-## 🚀 Quick Start
+## Quick Start
 
 ### Prerequisites
 
-- Python 3.9+
-- Supabase account (free tier works)
-- Anthropic API key (for document scanning)
+- Python 3.11+
+- Supabase account
+- Environment variables configured
 
 ### Installation
 
-1. **Clone the repository**
 ```bash
-git clone https://github.com/yourusername/ASEAGI.git
-cd ASEAGI
-```
+# Clone repository
+git clone https://github.com/YOUR_USERNAME/proj344-dashboard.git
+cd proj344-dashboard
 
-2. **Install dependencies**
-```bash
-pip install -r requirements.txt
-```
+# Install dependencies
+pip3 install -r requirements.txt
 
-3. **Set up environment variables**
-```bash
+# Set up environment variables
 cp .env.example .env
-# Edit .env with your actual credentials
+# Edit .env with your Supabase credentials
 ```
 
-4. **Set up Supabase database**
-```bash
-# Run the schema SQL file in your Supabase SQL editor
-# File: supabase/schema.sql
-```
+### Configuration
 
-5. **Launch dashboards**
-```bash
-# Launch all dashboards
-./scripts/launch-all-dashboards.sh
+Create `.streamlit/secrets.toml`:
 
-# Or launch individually
-streamlit run dashboards/proj344_master_dashboard.py --server.port 8501
-```
-
-6. **Access dashboards**
-- PROJ344 Master: http://localhost:8501
-- Legal Intelligence: http://localhost:8502
-- CEO Dashboard: http://localhost:8503
-
-## 📊 Dashboards
-
-### 1. PROJ344 Master Dashboard (Port 8501)
-
-Main dashboard for case intelligence and evidence review.
-
-**Features:**
-- System overview with key metrics
-- Smoking gun documents (900+ relevancy)
-- Perjury indicator tracking
-- Document intelligence with filters
-- Search & analytics
-
-**Use Cases:**
-- Daily case review
-- Evidence preparation
-- Motion planning
-- Appellate record building
-
-### 2. Legal Intelligence Dashboard (Port 8502)
-
-Detailed document analysis with PROJ344 scoring.
-
-**Features:**
-- Document-by-document breakdown
-- Score distribution analysis
-- Key quotes & smoking guns
-- Cross-reference capabilities
-
-**Use Cases:**
-- Deep document review
-- Evidence package assembly
-- Legal research
-
-### 3. CEO Dashboard (Port 8503)
-
-System administration and file organization.
-
-**Features:**
-- PARA structure overview
-- File organization health
-- Naming compliance tracking
-- Duplicate detection
-
-**Use Cases:**
-- System monitoring
-- File management
-- Quality assurance
-
-## 🔬 Document Scanning
-
-### Scan Documents
-
-```bash
-# Scan all documents in directory
-python3 scanners/batch_scan_documents.py /path/to/documents
-
-# Scan with filters
-python3 scanners/batch_scan_documents.py /path/to/documents --extensions .pdf,.jpg,.png
-
-# Dry run (no database upload)
-python3 scanners/batch_scan_documents.py /path/to/documents --dry-run
-```
-
-### Scoring Methodology
-
-**Score Range: 0-999**
-
-| Range | Category | Badge | Use Case |
-|-------|----------|-------|----------|
-| 900-999 | 🔥 Smoking Gun | Critical evidence | Motion exhibits, impeachment |
-| 800-899 | ⚠️ Critical | High-value evidence | Supporting documents |
-| 700-799 | 📌 Important | Strong evidence | Case building |
-| 600-699 | 📋 Useful | Background | Context & discovery |
-| 0-599 | 📄 Reference | General | Archive |
-
-## 🏗️ Architecture
-
-```
-ASEAGI/
-├── dashboards/              # Streamlit dashboards
-│   ├── proj344_master_dashboard.py
-│   ├── legal_intelligence_dashboard.py
-│   └── ceo_dashboard.py
-├── scanners/                # Document scanning tools
-│   ├── batch_scan_documents.py
-│   └── query_legal_documents.py
-├── supabase/                # Database schemas
-│   └── schema.sql
-├── scripts/                 # Utility scripts
-│   └── launch-all-dashboards.sh
-├── docs/                    # Documentation
-├── requirements.txt
-├── .env.example
-└── README.md
-```
-
-## 🗄️ Database Schema
-
-### Core Tables
-
-**legal_documents**
-- Document metadata & PROJ344 scores
-- Key quotes & smoking guns
-- Perjury/fraud indicators
-- W&I 388, CCP 473, criminal relevance
-
-**court_events**
-- Timeline of court proceedings
-- Multi-jurisdiction tracking
-
-**legal_violations**
-- Constitutional violation tracker
-- Due process monitoring
-
-## 🔐 Security
-
-### Environment Variables
-
-**NEVER commit:**
-- `.env` files
-- API keys
-- Supabase credentials
-- Case documents
-
-**Always use:**
-- `.env.example` as template
-- Environment variables for secrets
-- `.gitignore` for sensitive files
-
-### Data Privacy
-
-- All case data stays in your Supabase instance
-- Dashboards run locally (localhost only)
-- No external data transmission
-- API calls encrypted (HTTPS)
-
-## 🌐 Deployment Options
-
-### Option 1: Streamlit Community Cloud (Free)
-
-1. Push to GitHub (public or private repo)
-2. Go to [share.streamlit.io](https://share.streamlit.io)
-3. Connect your repository
-4. Add secrets in Streamlit Cloud UI
-5. Deploy!
-
-**Secrets to add in Streamlit Cloud:**
 ```toml
-SUPABASE_URL = "your-url"
-SUPABASE_KEY = "your-key"
+SUPABASE_URL = "https://your-project.supabase.co"
+SUPABASE_KEY = "your-anon-key"
 ```
 
-### Option 2: Heroku
+Or set environment variables:
 
 ```bash
-# Create Procfile
-echo "web: streamlit run dashboards/proj344_master_dashboard.py --server.port \$PORT" > Procfile
-
-# Deploy
-heroku create proj344-dashboard
-git push heroku main
-heroku config:set SUPABASE_URL=your-url
-heroku config:set SUPABASE_KEY=your-key
+export SUPABASE_URL="https://your-project.supabase.co"
+export SUPABASE_KEY="your-anon-key"
 ```
 
-### Option 3: Docker
+### Running
+
+**PROJ344 Dashboard:**
+```bash
+streamlit run proj344_master_dashboard.py --server.port=8501
+```
+Access: http://localhost:8501
+
+**CEO Global Dashboard:**
+```bash
+streamlit run ceo_global_dashboard.py --server.port=8503
+```
+Access: http://localhost:8503
+
+## Database Schema
+
+The system uses Supabase (PostgreSQL) with the following key tables:
+
+- `legal_documents` - Document metadata with scoring
+- `court_events` - Timeline of court proceedings
+- `timeline_events` - Chronological event tracking
+- `constitutional_violations` - Due process violations
+- `general_documents` - Universal document intake
+- `cross_system_priorities` - Unified priority management
+- `business_documents`, `personal_documents`, `family_documents` - CEO Dashboard tables
+
+## Document Scoring System
+
+Documents are automatically scored on four dimensions (0-1000):
+
+- **Micro (Mic)**: Detail-level importance
+- **Macro (Mac)**: Case-wide significance
+- **Legal (LEG)**: Legal weight and admissibility
+- **Relevancy (REL)**: Overall relevance to custody case
+
+Higher scores indicate critical documents.
+
+## Key Case Context
+
+**Case Number:** D22-03244 (Alameda County Superior Court)
+
+**Critical Incident:** August 10-13, 2024
+- August 10: Berkeley Police report documents child was **SAFE** with father
+- August 13: Ex parte filed claiming father violated restraining order
+- **Constitutional Issue**: Police report contradicts ex parte claims
+
+**Forum Shopping Pattern:**
+- Multiple restraining orders filed across jurisdictions
+- Strategic case filing to manipulate custody outcomes
+- Cross-case references required to identify contradictions
+
+## Architecture
+
+```
+PROJ344 System
+├── Document Intake → OCR + Classification
+├── Intelligence Scoring → Micro/Macro/Legal/Relevancy
+├── Routing → PROJ344 or CEO Dashboard
+├── Metadata Extraction → Tiered (Free → AI → Premium)
+└── Dashboard Display → Real-time visualization
+```
+
+## File Structure
+
+```
+proj344-dashboard/
+├── proj344_master_dashboard.py      # Main PROJ344 dashboard
+├── ceo_global_dashboard.py          # CEO life management dashboard
+├── timeline_constitutional_violations.py  # Timeline analysis
+├── proj344_style.py                 # Shared styling components
+├── requirements.txt                 # Python dependencies
+├── .streamlit/
+│   └── config.toml                  # Streamlit configuration
+└── README.md                        # This file
+```
+
+## Development
+
+### Adding New Features
+
+1. **New Dashboard Tab**: Add to appropriate dashboard file
+2. **New Scoring Dimension**: Update `legal_documents` schema
+3. **New Data Source**: Add to classification rules
+
+### Styling
+
+Custom CSS and components in `proj344_style.py`:
+- `inject_custom_css()` - Global styles
+- `render_header()` - Page headers
+- `render_metric_card()` - Metric displays
+
+## Deployment
+
+### Local Development
 
 ```bash
-# Build
-docker build -t ASEAGI .
-
-# Run
-docker run -p 8501:8501 \
-  -e SUPABASE_URL=your-url \
-  -e SUPABASE_KEY=your-key \
-  ASEAGI
+streamlit run proj344_master_dashboard.py
 ```
 
-## 📖 Documentation
+### Production (Cloud)
 
-- [Dashboard Guide](docs/DASHBOARD-GUIDE.md)
-- [Scanning Guide](docs/SCANNING-GUIDE.md)
-- [API Documentation](docs/API.md)
-- [PROJ344 Methodology](docs/PROJ344-METHODOLOGY.md)
+**Recommended:** Streamlit Community Cloud
 
-## 🤝 Contributing
+1. Push to GitHub
+2. Connect at https://streamlit.io/cloud
+3. Deploy from repository
+4. Configure secrets in Streamlit dashboard
 
-This is a private tool for legal case management. If you're working on a similar child protection case and would like to adapt this system, please reach out.
+**Alternative:** Docker + Cloud VM
 
-## ⚖️ Legal Notice
+```dockerfile
+FROM python:3.11-slim
+WORKDIR /app
+COPY requirements.txt .
+RUN pip install -r requirements.txt
+COPY . .
+CMD ["streamlit", "run", "proj344_master_dashboard.py", "--server.port=8501"]
+```
 
-**Disclaimer:** This tool provides document analysis and intelligence for legal cases. It does NOT:
-- Provide legal advice
-- Replace qualified attorneys
-- Make custody recommendations
-- Guarantee legal outcomes
+## Security Notes
 
-**Use Case:** Legal research, document organization, evidence preparation, case management.
+- Never commit `.env` or `secrets.toml`
+- Use Supabase Row Level Security (RLS) for data access
+- Consider private repository for sensitive case data
+- Rotate API keys regularly
 
-## 📜 License
+## Support & Documentation
 
-**Private Use Only** - This system contains case-specific code and methodologies for active litigation.
+**Full System Docs:** See parent repository documentation
+- `DUAL_SYSTEM_ARCHITECTURE.md` - System design
+- `IMPLEMENTATION_STATUS.md` - Complete status
+- `COMPLETE_SYSTEM_SUMMARY.md` - Full reference
 
-## 📞 Support
+**Issues:** Report via GitHub Issues
 
-For questions or issues:
-- Open an issue on GitHub
-- Review documentation in `/docs`
-- Check troubleshooting guides
+## License
 
-## 🛡️ Mission Statement
+Private - Not for public distribution
 
-**"No child's voice should be silenced by litigation. No protective parent should be punished for protecting."**
+## Author
 
-This system was built to ensure:
-- Children's disclosures are heard
-- Perjury is documented and prosecuted
-- Protective parents have professional-grade tools
-- Truth prevails over legal manipulation
+Don Bucknor
 
 ---
 
-**For Ashe. For Justice. For All Children.** 🛡️
-
-## 🏆 Acknowledgments
-
-Built with:
-- [Streamlit](https://streamlit.io) - Dashboard framework
-- [Supabase](https://supabase.com) - PostgreSQL database
-- [Anthropic Claude](https://anthropic.com) - AI analysis
-- [Plotly](https://plotly.com) - Interactive visualizations
-
----
-
-**Version:** 2.0
-**Last Updated:** November 2025
-**Case:** In re Ashe B. (J24-00478)
+**Note:** This dashboard contains sensitive legal case information. Ensure proper access controls and security measures are in place before deployment.

@@ -1,0 +1,23 @@
+{
+  "metadata": {
+    "file_path": "/home/user/ASEAGI/requirements.txt",
+    "file_name": "requirements.txt",
+    "file_type": "txt",
+    "file_size": 98,
+    "file_hash": "8172facbbc8b26541a165b5d3e8389bf",
+    "extraction_date": "2025-11-06T15:53:38.685632",
+    "extraction_method": "direct_read",
+    "title": "streamlit>=1.31.0",
+    "author": null,
+    "created_date": "2025-11-06T15:45:47.042164",
+    "modified_date": "2025-11-05T17:53:07.376007",
+    "page_count": null,
+    "word_count": 6,
+    "char_count": 98
+  },
+  "content": "streamlit>=1.31.0\npandas>=2.1.0\nnumpy>=1.24.0\nsupabase>=2.3.0\nplotly>=5.17.0\npython-dotenv>=1.0.0\n",
+  "content_preview": "streamlit>=1.31.0\npandas>=2.1.0\nnumpy>=1.24.0\nsupabase>=2.3.0\nplotly>=5.17.0\npython-dotenv>=1.0.0\n",
+  "sections": [],
+  "extraction_success": true,
+  "extraction_error": null
+}

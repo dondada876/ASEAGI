@@ -1,0 +1,14 @@
+{
+  "mcpServers": {
+    "aseagi": {
+      "command": "python",
+      "args": [
+        "/home/user/ASEAGI/mcp-servers/aseagi-mvp-server/server.py"
+      ],
+      "env": {
+        "SUPABASE_URL": "https://jvjlhxodmbkodzmggwpu.supabase.co",
+        "SUPABASE_KEY": "your-supabase-anon-key-here"
+      }
+    }
+  }
+}

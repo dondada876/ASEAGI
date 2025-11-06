@@ -1,0 +1,244 @@
+{
+  "metadata": {
+    "file_path": "/home/user/ASEAGI/PROJ344_DASHBOARD_GUIDE.md",
+    "file_name": "PROJ344_DASHBOARD_GUIDE.md",
+    "file_type": "md",
+    "file_size": 11830,
+    "file_hash": "8e7c0388b39abd8a6b4adabcee591108",
+    "extraction_date": "2025-11-06T15:53:38.700645",
+    "extraction_method": "direct_read",
+    "title": "# PROJ344: Legal Case Intelligence Dashboard - Complete Guide",
+    "author": null,
+    "created_date": "2025-11-06T15:45:47.125164",
+    "modified_date": "2025-11-05T21:52:23.054882",
+    "page_count": null,
+    "word_count": 1593,
+    "char_count": 11769
+  },
+  "content": "# PROJ344: Legal Case Intelligence Dashboard - Complete Guide\n\n**Case:** In re Ashe B., J24-00478\n**Purpose:** Comprehensive legal case intelligence, document analysis, and constitutional violations tracking\n\n---\n\n## Dashboard Overview\n\nThe PROJ344 Master Dashboard provides a multi-dimensional analysis system for legal case management, combining document intelligence, violation tracking, court event monitoring, and micro-level content analysis.\n\n---\n\n## 📊 Main Navigation Categories\n\n### 🏠 **Overview**\n**Purpose:** High-level snapshot of the entire case system\n**Key Metrics:**\n- **Legal Documents**: Total count of all documents in the system\n- **Violations Tracked**: Number of constitutional/legal violations identified\n- **Court Events**: Scheduled and historical court proceedings\n- **Pages Analyzed**: Individual pages processed for micro-level analysis\n- **Communications**: Matrix of all communications between parties\n- **DVRO Violations**: Domestic Violence Restraining Order violations tracked\n- **Court Cases**: Related or linked court proceedings\n- **Legal Citations**: Legal references and case law citations\n\n**Critical Documents Section:**\n- Shows documents with Relevancy Score 900+ (extremely critical)\n- These represent the most important evidence in the case\n- Includes executive summaries for quick understanding\n\n---\n\n## 📄 **Documents Intelligence**\n\n### Purpose\nAnalyzes and categorizes all legal documents in the case with multi-dimensional scoring.\n\n### Charts & Metadata\n\n#### 1. **Documents by Type** (Pie Chart)\n**What it shows:** Distribution of document categories\n**Document Types Include:**\n- Court Filings (motions, petitions, responses)\n- Evidence Documents (photos, records, statements)\n- Police Reports\n- Medical Records\n- Communications (emails, texts, letters)\n- Expert Witness Reports\n- Financial Records\n- Case Law / Legal Citations\n\n**Why it matters:** Helps identify what types of evidence dominate the case and where documentation may be lacking.\n\n---\n\n#### 2. **Documents by Importance** (Bar Chart)\n**What it shows:** How documents are rated in terms of case impact\n**Importance Levels:**\n- **Critical**: Case-determining documents\n- **High**: Significant supporting evidence\n- **Medium**: Contextual or procedural documents\n- **Low**: Administrative or background materials\n\n**Metadata Used:**\n- `importance` field from `legal_documents` table\n- Assigned based on legal relevance, evidentiary value, and case impact\n\n**Why it matters:** Prioritizes which documents need immediate review and which support overall narrative.\n\n---\n\n#### 3. **Relevancy Score Distribution** (Histogram)\n**What it shows:** Statistical distribution of how relevant each document is to the case\n\n**Scoring System (0-1000):**\n- **900-1000**: Critical evidence, case-defining\n- **700-899**: Highly relevant, strong support\n- **500-699**: Moderately relevant, contextual\n- **300-499**: Supporting information\n- **0-299**: Background or procedural\n\n**Metadata Components:**\nThe relevancy_number is calculated from:\n- **Micro Number**: Page-level content analysis (false statements, perjury, fraud indicators)\n- **Macro Number**: Document-level strategic importance\n- **Legal Number**: Legal precedent strength and citation value\n- **Category Score**: Document type weighting\n\n**Formula:** `relevancy_number = (micro_number + macro_number + legal_number + category_score) / 4`\n\n**Why it matters:** Identifies which documents carry the most weight in legal arguments and need priority attention.\n\n---\n\n#### 4. **Top 20 Documents by Relevancy** (Data Table)\n**What it shows:** The most critical documents ranked by combined scoring\n\n**Columns Displayed:**\n- **Filename**: Document identifier\n- **Relevancy Number**: Overall importance score (0-1000)\n- **Micro Number**: Page-level analysis score\n- **Macro Number**: Strategic document-level score\n- **Legal Number**: Legal strength score\n- **Document Type**: Category of document\n- **Importance**: Critical/High/Medium/Low rating\n\n**Why it matters:** This is your \"smoking gun\" list - the documents that will win or lose the case.\n\n---\n\n## ⚖️ **Legal Violations**\n\n### Purpose\nTracks constitutional violations, due process violations, and rights infringements.\n\n### Metrics\n- **Total Violations**: Count of all tracked violations\n- **Avg Severity Score**: How serious violations are (0-100 scale)\n- **Avg Proof Strength**: How strong the evidence is (0-100 scale)\n\n### Charts\n\n#### **Violations by Category**\n**Categories Include:**\n- Due Process Violations\n- Constitutional Rights Violations (1st, 4th, 5th, 6th, 14th Amendment)\n- Brady Violations (prosecutorial misconduct)\n- Discovery Violations\n- Court Order Violations\n- DVRO Violations\n- Evidence Tampering/Destruction\n\n#### **Violations by Perpetrator**\nShows which parties (CPS workers, opposing counsel, court officials, etc.) committed violations.\n\n#### **Violations Timeline**\nChronological scatter plot showing:\n- **X-axis**: Date of violation\n- **Y-axis**: Severity score\n- **Size**: Proof strength (larger bubbles = stronger evidence)\n\n**Why it matters:** Establishes patterns of misconduct and builds grounds for appeals, sanctions, or civil rights claims.\n\n---\n\n## 📅 **Court Events & Timeline**\n\n### Purpose\nComplete chronological record of all court proceedings and deadlines.\n\n### Metrics\n- **Total Events**: All court dates (past + future)\n- **Upcoming Events**: Future hearings/deadlines\n- **Past Events**: Historical court record\n\n### Sections\n\n#### **Events by Type**\n- Hearings\n- Motions\n- Trials\n- Conferences\n- Deadlines\n- Rulings/Orders\n\n#### **Upcoming Events**\nNext scheduled court dates with:\n- Event title\n- Date/Time\n- Court location\n- Required actions\n\n#### **Complete Case Timeline**\nFull historical view linking:\n- Court events\n- Document filings\n- Violation occurrences\n- Key communications\n\n**Why it matters:** Ensures nothing is missed and provides a master chronology for case strategy.\n\n---\n\n## 🔬 **Micro Document Analysis**\n\n### Purpose\nPage-by-page deep analysis of documents for false statements, perjury, and fraud.\n\n### Metrics\n- **Pages Analyzed**: Total pages processed\n- **Avg Fraud Score**: Average fraud indicators per page\n- **Avg Perjury Score**: Average perjury risk per page\n\n### Critical Sections\n\n#### **🚨 False Statements on Forms**\nIdentifies specific false statements on legal forms such as:\n- FL-300 (Request for Order)\n- DV-100 (DVRO Petition)\n- Police reports\n- Declarations under penalty of perjury\n\n**Fields Tracked:**\n- Form type\n- Page number\n- Statement made\n- Contradicting evidence\n- Proof strength\n\n#### **☑️ Checkbox Perjury Summary**\nTracks checked boxes on forms that are provably false:\n- \"I do not know respondent's address\" (when evidence shows they do)\n- \"No prior restraining orders\" (when records show otherwise)\n- \"Fear for safety\" (when contradicted by actions/communications)\n\n#### **⚠️ Actions vs. Intentions Discrepancies**\nCompares:\n- **Stated intentions** (in declarations/testimony)\n- **Actual actions** (proven by evidence)\n- Highlights contradictions that prove dishonesty\n\n**Why it matters:** Builds evidence of perjury and fraud, which can invalidate orders and establish criminal liability.\n\n---\n\n## 👥 **Multi-Jurisdiction Tracker**\n\n### Purpose\nTracks related cases across multiple jurisdictions that impact the main case.\n\n**Tracks:**\n- Related family law cases\n- Criminal proceedings\n- CPS cases\n- Civil rights lawsuits\n- Appeals\n\n**Why it matters:** Prevents contradictory rulings and identifies judicial conflicts.\n\n---\n\n## 💬 **Communications Analysis**\n\n### Purpose\nMatrix of all communications between parties, attorneys, and officials.\n\n**Analyzes:**\n- Emails\n- Text messages\n- Voicemails\n- Letters\n- Court filings\n\n**Metadata:**\n- Date/time\n- Sender/recipient\n- Topic/subject\n- Relevancy score\n- Linked documents\n- Violation flags\n\n**Why it matters:** Establishes timeline, proves notice, identifies coordination or conspiracy, catches lies.\n\n---\n\n## 🎯 **Critical Actions Required**\n\n### Purpose\nAction items dashboard showing what needs immediate attention.\n\n**Sections:**\n- Upcoming deadlines\n- Required responses\n- Evidence gaps\n- High-priority violations needing documentation\n- Documents needing review\n\n**Why it matters:** Task management for case strategy - ensures nothing falls through the cracks.\n\n---\n\n## 📊 Scoring Methodology\n\n### Multi-Dimensional Scoring System\n\nAll documents receive four component scores that combine into the final relevancy rating:\n\n#### **1. Micro Number (0-250)**\nPage-level content analysis:\n- False statement detection\n- Perjury indicators\n- Fraud markers\n- Contradiction identification\n- Evidence tampering signs\n\n#### **2. Macro Number (0-250)**\nDocument-level strategic value:\n- Case impact potential\n- Precedent-setting nature\n- Strategic positioning value\n- Narrative strength\n- Rebuttal power\n\n#### **3. Legal Number (0-250)**\nLegal authority and citation strength:\n- Case law alignment\n- Statutory support\n- Constitutional grounding\n- Legal precedent power\n- Admissibility strength\n\n#### **4. Category Score (0-250)**\nDocument type weighting:\n- Court orders (highest)\n- Expert witness reports\n- Police reports\n- Medical records\n- Declarations\n- Evidence photos\n- Administrative documents (lowest)\n\n### **Final Relevancy Score**\n`relevancy_number = (micro + macro + legal + category) / 4`\n\n**Result:** 0-1000 scale where:\n- 900+ = Case-critical evidence\n- 700-899 = High-value documents\n- 500-699 = Supporting evidence\n- 300-499 = Contextual material\n- 0-299 = Background/procedural\n\n---\n\n## 🗄️ Database Structure\n\n### Core Tables (39 Total)\n- `legal_documents` - All case documents\n- `document_pages` - Page-level analysis\n- `legal_violations` - Tracked violations\n- `court_events` - Court calendar\n- `communications_matrix` - All communications\n- `dvro_violations_tracker` - DVRO breach tracking\n- `court_case_tracker` - Multi-jurisdiction cases\n- `legal_citations` - Case law references\n\n### Views (52 Total)\nPre-computed queries for:\n- Critical documents (relevancy 900+)\n- Violations by perpetrator\n- Upcoming events\n- Timeline consolidation\n- False statements summary\n- Checkbox perjury analysis\n\n---\n\n## 🎯 Use Cases\n\n### For Legal Strategy\n1. **Identify strongest evidence** (Top 20 relevancy list)\n2. **Track constitutional violations** (grounds for appeals/lawsuits)\n3. **Monitor deadlines** (Court events calendar)\n4. **Document perjury** (Micro analysis false statements)\n\n### For Court Filings\n1. **Build motions** using highest-scored documents\n2. **Reference violations** with proof strength metrics\n3. **Create timelines** from event tracker\n4. **Cite contradictions** from actions vs. intentions analysis\n\n### For Settlement Negotiations\n1. **Demonstrate strength** with high relevancy scores\n2. **Show violation patterns** from perpetrator tracking\n3. **Reference evidence volume** from overview metrics\n\n---\n\n## 🔐 Data Security\n\nAll data stored in Supabase cloud database:\n- **URL**: `https://jvjlhxodmbkodzmggwpu.supabase.co`\n- **Access**: Encrypted credentials in `.streamlit/secrets.toml`\n- **Sync**: Real-time updates from Mac Mini processing\n- **Backup**: Automatic cloud backups\n\n---\n\n## 📱 Access\n\n**Local Dashboard**: http://localhost:8501\n**Network Access**: http://192.168.4.24:8501\n**Run Command**: `streamlit run proj344_master_dashboard.py`\n\n---\n\n## 🔄 Data Processing Flow\n\n1. **Mac Mini** processes documents → uploads to Supabase\n2. **Windows Dashboard** reads from Supabase in real-time\n3. **Both machines** connected to same central database\n4. **Updates appear instantly** across all devices\n\n---\n\n*This dashboard represents a comprehensive legal intelligence system combining traditional legal analysis with modern data science to build the strongest possible case.*\n",
+  "content_preview": "# PROJ344: Legal Case Intelligence Dashboard - Complete Guide\n\n**Case:** In re Ashe B., J24-00478\n**Purpose:** Comprehensive legal case intelligence, document analysis, and constitutional violations tracking\n\n---\n\n## Dashboard Overview\n\nThe PROJ344 Master Dashboard provides a multi-dimensional analysis system for legal case management, combining document intelligence, violation tracking, court event monitoring, and micro-level content analysis.\n\n---\n\n## 📊 Main Navigation Categories\n\n### 🏠 **Over...",
+  "sections": [
+    {
+      "title": "PROJ344: Legal Case Intelligence Dashboard - Complete Guide",
+      "content": "**Case:** In re Ashe B., J24-00478\n**Purpose:** Comprehensive legal case intelligence, document analysis, and constitutional violations tracking\n---"
+    },
+    {
+      "title": "Dashboard Overview",
+      "content": "The PROJ344 Master Dashboard provides a multi-dimensional analysis system for legal case management, combining document intelligence, violation tracking, court event monitoring, and micro-level content analysis.\n---"
+    },
+    {
+      "title": "📊 Main Navigation Categories",
+      "content": ""
+    },
+    {
+      "title": "🏠 **Overview**",
+      "content": "**Purpose:** High-level snapshot of the entire case system\n**Key Metrics:**\n- **Legal Documents**: Total count of all documents in the system\n- **Violations Tracked**: Number of constitutional/legal violations identified\n- **Court Events**: Scheduled and historical court proceedings\n- **Pages Analyzed**: Individual pages processed for micro-level analysis\n- **Communications**: Matrix of all communications between parties\n- **DVRO Violations**: Domestic Violence Restraining Order violations tracked\n- **Court Cases**: Related or linked court proceedings\n- **Legal Citations**: Legal references and case law citations\n**Critical Documents Section:**\n- Shows documents with Relevancy Score 900+ (extremely critical)\n- These represent the most important evidence in the case\n- Includes executive summaries for quick understanding\n---"
+    },
+    {
+      "title": "📄 **Documents Intelligence**",
+      "content": ""
+    },
+    {
+      "title": "Purpose",
+      "content": "Analyzes and categorizes all legal documents in the case with multi-dimensional scoring."
+    },
+    {
+      "title": "Charts & Metadata",
+      "content": ""
+    },
+    {
+      "title": "1. **Documents by Type** (Pie Chart)",
+      "content": "**What it shows:** Distribution of document categories\n**Document Types Include:**\n- Court Filings (motions, petitions, responses)\n- Evidence Documents (photos, records, statements)\n- Police Reports\n- Medical Records\n- Communications (emails, texts, letters)\n- Expert Witness Reports\n- Financial Records\n- Case Law / Legal Citations\n**Why it matters:** Helps identify what types of evidence dominate the case and where documentation may be lacking.\n---"
+    },
+    {
+      "title": "2. **Documents by Importance** (Bar Chart)",
+      "content": "**What it shows:** How documents are rated in terms of case impact\n**Importance Levels:**\n- **Critical**: Case-determining documents\n- **High**: Significant supporting evidence\n- **Medium**: Contextual or procedural documents\n- **Low**: Administrative or background materials\n**Metadata Used:**\n- `importance` field from `legal_documents` table\n- Assigned based on legal relevance, evidentiary value, and case impact\n**Why it matters:** Prioritizes which documents need immediate review and which support overall narrative.\n---"
+    },
+    {
+      "title": "3. **Relevancy Score Distribution** (Histogram)",
+      "content": "**What it shows:** Statistical distribution of how relevant each document is to the case\n**Scoring System (0-1000):**\n- **900-1000**: Critical evidence, case-defining\n- **700-899**: Highly relevant, strong support\n- **500-699**: Moderately relevant, contextual\n- **300-499**: Supporting information\n- **0-299**: Background or procedural\n**Metadata Components:**\nThe relevancy_number is calculated from:\n- **Micro Number**: Page-level content analysis (false statements, perjury, fraud indicators)\n- **Macro Number**: Document-level strategic importance\n- **Legal Number**: Legal precedent strength and citation value\n- **Category Score**: Document type weighting\n**Formula:** `relevancy_number = (micro_number + macro_number + legal_number + category_score) / 4`\n**Why it matters:** Identifies which documents carry the most weight in legal arguments and need priority attention.\n---"
+    },
+    {
+      "title": "4. **Top 20 Documents by Relevancy** (Data Table)",
+      "content": "**What it shows:** The most critical documents ranked by combined scoring\n**Columns Displayed:**\n- **Filename**: Document identifier\n- **Relevancy Number**: Overall importance score (0-1000)\n- **Micro Number**: Page-level analysis score\n- **Macro Number**: Strategic document-level score\n- **Legal Number**: Legal strength score\n- **Document Type**: Category of document\n- **Importance**: Critical/High/Medium/Low rating\n**Why it matters:** This is your \"smoking gun\" list - the documents that will win or lose the case.\n---"
+    },
+    {
+      "title": "⚖️ **Legal Violations**",
+      "content": ""
+    },
+    {
+      "title": "Purpose",
+      "content": "Tracks constitutional violations, due process violations, and rights infringements."
+    },
+    {
+      "title": "Metrics",
+      "content": "- **Total Violations**: Count of all tracked violations\n- **Avg Severity Score**: How serious violations are (0-100 scale)\n- **Avg Proof Strength**: How strong the evidence is (0-100 scale)"
+    },
+    {
+      "title": "Charts",
+      "content": ""
+    },
+    {
+      "title": "**Violations by Category**",
+      "content": "**Categories Include:**\n- Due Process Violations\n- Constitutional Rights Violations (1st, 4th, 5th, 6th, 14th Amendment)\n- Brady Violations (prosecutorial misconduct)\n- Discovery Violations\n- Court Order Violations\n- DVRO Violations\n- Evidence Tampering/Destruction"
+    },
+    {
+      "title": "**Violations by Perpetrator**",
+      "content": "Shows which parties (CPS workers, opposing counsel, court officials, etc.) committed violations."
+    },
+    {
+      "title": "**Violations Timeline**",
+      "content": "Chronological scatter plot showing:\n- **X-axis**: Date of violation\n- **Y-axis**: Severity score\n- **Size**: Proof strength (larger bubbles = stronger evidence)\n**Why it matters:** Establishes patterns of misconduct and builds grounds for appeals, sanctions, or civil rights claims.\n---"
+    },
+    {
+      "title": "📅 **Court Events & Timeline**",
+      "content": ""
+    },
+    {
+      "title": "Purpose",
+      "content": "Complete chronological record of all court proceedings and deadlines."
+    },
+    {
+      "title": "Metrics",
+      "content": "- **Total Events**: All court dates (past + future)\n- **Upcoming Events**: Future hearings/deadlines\n- **Past Events**: Historical court record"
+    },
+    {
+      "title": "Sections",
+      "content": ""
+    },
+    {
+      "title": "**Events by Type**",
+      "content": "- Hearings\n- Motions\n- Trials\n- Conferences\n- Deadlines\n- Rulings/Orders"
+    },
+    {
+      "title": "**Upcoming Events**",
+      "content": "Next scheduled court dates with:\n- Event title\n- Date/Time\n- Court location\n- Required actions"
+    },
+    {
+      "title": "**Complete Case Timeline**",
+      "content": "Full historical view linking:\n- Court events\n- Document filings\n- Violation occurrences\n- Key communications\n**Why it matters:** Ensures nothing is missed and provides a master chronology for case strategy.\n---"
+    },
+    {
+      "title": "🔬 **Micro Document Analysis**",
+      "content": ""
+    },
+    {
+      "title": "Purpose",
+      "content": "Page-by-page deep analysis of documents for false statements, perjury, and fraud."
+    },
+    {
+      "title": "Metrics",
+      "content": "- **Pages Analyzed**: Total pages processed\n- **Avg Fraud Score**: Average fraud indicators per page\n- **Avg Perjury Score**: Average perjury risk per page"
+    },
+    {
+      "title": "Critical Sections",
+      "content": ""
+    },
+    {
+      "title": "**🚨 False Statements on Forms**",
+      "content": "Identifies specific false statements on legal forms such as:\n- FL-300 (Request for Order)\n- DV-100 (DVRO Petition)\n- Police reports\n- Declarations under penalty of perjury\n**Fields Tracked:**\n- Form type\n- Page number\n- Statement made\n- Contradicting evidence\n- Proof strength"
+    },
+    {
+      "title": "**☑️ Checkbox Perjury Summary**",
+      "content": "Tracks checked boxes on forms that are provably false:\n- \"I do not know respondent's address\" (when evidence shows they do)\n- \"No prior restraining orders\" (when records show otherwise)\n- \"Fear for safety\" (when contradicted by actions/communications)"
+    },
+    {
+      "title": "**⚠️ Actions vs. Intentions Discrepancies**",
+      "content": "Compares:\n- **Stated intentions** (in declarations/testimony)\n- **Actual actions** (proven by evidence)\n- Highlights contradictions that prove dishonesty\n**Why it matters:** Builds evidence of perjury and fraud, which can invalidate orders and establish criminal liability.\n---"
+    },
+    {
+      "title": "👥 **Multi-Jurisdiction Tracker**",
+      "content": ""
+    },
+    {
+      "title": "Purpose",
+      "content": "Tracks related cases across multiple jurisdictions that impact the main case.\n**Tracks:**\n- Related family law cases\n- Criminal proceedings\n- CPS cases\n- Civil rights lawsuits\n- Appeals\n**Why it matters:** Prevents contradictory rulings and identifies judicial conflicts.\n---"
+    },
+    {
+      "title": "💬 **Communications Analysis**",
+      "content": ""
+    },
+    {
+      "title": "Purpose",
+      "content": "Matrix of all communications between parties, attorneys, and officials.\n**Analyzes:**\n- Emails\n- Text messages\n- Voicemails\n- Letters\n- Court filings\n**Metadata:**\n- Date/time\n- Sender/recipient\n- Topic/subject\n- Relevancy score\n- Linked documents\n- Violation flags\n**Why it matters:** Establishes timeline, proves notice, identifies coordination or conspiracy, catches lies.\n---"
+    },
+    {
+      "title": "🎯 **Critical Actions Required**",
+      "content": ""
+    },
+    {
+      "title": "Purpose",
+      "content": "Action items dashboard showing what needs immediate attention.\n**Sections:**\n- Upcoming deadlines\n- Required responses\n- Evidence gaps\n- High-priority violations needing documentation\n- Documents needing review\n**Why it matters:** Task management for case strategy - ensures nothing falls through the cracks.\n---"
+    },
+    {
+      "title": "📊 Scoring Methodology",
+      "content": ""
+    },
+    {
+      "title": "Multi-Dimensional Scoring System",
+      "content": "All documents receive four component scores that combine into the final relevancy rating:"
+    },
+    {
+      "title": "**1. Micro Number (0-250)**",
+      "content": "Page-level content analysis:\n- False statement detection\n- Perjury indicators\n- Fraud markers\n- Contradiction identification\n- Evidence tampering signs"
+    },
+    {
+      "title": "**2. Macro Number (0-250)**",
+      "content": "Document-level strategic value:\n- Case impact potential\n- Precedent-setting nature\n- Strategic positioning value\n- Narrative strength\n- Rebuttal power"
+    },
+    {
+      "title": "**3. Legal Number (0-250)**",
+      "content": "Legal authority and citation strength:\n- Case law alignment\n- Statutory support\n- Constitutional grounding\n- Legal precedent power\n- Admissibility strength"
+    },
+    {
+      "title": "**4. Category Score (0-250)**",
+      "content": "Document type weighting:\n- Court orders (highest)\n- Expert witness reports\n- Police reports\n- Medical records\n- Declarations\n- Evidence photos\n- Administrative documents (lowest)"
+    },
+    {
+      "title": "**Final Relevancy Score**",
+      "content": "`relevancy_number = (micro + macro + legal + category) / 4`\n**Result:** 0-1000 scale where:\n- 900+ = Case-critical evidence\n- 700-899 = High-value documents\n- 500-699 = Supporting evidence\n- 300-499 = Contextual material\n- 0-299 = Background/procedural\n---"
+    },
+    {
+      "title": "🗄️ Database Structure",
+      "content": ""
+    },
+    {
+      "title": "Core Tables (39 Total)",
+      "content": "- `legal_documents` - All case documents\n- `document_pages` - Page-level analysis\n- `legal_violations` - Tracked violations\n- `court_events` - Court calendar\n- `communications_matrix` - All communications\n- `dvro_violations_tracker` - DVRO breach tracking\n- `court_case_tracker` - Multi-jurisdiction cases\n- `legal_citations` - Case law references"
+    },
+    {
+      "title": "Views (52 Total)",
+      "content": "Pre-computed queries for:\n- Critical documents (relevancy 900+)\n- Violations by perpetrator\n- Upcoming events\n- Timeline consolidation\n- False statements summary\n- Checkbox perjury analysis\n---"
+    },
+    {
+      "title": "🎯 Use Cases",
+      "content": ""
+    },
+    {
+      "title": "For Legal Strategy",
+      "content": "1. **Identify strongest evidence** (Top 20 relevancy list)\n2. **Track constitutional violations** (grounds for appeals/lawsuits)\n3. **Monitor deadlines** (Court events calendar)\n4. **Document perjury** (Micro analysis false statements)"
+    },
+    {
+      "title": "For Court Filings",
+      "content": "1. **Build motions** using highest-scored documents\n2. **Reference violations** with proof strength metrics\n3. **Create timelines** from event tracker\n4. **Cite contradictions** from actions vs. intentions analysis"
+    },
+    {
+      "title": "For Settlement Negotiations",
+      "content": "1. **Demonstrate strength** with high relevancy scores\n2. **Show violation patterns** from perpetrator tracking\n3. **Reference evidence volume** from overview metrics\n---"
+    },
+    {
+      "title": "🔐 Data Security",
+      "content": "All data stored in Supabase cloud database:\n- **URL**: `https://jvjlhxodmbkodzmggwpu.supabase.co`\n- **Access**: Encrypted credentials in `.streamlit/secrets.toml`\n- **Sync**: Real-time updates from Mac Mini processing\n- **Backup**: Automatic cloud backups\n---"
+    },
+    {
+      "title": "📱 Access",
+      "content": "**Local Dashboard**: http://localhost:8501\n**Network Access**: http://192.168.4.24:8501\n**Run Command**: `streamlit run proj344_master_dashboard.py`\n---"
+    },
+    {
+      "title": "🔄 Data Processing Flow",
+      "content": "1. **Mac Mini** processes documents → uploads to Supabase\n2. **Windows Dashboard** reads from Supabase in real-time\n3. **Both machines** connected to same central database\n4. **Updates appear instantly** across all devices\n---\n*This dashboard represents a comprehensive legal intelligence system combining traditional legal analysis with modern data science to build the strongest possible case.*"
+    }
+  ],
+  "extraction_success": true,
+  "extraction_error": null
+}

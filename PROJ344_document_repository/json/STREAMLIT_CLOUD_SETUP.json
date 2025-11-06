@@ -1,0 +1,120 @@
+{
+  "metadata": {
+    "file_path": "/home/user/ASEAGI/STREAMLIT_CLOUD_SETUP.md",
+    "file_name": "STREAMLIT_CLOUD_SETUP.md",
+    "file_type": "md",
+    "file_size": 5987,
+    "file_hash": "2fc4953a6a967113c0b668ecd5827b8a",
+    "extraction_date": "2025-11-06T15:53:38.698967",
+    "extraction_method": "direct_read",
+    "title": "# Streamlit Cloud Deployment Setup Guide",
+    "author": null,
+    "created_date": "2025-11-06T15:45:47.134164",
+    "modified_date": "2025-11-05T21:52:23.054882",
+    "page_count": null,
+    "word_count": 793,
+    "char_count": 5923
+  },
+  "content": "# Streamlit Cloud Deployment Setup Guide\n\n## Overview\nThis guide walks you through deploying the PROJ344 dashboards to Streamlit Cloud at https://proj344-dashboards.streamlit.app/\n\n---\n\n## Step 1: Access Streamlit Cloud\n\n1. Go to https://share.streamlit.io/\n2. Sign in with your GitHub account (dondada876)\n3. Navigate to your app: https://proj344-dashboards.streamlit.app/\n\n---\n\n## Step 2: Configure Secrets in Streamlit Cloud\n\n**IMPORTANT**: Your dashboards need Supabase credentials to connect to the database. These must be configured in Streamlit Cloud's secrets management.\n\n### How to Add Secrets:\n\n1. In Streamlit Cloud dashboard, click on your app\n2. Click the **\"⚙️ Settings\"** button (top right)\n3. Select **\"Secrets\"** from the left sidebar\n4. Copy and paste the following into the secrets editor:\n\n```toml\n# Supabase Configuration\nSUPABASE_URL = \"https://jvjlhxodmbkodzmggwpu.supabase.co\"\nSUPABASE_KEY = \"eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Imp2amxoeG9kbWJrb2R6bWdnd3B1Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3NjIyMjMxOTAsImV4cCI6MjA3Nzc5OTE5MH0.ai65vVW816bNAV56XiuRxp5PE5IhBkMGPx3IbxfPh8c\"\n```\n\n5. Click **\"Save\"**\n6. Your app will automatically restart with the new secrets\n\n---\n\n## Step 3: Verify Entry Point\n\nMake sure your Streamlit Cloud app is configured to run the correct file:\n\n**Main Entry Point**: `proj344_master_dashboard.py`\n\nTo check/update:\n1. Go to app settings\n2. Under **\"Main file path\"**, ensure it shows: `proj344_master_dashboard.py`\n3. If different, update and save\n\n---\n\n## Step 4: Verify Deployment\n\nAfter configuring secrets and pushing the latest code:\n\n1. Wait 1-2 minutes for Streamlit Cloud to rebuild\n2. Visit https://proj344-dashboards.streamlit.app/\n3. You should see the dashboard load successfully\n4. Check that data from Supabase is displaying properly\n\n---\n\n## Troubleshooting\n\n### Issue: \"Missing SUPABASE_URL or SUPABASE_KEY\"\n\n**Solution**: Secrets not configured properly\n1. Go to app Settings → Secrets\n2. Verify the exact format shown in Step 2\n3. Ensure no extra spaces or formatting issues\n4. Save and wait for restart\n\n### Issue: \"Module not found\" errors\n\n**Solution**: Dependencies not installed\n1. Check that `requirements.txt` is in repository root\n2. Verify all packages are listed:\n   ```\n   streamlit>=1.31.0\n   pandas>=2.1.0\n   numpy>=1.24.0\n   supabase>=2.3.0\n   plotly>=5.17.0\n   python-dotenv>=1.0.0\n   ```\n3. Force rebuild: Settings → \"Reboot app\"\n\n### Issue: App shows old version\n\n**Solution**: Cache or deployment lag\n1. Clear cache: Click hamburger menu → \"Clear cache\"\n2. Force restart: Settings → \"Reboot app\"\n3. Hard refresh browser: Ctrl+Shift+R (Windows) or Cmd+Shift+R (Mac)\n\n### Issue: Python version errors\n\n**Solution**: Python version mismatch\n- Repository now includes `.python-version` file set to 3.11\n- Streamlit Cloud will automatically use this version\n- If issues persist, check Settings → Advanced → Python version\n\n---\n\n## Files Deployed\n\nAll dashboard files have been updated to support Streamlit Cloud secrets:\n\n1. ✅ `proj344_master_dashboard.py` - Main 8-page dashboard\n2. ✅ `supabase_dashboard.py` - File system cross-reference\n3. ✅ `court_events_dashboard.py` - Court timeline\n4. ✅ `legal_intelligence_dashboard.py` - Deep document analysis\n5. ✅ `ceo_global_dashboard.py` - Holistic life management\n6. ✅ `error_log_uploader.py` - System monitoring\n7. ✅ `timeline_constitutional_violations.py` - Violation tracking\n\n---\n\n## Architecture\n\n### Credential Loading Priority:\n1. **Streamlit Cloud**: Reads from `st.secrets` (configured in Cloud UI)\n2. **Local Development**: Reads from `.streamlit/secrets.toml` file\n3. **Fallback**: Environment variables or defaults (for backward compatibility)\n\n### Code Pattern:\n```python\n# Try Streamlit secrets first, then environment variables\nurl = st.secrets.get('SUPABASE_URL') if hasattr(st, 'secrets') else os.environ.get('SUPABASE_URL')\nkey = st.secrets.get('SUPABASE_KEY') if hasattr(st, 'secrets') else os.environ.get('SUPABASE_KEY')\n```\n\n---\n\n## Data Flow\n\n```\nMac Mini (Processing)\n      ↓\n  Supabase Cloud Database\n      ↓\nStreamlit Cloud Dashboard ← You are here\n      ↓\nWeb Browser (Users)\n```\n\n### Key Points:\n- **Mac Mini** processes documents and uploads to Supabase\n- **Supabase** is the central cloud database (PostgreSQL)\n- **Streamlit Cloud** reads from Supabase in real-time\n- **Both machines** (Mac and Cloud) connect to same database\n- **Updates are instant** across all platforms\n\n---\n\n## Security Notes\n\n⚠️ **IMPORTANT**: The secrets shown above contain your Supabase API key:\n- This is the **anon/public** key (safe for client-side use)\n- It has Row-Level Security (RLS) enabled in Supabase\n- Never commit `.streamlit/secrets.toml` to Git (already in .gitignore)\n- Streamlit Cloud secrets are encrypted at rest\n\n---\n\n## Monitoring\n\nAfter deployment, monitor your app:\n\n1. **Logs**: Settings → \"Manage app\" → \"Logs\" tab\n2. **Metrics**: Check resource usage and errors\n3. **Analytics**: Settings → \"Analytics\" for usage stats\n\n---\n\n## Need Help?\n\nIf issues persist after following this guide:\n\n1. Check Streamlit Cloud logs for specific error messages\n2. Verify Supabase connection by testing queries manually\n3. Ensure Mac Mini is still processing and uploading data\n4. Review commit history: latest commit should include secrets support\n\n---\n\n## Latest Deployment\n\n**Commit**: `39f145e` - \"Update dashboards for Streamlit Cloud deployment\"\n\n**Changes Included**:\n- ✅ Streamlit secrets support in all dashboards\n- ✅ Python 3.11 version specification\n- ✅ Comprehensive documentation (PROJ344_DASHBOARD_GUIDE.md)\n- ✅ Backward compatibility with environment variables\n\n**Deployment Status**:\n- Code pushed to GitHub: ✅\n- Secrets configured: ⚠️ **YOU NEED TO DO THIS** (Step 2 above)\n- App should auto-rebuild: ✅ (after secrets are added)\n\n---\n\n*Once you complete Step 2 (adding secrets), your Streamlit Cloud dashboard should work perfectly!*\n",
+  "content_preview": "# Streamlit Cloud Deployment Setup Guide\n\n## Overview\nThis guide walks you through deploying the PROJ344 dashboards to Streamlit Cloud at https://proj344-dashboards.streamlit.app/\n\n---\n\n## Step 1: Access Streamlit Cloud\n\n1. Go to https://share.streamlit.io/\n2. Sign in with your GitHub account (dondada876)\n3. Navigate to your app: https://proj344-dashboards.streamlit.app/\n\n---\n\n## Step 2: Configure Secrets in Streamlit Cloud\n\n**IMPORTANT**: Your dashboards need Supabase credentials to connect to ...",
+  "sections": [
+    {
+      "title": "Streamlit Cloud Deployment Setup Guide",
+      "content": ""
+    },
+    {
+      "title": "Overview",
+      "content": "This guide walks you through deploying the PROJ344 dashboards to Streamlit Cloud at https://proj344-dashboards.streamlit.app/\n---"
+    },
+    {
+      "title": "Step 1: Access Streamlit Cloud",
+      "content": "1. Go to https://share.streamlit.io/\n2. Sign in with your GitHub account (dondada876)\n3. Navigate to your app: https://proj344-dashboards.streamlit.app/\n---"
+    },
+    {
+      "title": "Step 2: Configure Secrets in Streamlit Cloud",
+      "content": "**IMPORTANT**: Your dashboards need Supabase credentials to connect to the database. These must be configured in Streamlit Cloud's secrets management."
+    },
+    {
+      "title": "How to Add Secrets:",
+      "content": "1. In Streamlit Cloud dashboard, click on your app\n2. Click the **\"⚙️ Settings\"** button (top right)\n3. Select **\"Secrets\"** from the left sidebar\n4. Copy and paste the following into the secrets editor:\n```toml"
+    },
+    {
+      "title": "Supabase Configuration",
+      "content": "SUPABASE_URL = \"https://jvjlhxodmbkodzmggwpu.supabase.co\"\nSUPABASE_KEY = \"eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Imp2amxoeG9kbWJrb2R6bWdnd3B1Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3NjIyMjMxOTAsImV4cCI6MjA3Nzc5OTE5MH0.ai65vVW816bNAV56XiuRxp5PE5IhBkMGPx3IbxfPh8c\"\n```\n5. Click **\"Save\"**\n6. Your app will automatically restart with the new secrets\n---"
+    },
+    {
+      "title": "Step 3: Verify Entry Point",
+      "content": "Make sure your Streamlit Cloud app is configured to run the correct file:\n**Main Entry Point**: `proj344_master_dashboard.py`\nTo check/update:\n1. Go to app settings\n2. Under **\"Main file path\"**, ensure it shows: `proj344_master_dashboard.py`\n3. If different, update and save\n---"
+    },
+    {
+      "title": "Step 4: Verify Deployment",
+      "content": "After configuring secrets and pushing the latest code:\n1. Wait 1-2 minutes for Streamlit Cloud to rebuild\n2. Visit https://proj344-dashboards.streamlit.app/\n3. You should see the dashboard load successfully\n4. Check that data from Supabase is displaying properly\n---"
+    },
+    {
+      "title": "Troubleshooting",
+      "content": ""
+    },
+    {
+      "title": "Issue: \"Missing SUPABASE_URL or SUPABASE_KEY\"",
+      "content": "**Solution**: Secrets not configured properly\n1. Go to app Settings → Secrets\n2. Verify the exact format shown in Step 2\n3. Ensure no extra spaces or formatting issues\n4. Save and wait for restart"
+    },
+    {
+      "title": "Issue: \"Module not found\" errors",
+      "content": "**Solution**: Dependencies not installed\n1. Check that `requirements.txt` is in repository root\n2. Verify all packages are listed:\n   ```\n   streamlit>=1.31.0\n   pandas>=2.1.0\n   numpy>=1.24.0\n   supabase>=2.3.0\n   plotly>=5.17.0\n   python-dotenv>=1.0.0\n   ```\n3. Force rebuild: Settings → \"Reboot app\""
+    },
+    {
+      "title": "Issue: App shows old version",
+      "content": "**Solution**: Cache or deployment lag\n1. Clear cache: Click hamburger menu → \"Clear cache\"\n2. Force restart: Settings → \"Reboot app\"\n3. Hard refresh browser: Ctrl+Shift+R (Windows) or Cmd+Shift+R (Mac)"
+    },
+    {
+      "title": "Issue: Python version errors",
+      "content": "**Solution**: Python version mismatch\n- Repository now includes `.python-version` file set to 3.11\n- Streamlit Cloud will automatically use this version\n- If issues persist, check Settings → Advanced → Python version\n---"
+    },
+    {
+      "title": "Files Deployed",
+      "content": "All dashboard files have been updated to support Streamlit Cloud secrets:\n1. ✅ `proj344_master_dashboard.py` - Main 8-page dashboard\n2. ✅ `supabase_dashboard.py` - File system cross-reference\n3. ✅ `court_events_dashboard.py` - Court timeline\n4. ✅ `legal_intelligence_dashboard.py` - Deep document analysis\n5. ✅ `ceo_global_dashboard.py` - Holistic life management\n6. ✅ `error_log_uploader.py` - System monitoring\n7. ✅ `timeline_constitutional_violations.py` - Violation tracking\n---"
+    },
+    {
+      "title": "Architecture",
+      "content": ""
+    },
+    {
+      "title": "Credential Loading Priority:",
+      "content": "1. **Streamlit Cloud**: Reads from `st.secrets` (configured in Cloud UI)\n2. **Local Development**: Reads from `.streamlit/secrets.toml` file\n3. **Fallback**: Environment variables or defaults (for backward compatibility)"
+    },
+    {
+      "title": "Code Pattern:",
+      "content": "```python"
+    },
+    {
+      "title": "Try Streamlit secrets first, then environment variables",
+      "content": "url = st.secrets.get('SUPABASE_URL') if hasattr(st, 'secrets') else os.environ.get('SUPABASE_URL')\nkey = st.secrets.get('SUPABASE_KEY') if hasattr(st, 'secrets') else os.environ.get('SUPABASE_KEY')\n```\n---"
+    },
+    {
+      "title": "Data Flow",
+      "content": "```\nMac Mini (Processing)\n      ↓\n  Supabase Cloud Database\n      ↓\nStreamlit Cloud Dashboard ← You are here\n      ↓\nWeb Browser (Users)\n```"
+    },
+    {
+      "title": "Key Points:",
+      "content": "- **Mac Mini** processes documents and uploads to Supabase\n- **Supabase** is the central cloud database (PostgreSQL)\n- **Streamlit Cloud** reads from Supabase in real-time\n- **Both machines** (Mac and Cloud) connect to same database\n- **Updates are instant** across all platforms\n---"
+    },
+    {
+      "title": "Security Notes",
+      "content": "⚠️ **IMPORTANT**: The secrets shown above contain your Supabase API key:\n- This is the **anon/public** key (safe for client-side use)\n- It has Row-Level Security (RLS) enabled in Supabase\n- Never commit `.streamlit/secrets.toml` to Git (already in .gitignore)\n- Streamlit Cloud secrets are encrypted at rest\n---"
+    },
+    {
+      "title": "Monitoring",
+      "content": "After deployment, monitor your app:\n1. **Logs**: Settings → \"Manage app\" → \"Logs\" tab\n2. **Metrics**: Check resource usage and errors\n3. **Analytics**: Settings → \"Analytics\" for usage stats\n---"
+    },
+    {
+      "title": "Need Help?",
+      "content": "If issues persist after following this guide:\n1. Check Streamlit Cloud logs for specific error messages\n2. Verify Supabase connection by testing queries manually\n3. Ensure Mac Mini is still processing and uploading data\n4. Review commit history: latest commit should include secrets support\n---"
+    },
+    {
+      "title": "Latest Deployment",
+      "content": "**Commit**: `39f145e` - \"Update dashboards for Streamlit Cloud deployment\"\n**Changes Included**:\n- ✅ Streamlit secrets support in all dashboards\n- ✅ Python 3.11 version specification\n- ✅ Comprehensive documentation (PROJ344_DASHBOARD_GUIDE.md)\n- ✅ Backward compatibility with environment variables\n**Deployment Status**:\n- Code pushed to GitHub: ✅\n- Secrets configured: ⚠️ **YOU NEED TO DO THIS** (Step 2 above)\n- App should auto-rebuild: ✅ (after secrets are added)\n---\n*Once you complete Step 2 (adding secrets), your Streamlit Cloud dashboard should work perfectly!*"
+    }
+  ],
+  "extraction_success": true,
+  "extraction_error": null
+}

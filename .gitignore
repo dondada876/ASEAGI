@@ -1,78 +1,9 @@
-# PROJ344 - Security & Privacy
-
-# Environment variables (CRITICAL - Never commit!)
-.env
-.env.local
-.env.production
-*.env
-
-# API Keys and credentials
-*_key.txt
-*_token.txt
-credentials.json
-secrets.json
-
-# Supabase config with keys
-supabase_config.json
-
-# Python
-__pycache__/
-*.py[cod]
-*$py.class
-*.so
-.Python
-env/
-venv/
-ENV/
-build/
-develop-eggs/
-dist/
-downloads/
-eggs/
-.eggs/
-lib/
-lib64/
-parts/
-sdist/
-var/
-wheels/
-*.egg-info/
-.installed.cfg
-*.egg
-
-# Streamlit
 .streamlit/secrets.toml
-
-# IDEs
-.vscode/
-.idea/
-*.swp
-*.swo
-*~
-
-# OS
+.env
+__pycache__/
+*.pyc
 .DS_Store
-Thumbs.db
-
-# Logs
 *.log
-logs/
-
-# Data files (case documents - keep private!)
-data/
-documents/
-*.pdf
-*.jpg
-*.jpeg
-*.png
-*.heic
-
-# Database dumps
-*.sql
-*.db
-*.sqlite
-
-# Temporary files
-tmp/
-temp/
-*.tmp
+venv/
+.venv/
+*.swp

@@ -1,0 +1,184 @@
+version: '3.8'
+
+# ============================================================================
+# ASEAGI CLOUD-HYBRID DEPLOYMENT
+# Uses cloud services (Qdrant Cloud, Neo4j Aura, n8n Cloud)
+# Only deploys local services (API, Bot, Dashboards, Redis)
+#
+# Benefits:
+# - Lower resource usage (~4GB RAM vs 8GB)
+# - Managed cloud services (better reliability)
+# - Faster deployment (no Neo4j/Qdrant setup)
+# ============================================================================
+
+services:
+  # ==========================================================================
+  # REDIS CACHE - Local lightweight cache
+  # ==========================================================================
+  redis:
+    image: redis:7-alpine
+    container_name: aseagi-redis
+    command: redis-server --requirepass ${REDIS_PASSWORD} --appendonly yes
+    ports:
+      - "6379:6379"
+    volumes:
+      - redis-data:/data
+    restart: unless-stopped
+    networks:
+      - aseagi-network
+    healthcheck:
+      test: ["CMD", "redis-cli", "-a", "${REDIS_PASSWORD}", "ping"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+
+  # ==========================================================================
+  # FASTAPI BACKEND - Main API (connects to cloud services)
+  # ==========================================================================
+  api:
+    build:
+      context: ./api-service
+      dockerfile: Dockerfile
+    container_name: aseagi-api
+    ports:
+      - "8000:8000"
+    environment:
+      # Supabase
+      - SUPABASE_URL=${SUPABASE_URL}
+      - SUPABASE_KEY=${SUPABASE_KEY}
+
+      # Telegram
+      - TELEGRAM_BOT_TOKEN=${TELEGRAM_BOT_TOKEN}
+
+      # API Config
+      - API_HOST=0.0.0.0
+      - API_PORT=8000
+      - API_BASE_URL=http://api:8000
+      - CORS_ORIGINS=*
+
+      # Redis (local)
+      - REDIS_URL=redis://redis:6379
+      - REDIS_PASSWORD=${REDIS_PASSWORD}
+
+      # Qdrant Cloud (external)
+      - QDRANT_URL=${QDRANT_URL}
+      - QDRANT_API_KEY=${QDRANT_API_KEY}
+
+      # Neo4j Aura (external)
+      - NEO4J_URI=${NEO4J_URI}
+      - NEO4J_USER=${NEO4J_USER}
+      - NEO4J_PASSWORD=${NEO4J_PASSWORD}
+
+      # n8n Cloud (external)
+      - N8N_URL=${N8N_URL}
+      - N8N_API_KEY=${N8N_API_KEY}
+
+      # Optional AI APIs
+      - OPENAI_API_KEY=${OPENAI_API_KEY:-}
+      - ANTHROPIC_API_KEY=${ANTHROPIC_API_KEY:-}
+    depends_on:
+      - redis
+    volumes:
+      - ./uploads:/app/uploads
+      - ./logs:/app/logs
+    restart: unless-stopped
+    networks:
+      - aseagi-network
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:8000/health"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+
+  # ==========================================================================
+  # TELEGRAM BOT - Client that connects to FastAPI
+  # ==========================================================================
+  telegram:
+    build:
+      context: ./api-service
+      dockerfile: Dockerfile
+    container_name: aseagi-telegram
+    command: ["python", "telegram_bot.py"]
+    environment:
+      - TELEGRAM_BOT_TOKEN=${TELEGRAM_BOT_TOKEN}
+      - API_BASE_URL=http://api:8000
+      - SUPABASE_URL=${SUPABASE_URL}
+      - SUPABASE_KEY=${SUPABASE_KEY}
+    depends_on:
+      - api
+    restart: unless-stopped
+    networks:
+      - aseagi-network
+
+  # ==========================================================================
+  # STREAMLIT DASHBOARD - Analytics and visualization
+  # ==========================================================================
+  dashboard:
+    build:
+      context: .
+      dockerfile: Dockerfile.streamlit
+    container_name: aseagi-dashboard
+    ports:
+      - "80:8501"
+    environment:
+      - SUPABASE_URL=${SUPABASE_URL}
+      - SUPABASE_KEY=${SUPABASE_KEY}
+      - API_URL=http://api:8000
+      - QDRANT_URL=${QDRANT_URL}
+      - QDRANT_API_KEY=${QDRANT_API_KEY}
+      - NEO4J_URI=${NEO4J_URI}
+      - NEO4J_USER=${NEO4J_USER}
+      - NEO4J_PASSWORD=${NEO4J_PASSWORD}
+    depends_on:
+      - api
+    volumes:
+      - ./dashboards:/app/dashboards
+    restart: unless-stopped
+    networks:
+      - aseagi-network
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:8501/_stcore/health"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+
+# ==============================================================================
+# VOLUMES - Persistent data storage (only Redis needed)
+# ==============================================================================
+volumes:
+  redis-data:
+    driver: local
+
+# ==============================================================================
+# NETWORKS - Internal communication
+# ==============================================================================
+networks:
+  aseagi-network:
+    driver: bridge
+    ipam:
+      config:
+        - subnet: 172.25.0.0/16
+
+# ==============================================================================
+# NOTES
+# ==============================================================================
+
+# This is a CLOUD-HYBRID deployment that:
+#   ✓ Runs locally: FastAPI, Telegram Bot, Dashboards, Redis
+#   ✓ Uses cloud: Qdrant Cloud, Neo4j Aura, n8n Cloud
+#
+# Benefits:
+#   - Lower resource usage (~4GB RAM)
+#   - Managed cloud services
+#   - Faster deployment
+#   - Better reliability
+#
+# Resource Requirements:
+#   - RAM: ~4GB (vs 8GB for full self-hosted)
+#   - CPU: 2-4 cores
+#   - Disk: ~5GB
+#
+# Deployment:
+#   docker-compose -f docker-compose.cloud.yml up -d
+#
+# For Ashe. For Justice. For All Children. 🛡️

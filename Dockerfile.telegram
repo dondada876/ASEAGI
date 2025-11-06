@@ -1,0 +1,27 @@
+# ASEAGI Telegram Bot Dockerfile
+# Separate container to avoid port conflicts
+
+FROM python:3.11-slim
+
+# Set working directory
+WORKDIR /app
+
+# Install dependencies
+RUN pip install --no-cache-dir \
+    python-telegram-bot==20.7 \
+    requests==2.31.0 \
+    redis==5.0.1 \
+    python-dotenv==1.0.0
+
+# Copy bot code
+COPY telegram_bot.py .
+
+# Expose webhook port (different from FastAPI!)
+EXPOSE 8443
+
+# Health check
+HEALTHCHECK --interval=30s --timeout=10s --start-period=5s --retries=3 \
+  CMD curl -f http://localhost:8443/health || exit 1
+
+# Run bot
+CMD ["python3", "telegram_bot.py"]

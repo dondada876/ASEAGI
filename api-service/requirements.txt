@@ -1,0 +1,25 @@
+# ASEAGI FastAPI Service Dependencies
+
+# FastAPI and web server
+fastapi==0.109.0
+uvicorn[standard]==0.27.0
+python-multipart==0.0.6
+
+# Supabase client
+supabase==2.3.0
+postgrest==0.16.0
+
+# Telegram bot
+python-telegram-bot==20.7
+
+# HTTP requests
+requests==2.31.0
+
+# Environment variables
+python-dotenv==1.0.0
+
+# Data validation
+pydantic==2.5.3
+
+# Async support
+aiofiles==23.2.1

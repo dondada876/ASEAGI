@@ -1,0 +1,32 @@
+{
+  "metadata": {
+    "file_path": "/home/user/ASEAGI/requirements_truth_system.txt",
+    "file_name": "requirements_truth_system.txt",
+    "file_type": "txt",
+    "file_size": 281,
+    "file_hash": "df488eca423e1d99c473428227999562",
+    "extraction_date": "2025-11-06T15:53:38.686882",
+    "extraction_method": "direct_read",
+    "title": "# Truth Score & Justice Analysis System - Python Dependencies",
+    "author": null,
+    "created_date": "2025-11-06T15:45:47.134164",
+    "modified_date": "2025-11-05T22:00:15.177499",
+    "page_count": null,
+    "word_count": 26,
+    "char_count": 269
+  },
+  "content": "# Truth Score & Justice Analysis System - Python Dependencies\n# Install with: pip install -r requirements_truth_system.txt\n\nstreamlit>=1.28.0\npandas>=2.0.0\nplotly>=5.17.0\nnumpy>=1.24.0\nsupabase>=2.0.0\nanthropic>=0.25.0\nPillow>=10.0.0\nPyPDF2>=3.0.0\npython-dotenv>=1.0.0\n",
+  "content_preview": "# Truth Score & Justice Analysis System - Python Dependencies\n# Install with: pip install -r requirements_truth_system.txt\n\nstreamlit>=1.28.0\npandas>=2.0.0\nplotly>=5.17.0\nnumpy>=1.24.0\nsupabase>=2.0.0\nanthropic>=0.25.0\nPillow>=10.0.0\nPyPDF2>=3.0.0\npython-dotenv>=1.0.0\n",
+  "sections": [
+    {
+      "title": "Truth Score & Justice Analysis System - Python Dependencies",
+      "content": ""
+    },
+    {
+      "title": "Install with: pip install -r requirements_truth_system.txt",
+      "content": "streamlit>=1.28.0\npandas>=2.0.0\nplotly>=5.17.0\nnumpy>=1.24.0\nsupabase>=2.0.0\nanthropic>=0.25.0\nPillow>=10.0.0\nPyPDF2>=3.0.0\npython-dotenv>=1.0.0"
+    }
+  ],
+  "extraction_success": true,
+  "extraction_error": null
+}
