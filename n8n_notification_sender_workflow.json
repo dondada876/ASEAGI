@@ -1,0 +1,276 @@
+{
+  "name": "Telegram Notification Sender",
+  "nodes": [
+    {
+      "parameters": {
+        "rule": {
+          "interval": [
+            {
+              "field": "seconds",
+              "secondsInterval": 30
+            }
+          ]
+        }
+      },
+      "id": "schedule-trigger",
+      "name": "Schedule - Every 30 Seconds",
+      "type": "n8n-nodes-base.scheduleTrigger",
+      "typeVersion": 1.2,
+      "position": [240, 300]
+    },
+    {
+      "parameters": {
+        "authentication": "serviceAccount",
+        "operation": "get",
+        "tableId": "notification_queue",
+        "returnAll": false,
+        "limit": 10,
+        "filterType": "manual",
+        "filters": {
+          "conditions": [
+            {
+              "column": "status",
+              "operator": "eq",
+              "value": "pending"
+            },
+            {
+              "column": "send_after",
+              "operator": "lte",
+              "value": "={{ $now.toISO() }}"
+            }
+          ]
+        },
+        "sort": {
+          "values": [
+            {
+              "column": "priority",
+              "direction": "asc"
+            },
+            {
+              "column": "created_at",
+              "direction": "asc"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "id": "get-pending-notifications",
+      "name": "Supabase - Get Pending Notifications",
+      "type": "n8n-nodes-base.supabase",
+      "typeVersion": 1,
+      "position": [460, 300],
+      "credentials": {
+        "supabaseApi": {
+          "id": "supabase-credentials",
+          "name": "Supabase Account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "strict"
+          },
+          "conditions": [
+            {
+              "id": "has-notifications",
+              "leftValue": "={{ $json.length }}",
+              "rightValue": "0",
+              "operator": {
+                "type": "number",
+                "operation": "gt"
+              }
+            }
+          ],
+          "combinator": "and"
+        },
+        "options": {}
+      },
+      "id": "check-has-notifications",
+      "name": "Check - Has Notifications",
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2,
+      "position": [680, 300]
+    },
+    {
+      "parameters": {
+        "chatId": "={{ $json.telegram_chat_id }}",
+        "text": "={{ $json.title ? '**' + $json.title + '**\\n\\n' : '' }}{{ $json.message }}",
+        "parseMode": "Markdown",
+        "options": {}
+      },
+      "id": "send-telegram-message",
+      "name": "Telegram - Send Message",
+      "type": "n8n-nodes-base.telegram",
+      "typeVersion": 1.2,
+      "position": [900, 200],
+      "credentials": {
+        "telegramApi": {
+          "id": "telegram-credentials",
+          "name": "Telegram Bot"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "authentication": "serviceAccount",
+        "operation": "update",
+        "tableId": "notification_queue",
+        "filterType": "manual",
+        "matchingColumns": [
+          "id"
+        ],
+        "matchingColumnsValues": {
+          "id": "={{ $('Supabase - Get Pending Notifications').item.json.id }}"
+        },
+        "columns": {
+          "mappingMode": "defineBelow",
+          "value": {
+            "status": "sent",
+            "sent_at": "={{ $now.toISO() }}"
+          }
+        },
+        "options": {}
+      },
+      "id": "mark-as-sent",
+      "name": "Supabase - Mark as Sent",
+      "type": "n8n-nodes-base.supabase",
+      "typeVersion": 1,
+      "position": [1120, 200],
+      "credentials": {
+        "supabaseApi": {
+          "id": "supabase-credentials",
+          "name": "Supabase Account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "jsCode": "// Handle send error\nconst notification = $('Supabase - Get Pending Notifications').item.json;\nconst error = $input.item.json.error || 'Failed to send Telegram message';\n\nconst retryCount = notification.retry_count || 0;\nconst maxRetries = notification.max_retries || 3;\n\nlet newStatus = 'failed';\nif (retryCount < maxRetries) {\n  // Will retry\n  newStatus = 'pending';\n}\n\nreturn {\n  json: {\n    id: notification.id,\n    status: newStatus,\n    error_message: error,\n    retry_count: retryCount + 1\n  }\n};"
+      },
+      "id": "handle-send-error",
+      "name": "Handle Send Error",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [900, 400]
+    },
+    {
+      "parameters": {
+        "authentication": "serviceAccount",
+        "operation": "update",
+        "tableId": "notification_queue",
+        "filterType": "manual",
+        "matchingColumns": [
+          "id"
+        ],
+        "matchingColumnsValues": {
+          "id": "={{ $json.id }}"
+        },
+        "columns": {
+          "mappingMode": "defineBelow",
+          "value": {
+            "status": "={{ $json.status }}",
+            "error_message": "={{ $json.error_message }}",
+            "retry_count": "={{ $json.retry_count }}"
+          }
+        },
+        "options": {}
+      },
+      "id": "mark-as-failed",
+      "name": "Supabase - Mark as Failed/Retry",
+      "type": "n8n-nodes-base.supabase",
+      "typeVersion": 1,
+      "position": [1120, 400],
+      "credentials": {
+        "supabaseApi": {
+          "id": "supabase-credentials",
+          "name": "Supabase Account"
+        }
+      }
+    },
+    {
+      "parameters": {},
+      "id": "no-op-node",
+      "name": "No Notifications - Skip",
+      "type": "n8n-nodes-base.noOp",
+      "typeVersion": 1,
+      "position": [900, 500]
+    }
+  ],
+  "connections": {
+    "Schedule - Every 30 Seconds": {
+      "main": [
+        [
+          {
+            "node": "Supabase - Get Pending Notifications",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Supabase - Get Pending Notifications": {
+      "main": [
+        [
+          {
+            "node": "Check - Has Notifications",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Check - Has Notifications": {
+      "main": [
+        [
+          {
+            "node": "Telegram - Send Message",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "No Notifications - Skip",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Telegram - Send Message": {
+      "main": [
+        [
+          {
+            "node": "Supabase - Mark as Sent",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Handle Send Error": {
+      "main": [
+        [
+          {
+            "node": "Supabase - Mark as Failed/Retry",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "pinData": {},
+  "settings": {
+    "executionOrder": "v1"
+  },
+  "staticData": null,
+  "tags": [],
+  "triggerCount": 1,
+  "updatedAt": "2025-11-06T00:00:00.000Z",
+  "versionId": "1"
+}

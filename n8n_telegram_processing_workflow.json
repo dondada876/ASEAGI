@@ -1,0 +1,660 @@
+{
+  "name": "Telegram Document Processing Pipeline",
+  "nodes": [
+    {
+      "parameters": {
+        "path": "telegram-upload",
+        "options": {},
+        "responseMode": "responseNode",
+        "responseData": "allEntries"
+      },
+      "id": "webhook-node",
+      "name": "Webhook - Telegram Upload",
+      "type": "n8n-nodes-base.webhook",
+      "typeVersion": 1.1,
+      "position": [240, 300],
+      "webhookId": "telegram-upload-webhook"
+    },
+    {
+      "parameters": {
+        "jsCode": "// Validate incoming data\nconst data = $input.item.json;\n\n// Check required fields\nif (!data.upload_id) {\n  throw new Error('Missing upload_id');\n}\n\nif (!data.file_id) {\n  throw new Error('Missing file_id');\n}\n\n// Check file type\nconst allowedTypes = ['photo', 'document', 'audio', 'video', 'voice'];\nif (!allowedTypes.includes(data.file_type)) {\n  return {\n    json: {\n      error: 'Unsupported file type',\n      status: 'failed',\n      upload_id: data.upload_id\n    }\n  };\n}\n\n// Check file size (max 20MB)\nif (data.file_size && data.file_size > 20 * 1024 * 1024) {\n  return {\n    json: {\n      error: 'File too large (max 20MB)',\n      status: 'failed',\n      upload_id: data.upload_id\n    }\n  };\n}\n\n// Validation passed\nreturn {\n  json: {\n    ...data,\n    validation_status: 'passed',\n    validated_at: new Date().toISOString()\n  }\n};"
+      },
+      "id": "validation-node",
+      "name": "Validate Upload",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [460, 300]
+    },
+    {
+      "parameters": {
+        "authentication": "serviceAccount",
+        "operation": "insert",
+        "tableId": "processing_logs",
+        "columns": {
+          "mappingMode": "defineBelow",
+          "value": {
+            "telegram_upload_id": "={{ $json.upload_id }}",
+            "stage": "validation",
+            "status": "completed",
+            "message": "File validation successful",
+            "triggered_by": "n8n",
+            "details": "={{ JSON.stringify({ file_type: $json.file_type, file_size: $json.file_size }) }}"
+          }
+        },
+        "options": {}
+      },
+      "id": "log-validation",
+      "name": "Supabase - Log Validation",
+      "type": "n8n-nodes-base.supabase",
+      "typeVersion": 1,
+      "position": [680, 300],
+      "credentials": {
+        "supabaseApi": {
+          "id": "supabase-credentials",
+          "name": "Supabase Account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "authentication": "serviceAccount",
+        "operation": "update",
+        "tableId": "telegram_uploads",
+        "filterType": "manual",
+        "matchingColumns": [
+          "id"
+        ],
+        "matchingColumnsValues": {
+          "id": "={{ $json.upload_id }}"
+        },
+        "columns": {
+          "mappingMode": "defineBelow",
+          "value": {
+            "status": "processing",
+            "processing_stage": "downloading",
+            "processing_started_at": "={{ $now.toISO() }}"
+          }
+        },
+        "options": {}
+      },
+      "id": "update-status-processing",
+      "name": "Supabase - Update Status (Processing)",
+      "type": "n8n-nodes-base.supabase",
+      "typeVersion": 1,
+      "position": [900, 300],
+      "credentials": {
+        "supabaseApi": {
+          "id": "supabase-credentials",
+          "name": "Supabase Account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "method": "GET",
+        "url": "=https://api.telegram.org/bot{{ $env.TELEGRAM_BOT_TOKEN }}/getFile?file_id={{ $json.file_id }}",
+        "options": {}
+      },
+      "id": "get-file-path",
+      "name": "Telegram - Get File Path",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [1120, 300]
+    },
+    {
+      "parameters": {
+        "jsCode": "// Extract file path from Telegram response\nconst telegramResponse = $input.item.json;\nconst filePath = telegramResponse.result.file_path;\n\n// Construct download URL\nconst downloadUrl = `https://api.telegram.org/file/bot${process.env.TELEGRAM_BOT_TOKEN}/${filePath}`;\n\n// Pass through original data plus new fields\nreturn {\n  json: {\n    ...telegramResponse,\n    download_url: downloadUrl,\n    file_path: filePath\n  }\n};"
+      },
+      "id": "extract-file-url",
+      "name": "Extract Download URL",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [1340, 300]
+    },
+    {
+      "parameters": {
+        "method": "GET",
+        "url": "={{ $json.download_url }}",
+        "options": {
+          "response": {
+            "response": {
+              "responseFormat": "file"
+            }
+          }
+        }
+      },
+      "id": "download-file",
+      "name": "Download File from Telegram",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [1560, 300]
+    },
+    {
+      "parameters": {
+        "authentication": "accessKey",
+        "resource": "file",
+        "operation": "upload",
+        "bucketName": "={{ $env.S3_BUCKET_NAME }}",
+        "fileName": "={{ $json.storage_filename }}",
+        "binaryData": true,
+        "options": {
+          "acl": "private"
+        }
+      },
+      "id": "upload-to-s3",
+      "name": "AWS S3 - Upload File",
+      "type": "n8n-nodes-base.aws",
+      "typeVersion": 1,
+      "position": [1780, 300],
+      "credentials": {
+        "aws": {
+          "id": "aws-credentials",
+          "name": "AWS Account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "jsCode": "// Get data from previous nodes\nconst webhookData = $('Webhook - Telegram Upload').item.json;\nconst s3Response = $input.item.json;\n\n// Generate file metadata\nconst now = new Date();\nconst year = now.getFullYear();\nconst month = String(now.getMonth() + 1).padStart(2, '0');\n\n// Build S3 path\nconst docType = webhookData.document_type || 'OTHR';\nconst s3Key = `${year}/${month}/${docType}/${webhookData.storage_filename}`;\nconst s3Url = `https://${process.env.S3_BUCKET_NAME}.s3.amazonaws.com/${s3Key}`;\n\n// Calculate file hash (simplified - in production use proper hash)\nconst fileHash = webhookData.file_unique_id || webhookData.file_id;\n\nreturn {\n  json: {\n    upload_id: webhookData.upload_id,\n    file_hash: fileHash,\n    original_filename: webhookData.storage_filename,\n    file_size: webhookData.file_size,\n    mime_type: webhookData.mime_type,\n    primary_storage_provider: 's3',\n    primary_storage_url: s3Url,\n    primary_storage_path: s3Key,\n    primary_storage_bucket: process.env.S3_BUCKET_NAME,\n    stored_at: now.toISOString()\n  }\n};"
+      },
+      "id": "prepare-storage-data",
+      "name": "Prepare Storage Registry Data",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [2000, 300]
+    },
+    {
+      "parameters": {
+        "authentication": "serviceAccount",
+        "operation": "insert",
+        "tableId": "storage_registry",
+        "columns": {
+          "mappingMode": "defineBelow",
+          "value": {
+            "telegram_upload_id": "={{ $json.upload_id }}",
+            "file_hash": "={{ $json.file_hash }}",
+            "original_filename": "={{ $json.original_filename }}",
+            "file_size": "={{ $json.file_size }}",
+            "mime_type": "={{ $json.mime_type }}",
+            "primary_storage_provider": "={{ $json.primary_storage_provider }}",
+            "primary_storage_url": "={{ $json.primary_storage_url }}",
+            "primary_storage_path": "={{ $json.primary_storage_path }}",
+            "primary_storage_bucket": "={{ $json.primary_storage_bucket }}",
+            "stored_at": "={{ $json.stored_at }}"
+          }
+        },
+        "options": {
+          "returnFields": "id"
+        }
+      },
+      "id": "insert-storage-registry",
+      "name": "Supabase - Insert Storage Registry",
+      "type": "n8n-nodes-base.supabase",
+      "typeVersion": 1,
+      "position": [2220, 300],
+      "credentials": {
+        "supabaseApi": {
+          "id": "supabase-credentials",
+          "name": "Supabase Account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "jsCode": "// Get storage registry ID from previous node\nconst storageData = $('Prepare Storage Registry Data').item.json;\nconst storageRegistryResponse = $input.item.json;\nconst storageRegistryId = storageRegistryResponse[0]?.id;\n\n// Get webhook data\nconst webhookData = $('Webhook - Telegram Upload').item.json;\n\n// Calculate processing duration\nconst startTime = new Date(webhookData.uploaded_at || Date.now());\nconst endTime = new Date();\nconst durationSeconds = Math.floor((endTime - startTime) / 1000);\n\nreturn {\n  json: {\n    upload_id: webhookData.upload_id,\n    storage_registry_id: storageRegistryId,\n    status: 'completed',\n    processing_stage: 'completed',\n    permanent_storage_url: storageData.primary_storage_url,\n    storage_provider: 's3',\n    storage_path: storageData.primary_storage_path,\n    processing_completed_at: endTime.toISOString(),\n    processing_duration_seconds: durationSeconds,\n    telegram_user_id: webhookData.telegram_user_id,\n    telegram_chat_id: webhookData.telegram_chat_id,\n    document_title: webhookData.document_title\n  }\n};"
+      },
+      "id": "prepare-completion-data",
+      "name": "Prepare Completion Data",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [2440, 300]
+    },
+    {
+      "parameters": {
+        "authentication": "serviceAccount",
+        "operation": "update",
+        "tableId": "telegram_uploads",
+        "filterType": "manual",
+        "matchingColumns": [
+          "id"
+        ],
+        "matchingColumnsValues": {
+          "id": "={{ $json.upload_id }}"
+        },
+        "columns": {
+          "mappingMode": "defineBelow",
+          "value": {
+            "status": "={{ $json.status }}",
+            "processing_stage": "={{ $json.processing_stage }}",
+            "permanent_storage_url": "={{ $json.permanent_storage_url }}",
+            "storage_provider": "={{ $json.storage_provider }}",
+            "storage_path": "={{ $json.storage_path }}",
+            "storage_registry_id": "={{ $json.storage_registry_id }}",
+            "processing_completed_at": "={{ $json.processing_completed_at }}",
+            "processing_duration_seconds": "={{ $json.processing_duration_seconds }}"
+          }
+        },
+        "options": {}
+      },
+      "id": "update-upload-completed",
+      "name": "Supabase - Update Upload (Completed)",
+      "type": "n8n-nodes-base.supabase",
+      "typeVersion": 1,
+      "position": [2660, 300],
+      "credentials": {
+        "supabaseApi": {
+          "id": "supabase-credentials",
+          "name": "Supabase Account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "authentication": "serviceAccount",
+        "operation": "insert",
+        "tableId": "processing_logs",
+        "columns": {
+          "mappingMode": "defineBelow",
+          "value": {
+            "telegram_upload_id": "={{ $json.upload_id }}",
+            "stage": "completed",
+            "status": "completed",
+            "message": "Document processing completed successfully",
+            "triggered_by": "n8n",
+            "details": "={{ JSON.stringify({ storage_url: $json.permanent_storage_url, duration_seconds: $json.processing_duration_seconds }) }}"
+          }
+        },
+        "options": {}
+      },
+      "id": "log-completion",
+      "name": "Supabase - Log Completion",
+      "type": "n8n-nodes-base.supabase",
+      "typeVersion": 1,
+      "position": [2880, 300],
+      "credentials": {
+        "supabaseApi": {
+          "id": "supabase-credentials",
+          "name": "Supabase Account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "authentication": "serviceAccount",
+        "operation": "insert",
+        "tableId": "notification_queue",
+        "columns": {
+          "mappingMode": "defineBelow",
+          "value": {
+            "telegram_user_id": "={{ $json.telegram_user_id }}",
+            "telegram_chat_id": "={{ $json.telegram_chat_id }}",
+            "notification_type": "processing_complete",
+            "title": "✅ Processing Complete",
+            "message": "={{ '🎉 Your document \"' + $json.document_title + '\" has been processed successfully!\\n\\n⏱️ Processing time: ' + $json.processing_duration_seconds + ' seconds\\n💾 Stored in S3\\n\\nUse /status to view details.' }}",
+            "telegram_upload_id": "={{ $json.upload_id }}",
+            "priority": 3
+          }
+        },
+        "options": {}
+      },
+      "id": "queue-notification",
+      "name": "Supabase - Queue Notification",
+      "type": "n8n-nodes-base.supabase",
+      "typeVersion": 1,
+      "position": [3100, 300],
+      "credentials": {
+        "supabaseApi": {
+          "id": "supabase-credentials",
+          "name": "Supabase Account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "respondWith": "json",
+        "responseBody": "={{ JSON.stringify({ success: true, message: 'Document processing completed', upload_id: $json.upload_id, storage_url: $('Prepare Completion Data').item.json.permanent_storage_url }) }}",
+        "options": {}
+      },
+      "id": "respond-success",
+      "name": "Respond - Success",
+      "type": "n8n-nodes-base.respondToWebhook",
+      "typeVersion": 1.1,
+      "position": [3320, 300]
+    },
+    {
+      "parameters": {
+        "jsCode": "// Handle error\nconst error = $input.item.json.error || 'Unknown error occurred';\nconst webhookData = $('Webhook - Telegram Upload').item.json;\n\nreturn {\n  json: {\n    upload_id: webhookData.upload_id,\n    status: 'failed',\n    error_message: error,\n    error_code: 'PROCESSING_ERROR',\n    telegram_user_id: webhookData.telegram_user_id,\n    telegram_chat_id: webhookData.telegram_chat_id\n  }\n};"
+      },
+      "id": "handle-error",
+      "name": "Handle Error",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [900, 500]
+    },
+    {
+      "parameters": {
+        "authentication": "serviceAccount",
+        "operation": "update",
+        "tableId": "telegram_uploads",
+        "filterType": "manual",
+        "matchingColumns": [
+          "id"
+        ],
+        "matchingColumnsValues": {
+          "id": "={{ $json.upload_id }}"
+        },
+        "columns": {
+          "mappingMode": "defineBelow",
+          "value": {
+            "status": "failed",
+            "error_message": "={{ $json.error_message }}",
+            "error_code": "={{ $json.error_code }}",
+            "retry_count": "={{ $('Webhook - Telegram Upload').item.json.retry_count + 1 || 1 }}"
+          }
+        },
+        "options": {}
+      },
+      "id": "update-upload-failed",
+      "name": "Supabase - Update Upload (Failed)",
+      "type": "n8n-nodes-base.supabase",
+      "typeVersion": 1,
+      "position": [1120, 500],
+      "credentials": {
+        "supabaseApi": {
+          "id": "supabase-credentials",
+          "name": "Supabase Account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "authentication": "serviceAccount",
+        "operation": "insert",
+        "tableId": "processing_logs",
+        "columns": {
+          "mappingMode": "defineBelow",
+          "value": {
+            "telegram_upload_id": "={{ $json.upload_id }}",
+            "stage": "error_handler",
+            "status": "failed",
+            "message": "Processing failed",
+            "error_details": "={{ $json.error_message }}",
+            "error_code": "={{ $json.error_code }}",
+            "triggered_by": "n8n"
+          }
+        },
+        "options": {}
+      },
+      "id": "log-error",
+      "name": "Supabase - Log Error",
+      "type": "n8n-nodes-base.supabase",
+      "typeVersion": 1,
+      "position": [1340, 500],
+      "credentials": {
+        "supabaseApi": {
+          "id": "supabase-credentials",
+          "name": "Supabase Account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "authentication": "serviceAccount",
+        "operation": "insert",
+        "tableId": "notification_queue",
+        "columns": {
+          "mappingMode": "defineBelow",
+          "value": {
+            "telegram_user_id": "={{ $json.telegram_user_id }}",
+            "telegram_chat_id": "={{ $json.telegram_chat_id }}",
+            "notification_type": "processing_failed",
+            "title": "❌ Processing Failed",
+            "message": "={{ '⚠️ Document processing failed\\n\\nError: ' + $json.error_message + '\\n\\nUse /retry ' + $json.upload_id.substring(0, 8) + ' to try again.' }}",
+            "telegram_upload_id": "={{ $json.upload_id }}",
+            "priority": 1
+          }
+        },
+        "options": {}
+      },
+      "id": "queue-error-notification",
+      "name": "Supabase - Queue Error Notification",
+      "type": "n8n-nodes-base.supabase",
+      "typeVersion": 1,
+      "position": [1560, 500],
+      "credentials": {
+        "supabaseApi": {
+          "id": "supabase-credentials",
+          "name": "Supabase Account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "respondWith": "json",
+        "responseBody": "={{ JSON.stringify({ success: false, error: $json.error_message, upload_id: $json.upload_id }) }}",
+        "options": {
+          "responseCode": 500
+        }
+      },
+      "id": "respond-error",
+      "name": "Respond - Error",
+      "type": "n8n-nodes-base.respondToWebhook",
+      "typeVersion": 1.1,
+      "position": [1780, 500]
+    }
+  ],
+  "connections": {
+    "Webhook - Telegram Upload": {
+      "main": [
+        [
+          {
+            "node": "Validate Upload",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Validate Upload": {
+      "main": [
+        [
+          {
+            "node": "Supabase - Log Validation",
+            "type": "main",
+            "index": 0
+          },
+          {
+            "node": "Handle Error",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Supabase - Log Validation": {
+      "main": [
+        [
+          {
+            "node": "Supabase - Update Status (Processing)",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Supabase - Update Status (Processing)": {
+      "main": [
+        [
+          {
+            "node": "Telegram - Get File Path",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Telegram - Get File Path": {
+      "main": [
+        [
+          {
+            "node": "Extract Download URL",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Extract Download URL": {
+      "main": [
+        [
+          {
+            "node": "Download File from Telegram",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Download File from Telegram": {
+      "main": [
+        [
+          {
+            "node": "AWS S3 - Upload File",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "AWS S3 - Upload File": {
+      "main": [
+        [
+          {
+            "node": "Prepare Storage Registry Data",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Prepare Storage Registry Data": {
+      "main": [
+        [
+          {
+            "node": "Supabase - Insert Storage Registry",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Supabase - Insert Storage Registry": {
+      "main": [
+        [
+          {
+            "node": "Prepare Completion Data",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Prepare Completion Data": {
+      "main": [
+        [
+          {
+            "node": "Supabase - Update Upload (Completed)",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Supabase - Update Upload (Completed)": {
+      "main": [
+        [
+          {
+            "node": "Supabase - Log Completion",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Supabase - Log Completion": {
+      "main": [
+        [
+          {
+            "node": "Supabase - Queue Notification",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Supabase - Queue Notification": {
+      "main": [
+        [
+          {
+            "node": "Respond - Success",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Handle Error": {
+      "main": [
+        [
+          {
+            "node": "Supabase - Update Upload (Failed)",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Supabase - Update Upload (Failed)": {
+      "main": [
+        [
+          {
+            "node": "Supabase - Log Error",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Supabase - Log Error": {
+      "main": [
+        [
+          {
+            "node": "Supabase - Queue Error Notification",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Supabase - Queue Error Notification": {
+      "main": [
+        [
+          {
+            "node": "Respond - Error",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "pinData": {},
+  "settings": {
+    "executionOrder": "v1"
+  },
+  "staticData": null,
+  "tags": [],
+  "triggerCount": 1,
+  "updatedAt": "2025-11-06T00:00:00.000Z",
+  "versionId": "1"
+}
