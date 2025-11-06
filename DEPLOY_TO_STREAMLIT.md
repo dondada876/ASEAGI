@@ -2,7 +2,7 @@
 
 ## ✅ Prerequisites (Already Done!)
 
-- ✅ GitHub repository created: `https://github.com/dondada876/proj344-dashboards`
+- ✅ GitHub repository created: `https://github.com/dondada876/ASEAGI`
 - ✅ All dashboards pushed to GitHub
 - ✅ Requirements.txt configured
 - ✅ .gitignore protecting secrets
@@ -27,7 +27,7 @@
 1. Click **"New app"** (big button on the dashboard)
 2. Fill in the deployment form:
 
-   **Repository:** `dondada876/proj344-dashboards`
+   **Repository:** `dondada876/ASEAGI`
 
    **Branch:** `main`
 
@@ -49,7 +49,7 @@ SUPABASE_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJ
 
 **Your app will be live at:**
 ```
-https://dondada876-proj344-dashboards-dashboards-enhanced-scanning-monitor.streamlit.app
+https://dondada876-ASEAGI-dashboards-enhanced-scanning-monitor.streamlit.app
 ```
 
 ---
@@ -63,14 +63,14 @@ Repeat the process for each dashboard:
 - **Main file path:** `dashboards/proj344_master_dashboard.py`
 - **App URL:** `proj344-master`
 - **Secrets:** Same as above
-- **Live URL:** `https://dondada876-proj344-dashboards-dashboards-proj344-master-dashboard.streamlit.app`
+- **Live URL:** `https://dondada876-ASEAGI-dashboards-proj344-master-dashboard.streamlit.app`
 
 #### **Legal Intelligence Dashboard**
 
 - **Main file path:** `dashboards/legal_intelligence_dashboard.py`
 - **App URL:** `proj344-legal-intel`
 - **Secrets:** Same as above
-- **Live URL:** `https://dondada876-proj344-dashboards-dashboards-legal-intelligence-dashboard.streamlit.app`
+- **Live URL:** `https://dondada876-ASEAGI-dashboards-legal-intelligence-dashboard.streamlit.app`
 
 #### **CEO Dashboard**
 
@@ -149,7 +149,7 @@ To keep apps awake:
 **Already configured!** Whenever you push to GitHub:
 
 ```bash
-cd /Users/dbucknor/Downloads/proj344-dashboards
+cd /Users/dbucknor/Downloads/ASEAGI
 git add .
 git commit -m "Update dashboards"
 git push origin main
@@ -180,10 +180,10 @@ Anyone with the URL can access your apps.
 **Share URLs:**
 ```
 Enhanced Scanning Monitor:
-https://dondada876-proj344-dashboards-dashboards-enhanced-scanning-monitor.streamlit.app
+https://dondada876-ASEAGI-dashboards-enhanced-scanning-monitor.streamlit.app
 
 Master Dashboard:
-https://dondada876-proj344-dashboards-dashboards-proj344-master-dashboard.streamlit.app
+https://dondada876-ASEAGI-dashboards-proj344-master-dashboard.streamlit.app
 ```
 
 ### Private Apps (Paid Plans):
@@ -199,7 +199,7 @@ Restrict access to specific email addresses or domains.
 **Fix:** Make sure all dependencies are in `requirements.txt`
 
 ```bash
-cd /Users/dbucknor/Downloads/proj344-dashboards
+cd /Users/dbucknor/Downloads/ASEAGI
 cat requirements.txt
 ```
 

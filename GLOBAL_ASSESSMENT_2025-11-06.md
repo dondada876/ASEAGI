@@ -113,7 +113,7 @@ Docket Number: J24-00478
 
 ### Repository Details:
 ```
-URL: https://github.com/dondada876/proj344-dashboards
+URL: https://github.com/dondada876/ASEAGI
 Owner: dondada876
 Visibility: Private
 Commits: 5
@@ -129,7 +129,7 @@ Branches: main
 
 ### Repository Structure:
 ```
-proj344-dashboards/
+ASEAGI/
 ├── dashboards/           (5 Streamlit dashboards)
 ├── scanners/            (Batch scanning scripts)
 ├── docs/                (Technical documentation)
@@ -336,7 +336,7 @@ Digital Ocean Droplet (Ubuntu 24.04)
 
 - **Claude Code:** This AI assistant
 - **Supabase Dashboard:** https://app.supabase.com
-- **GitHub Repository:** https://github.com/dondada876/proj344-dashboards
+- **GitHub Repository:** https://github.com/dondada876/ASEAGI
 - **Digital Ocean Docs:** https://docs.digitalocean.com
 - **Docker Documentation:** https://docs.docker.com
 - **Streamlit Docs:** https://docs.streamlit.io

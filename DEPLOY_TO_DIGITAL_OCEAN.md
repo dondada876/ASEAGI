@@ -62,7 +62,7 @@ docker --version
    - Click "New SSH Key"
    - Paste public key from `~/.ssh/id_ed25519_digitalocean.pub`
    - Name it: "proj344-macbook"
-7. **Hostname:** `proj344-dashboards`
+7. **Hostname:** `ASEAGI`
 8. **Tags:** `proj344`, `legal`, `dashboards`
 9. Click **"Create Droplet"** 🚀
 
@@ -76,7 +76,7 @@ doctl auth init
 doctl compute ssh-key import proj344-macbook --public-key-file ~/.ssh/id_ed25519_digitalocean.pub
 
 # Create droplet
-doctl compute droplet create proj344-dashboards \
+doctl compute droplet create ASEAGI \
   --image ubuntu-24-04-x64 \
   --size s-2vcpu-2gb \
   --region sfo3 \
@@ -151,8 +151,8 @@ apt install -y git
 
 # Clone your repository
 cd /opt
-git clone https://github.com/dondada876/proj344-dashboards.git
-cd proj344-dashboards
+git clone https://github.com/dondada876/ASEAGI.git
+cd ASEAGI
 
 # Verify files
 ls -la
@@ -537,7 +537,7 @@ curl http://localhost:8505
 Create a deployment script for easy updates:
 
 ```bash
-nano /opt/proj344-dashboards/deploy.sh
+nano /opt/ASEAGI/deploy.sh
 ```
 
 ```bash
@@ -548,7 +548,7 @@ echo "🚀 PROJ344 Dashboard Deployment"
 echo "================================"
 
 # Navigate to project directory
-cd /opt/proj344-dashboards
+cd /opt/ASEAGI
 
 # Pull latest changes
 echo "📥 Pulling latest changes from GitHub..."
@@ -574,12 +574,12 @@ docker compose logs -f
 
 Make executable:
 ```bash
-chmod +x /opt/proj344-dashboards/deploy.sh
+chmod +x /opt/ASEAGI/deploy.sh
 ```
 
 Deploy updates anytime:
 ```bash
-/opt/proj344-dashboards/deploy.sh
+/opt/ASEAGI/deploy.sh
 ```
 
 ---
@@ -662,7 +662,7 @@ docker compose restart proj344-master
 ### Update Dashboards
 
 ```bash
-cd /opt/proj344-dashboards
+cd /opt/ASEAGI
 git pull
 docker compose build
 docker compose up -d
@@ -799,7 +799,7 @@ Your dashboards are now live on Digital Ocean!
 - **Docker Documentation:** https://docs.docker.com
 - **Nginx Documentation:** https://nginx.org/en/docs/
 - **Certbot Documentation:** https://certbot.eff.org
-- **PROJ344 Repository:** https://github.com/dondada876/proj344-dashboards
+- **PROJ344 Repository:** https://github.com/dondada876/ASEAGI
 
 ---
 

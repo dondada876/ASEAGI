@@ -47,8 +47,8 @@ AI-powered legal document intelligence system with multi-dimensional scoring for
 
 1. **Clone the repository**
 ```bash
-git clone https://github.com/yourusername/proj344-dashboards.git
-cd proj344-dashboards
+git clone https://github.com/yourusername/ASEAGI.git
+cd ASEAGI
 ```
 
 2. **Install dependencies**
@@ -161,7 +161,7 @@ python3 scanners/batch_scan_documents.py /path/to/documents --dry-run
 ## 🏗️ Architecture
 
 ```
-proj344-dashboards/
+ASEAGI/
 ├── dashboards/              # Streamlit dashboards
 │   ├── proj344_master_dashboard.py
 │   ├── legal_intelligence_dashboard.py
@@ -252,13 +252,13 @@ heroku config:set SUPABASE_KEY=your-key
 
 ```bash
 # Build
-docker build -t proj344-dashboards .
+docker build -t ASEAGI .
 
 # Run
 docker run -p 8501:8501 \
   -e SUPABASE_URL=your-url \
   -e SUPABASE_KEY=your-key \
-  proj344-dashboards
+  ASEAGI
 ```
 
 ## 📖 Documentation

@@ -25,7 +25,7 @@ Since your dashboards contain **case-sensitive data**, here are your options:
 
 **Security Note:** Even public apps are hard to find unless you share the URL. Streamlit generates random URLs like:
 ```
-https://dondada876-proj344-dashboards-dashboards-enhanced-mon-a8f2kl.streamlit.app
+https://dondada876-ASEAGI-dashboards-enhanced-mon-a8f2kl.streamlit.app
 ```
 
 ---
@@ -212,7 +212,7 @@ if datetime.now() > EXPIRY_DATE:
 
 1. Go to https://share.streamlit.io
 2. Click "New app"
-3. **Repository:** `dondada876/proj344-dashboards`
+3. **Repository:** `dondada876/ASEAGI`
 4. **Branch:** `main`
 5. **Main file:** `dashboards/enhanced_scanning_monitor.py`
 6. **Visibility:** ✅ PUBLIC
@@ -222,7 +222,7 @@ if datetime.now() > EXPIRY_DATE:
 ### **Step 2: Deploy PROJ344 Master Dashboard (PRIVATE)**
 
 1. Click "New app"
-2. **Repository:** `dondada876/proj344-dashboards`
+2. **Repository:** `dondada876/ASEAGI`
 3. **Branch:** `main`
 4. **Main file:** `dashboards/proj344_master_dashboard.py`
 5. **Visibility:** 🔒 PRIVATE (use your 1 private slot)
@@ -232,7 +232,7 @@ if datetime.now() > EXPIRY_DATE:
 ### **Step 3: Deploy CEO Dashboard (PUBLIC)**
 
 1. Click "New app"
-2. **Repository:** `dondada876/proj344-dashboards`
+2. **Repository:** `dondada876/ASEAGI`
 3. **Branch:** `main`
 4. **Main file:** `dashboards/ceo_dashboard.py`
 5. **Visibility:** ✅ PUBLIC

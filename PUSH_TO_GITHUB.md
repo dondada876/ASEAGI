@@ -24,7 +24,7 @@ Your PROJ344 dashboards repository is fully configured and ready to push to GitH
 **Option A: Via GitHub Website (Easiest)**
 
 1. Go to: https://github.com/new
-2. Repository name: `proj344-dashboards`
+2. Repository name: `ASEAGI`
 3. Description: `AI-powered legal document intelligence system`
 4. Choose visibility:
    - ⚠️ **Private** (recommended - case data)
@@ -42,8 +42,8 @@ brew install gh
 gh auth login
 
 # Create private repository and push
-cd /Users/dbucknor/Downloads/proj344-dashboards
-gh repo create proj344-dashboards --private --source=. --remote=origin --push
+cd /Users/dbucknor/Downloads/ASEAGI
+gh repo create ASEAGI --private --source=. --remote=origin --push
 ```
 
 ### Step 2: Connect and Push
@@ -51,7 +51,7 @@ gh repo create proj344-dashboards --private --source=. --remote=origin --push
 After creating the repo on GitHub, run:
 
 ```bash
-cd /Users/dbucknor/Downloads/proj344-dashboards
+cd /Users/dbucknor/Downloads/ASEAGI
 
 # Create initial commit
 git commit -m "Initial commit: PROJ344 Legal Intelligence Dashboards
@@ -66,10 +66,10 @@ Features:
 - Complete documentation and guides"
 
 # Add GitHub remote (replace YOUR_USERNAME)
-git remote add origin https://github.com/YOUR_USERNAME/proj344-dashboards.git
+git remote add origin https://github.com/YOUR_USERNAME/ASEAGI.git
 
 # Or use SSH
-git remote add origin git@github.com:YOUR_USERNAME/proj344-dashboards.git
+git remote add origin git@github.com:YOUR_USERNAME/ASEAGI.git
 
 # Set main branch
 git branch -M main
@@ -80,7 +80,7 @@ git push -u origin main
 
 ### Step 3: Verify on GitHub
 
-1. Go to: `https://github.com/YOUR_USERNAME/proj344-dashboards`
+1. Go to: `https://github.com/YOUR_USERNAME/ASEAGI`
 2. Verify all files are present
 3. Check README displays correctly
 4. Verify .gitignore excluded sensitive files
@@ -94,7 +94,7 @@ After pushing to GitHub:
 1. Go to: https://share.streamlit.io
 2. Click "New app"
 3. Connect GitHub account
-4. Select repository: `proj344-dashboards`
+4. Select repository: `ASEAGI`
 5. Main file: `dashboards/proj344_master_dashboard.py`
 6. Click "Advanced settings" → "Secrets"
 7. Add:
@@ -105,7 +105,7 @@ SUPABASE_KEY = "your-supabase-anon-key"
 8. Click "Deploy"!
 
 **Your dashboard will be live at:**
-`https://YOUR_USERNAME-proj344-dashboards-proj344-master-dashboard.streamlit.app`
+`https://YOUR_USERNAME-ASEAGI-proj344-master-dashboard.streamlit.app`
 
 ---
 
@@ -114,7 +114,7 @@ SUPABASE_KEY = "your-supabase-anon-key"
 Before pushing, verify:
 
 ```bash
-cd /Users/dbucknor/Downloads/proj344-dashboards
+cd /Users/dbucknor/Downloads/ASEAGI
 
 # ✅ Check .gitignore is working
 git status --ignored
@@ -132,7 +132,7 @@ git ls-files | grep ".env$" && echo "❌ .env is staged!" || echo "✅ .env not 
 ## 📁 Repository Structure (On GitHub)
 
 ```
-proj344-dashboards/
+ASEAGI/
 ├── .github/workflows/     # CI/CD (future)
 ├── dashboards/
 │   ├── proj344_master_dashboard.py
@@ -183,7 +183,7 @@ proj344-dashboards/
 ### "Remote origin already exists"
 ```bash
 git remote remove origin
-git remote add origin https://github.com/YOUR_USERNAME/proj344-dashboards.git
+git remote add origin https://github.com/YOUR_USERNAME/ASEAGI.git
 ```
 
 ### "Permission denied"
