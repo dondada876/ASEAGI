@@ -1,4 +1,7 @@
-.streamlit/secrets.toml
+# SECURITY NOTE: secrets.toml is now tracked in git per user request
+# Ensure your GitHub repo is PRIVATE to protect credentials
+# .streamlit/secrets.toml
+
 .env
 __pycache__/
 *.pyc
