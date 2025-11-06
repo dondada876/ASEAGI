@@ -1,0 +1,58 @@
+{
+  "name": "ASEAGI Daily Case Report",
+  "nodes": [
+    {
+      "parameters": {
+        "rule": {
+          "interval": [
+            {
+              "field": "cronExpression",
+              "expression": "0 8 * * *"
+            }
+          ]
+        }
+      },
+      "name": "Schedule Trigger - 8 AM Daily",
+      "type": "n8n-nodes-base.scheduleTrigger",
+      "typeVersion": 1,
+      "position": [250, 300],
+      "id": "schedule-daily"
+    },
+    {
+      "parameters": {
+        "operation": "executeQuery",
+        "query": "SELECT \n  COUNT(*) as total_docs,\n  COUNT(CASE WHEN relevancy_score >= 900 THEN 1 END) as critical_docs,\n  COUNT(CASE WHEN relevancy_score >= 800 THEN 1 END) as important_docs,\n  MAX(processed_at) as last_update\nFROM legal_documents \nWHERE docket_number = 'J24-00478'"
+      },
+      "name": "Get Document Stats from Supabase",
+      "type": "n8n-nodes-base.supabase",
+      "typeVersion": 1,
+      "position": [450, 300],
+      "id": "supabase-stats"
+    },
+    {
+      "parameters": {
+        "chatId": "YOUR_TELEGRAM_CHAT_ID",
+        "text": "=📊 **ASEAGI Daily Report**\n📅 {{ $now.format('MMMM d, yyyy') }}\n\n**Case J24-00478: Ashe Bucknor**\n\n📁 Total Documents: {{ $json.total_docs }}\n🎯 Critical Evidence (900+): {{ $json.critical_docs }}\n⚠️  Important Evidence (800+): {{ $json.important_docs }}\n🕐 Last Update: {{ $json.last_update }}\n\n🔗 **View Dashboards:**\n• Master: http://137.184.1.91:8501\n• Legal Intel: http://137.184.1.91:8502\n• CEO Dashboard: http://137.184.1.91:8503\n\n⚖️ *For Ashe. For Justice. For All Children.*",
+        "additionalFields": {
+          "parse_mode": "Markdown"
+        }
+      },
+      "name": "Send Telegram Daily Report",
+      "type": "n8n-nodes-base.telegram",
+      "typeVersion": 1,
+      "position": [650, 300],
+      "id": "telegram-report"
+    }
+  ],
+  "connections": {
+    "Schedule Trigger - 8 AM Daily": {
+      "main": [[{"node": "Get Document Stats from Supabase", "type": "main", "index": 0}]]
+    },
+    "Get Document Stats from Supabase": {
+      "main": [[{"node": "Send Telegram Daily Report", "type": "main", "index": 0}]]
+    }
+  },
+  "settings": {
+    "executionOrder": "v1"
+  }
+}
