@@ -1,0 +1,155 @@
+version: '3.8'
+
+# ============================================================================
+# ASEAGI STANDARD DEPLOYMENT
+# Telegram Bot + FastAPI + Dashboards + Redis Cache
+#
+# This is a balanced deployment without n8n, Qdrant, or Neo4j
+# Perfect for getting Telegram bot working without complexity
+# ============================================================================
+
+services:
+  # ==========================================================================
+  # REDIS CACHE - Performance optimization
+  # ==========================================================================
+  redis:
+    image: redis:7-alpine
+    container_name: aseagi-redis
+    command: redis-server --requirepass ${REDIS_PASSWORD} --appendonly yes
+    ports:
+      - "6379:6379"
+    volumes:
+      - redis-data:/data
+    restart: unless-stopped
+    networks:
+      - aseagi-network
+    healthcheck:
+      test: ["CMD", "redis-cli", "-a", "${REDIS_PASSWORD}", "ping"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+
+  # ==========================================================================
+  # FASTAPI BACKEND - Main API
+  # ==========================================================================
+  api:
+    build:
+      context: ./api-service
+      dockerfile: Dockerfile
+    container_name: aseagi-api
+    ports:
+      - "8000:8000"
+    environment:
+      - SUPABASE_URL=${SUPABASE_URL}
+      - SUPABASE_KEY=${SUPABASE_KEY}
+      - TELEGRAM_BOT_TOKEN=${TELEGRAM_BOT_TOKEN}
+      - API_HOST=0.0.0.0
+      - API_PORT=8000
+      - API_BASE_URL=http://api:8000
+      - CORS_ORIGINS=*
+      - REDIS_URL=redis://redis:6379
+      - REDIS_PASSWORD=${REDIS_PASSWORD}
+      - OPENAI_API_KEY=${OPENAI_API_KEY:-}
+      - ANTHROPIC_API_KEY=${ANTHROPIC_API_KEY:-}
+    depends_on:
+      - redis
+    volumes:
+      - ./uploads:/app/uploads
+      - ./logs:/app/logs
+    restart: unless-stopped
+    networks:
+      - aseagi-network
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:8000/health"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+
+  # ==========================================================================
+  # TELEGRAM BOT - Client that connects to FastAPI
+  # ==========================================================================
+  telegram:
+    build:
+      context: ./api-service
+      dockerfile: Dockerfile
+    container_name: aseagi-telegram
+    command: ["python", "telegram_bot.py"]
+    environment:
+      - TELEGRAM_BOT_TOKEN=${TELEGRAM_BOT_TOKEN}
+      - API_BASE_URL=http://api:8000
+      - SUPABASE_URL=${SUPABASE_URL}
+      - SUPABASE_KEY=${SUPABASE_KEY}
+    depends_on:
+      - api
+    restart: unless-stopped
+    networks:
+      - aseagi-network
+
+  # ==========================================================================
+  # STREAMLIT DASHBOARD - Analytics and visualization
+  # ==========================================================================
+  dashboard:
+    build:
+      context: .
+      dockerfile: Dockerfile.streamlit
+    container_name: aseagi-dashboard
+    ports:
+      - "80:8501"
+    environment:
+      - SUPABASE_URL=${SUPABASE_URL}
+      - SUPABASE_KEY=${SUPABASE_KEY}
+      - API_URL=http://api:8000
+    depends_on:
+      - api
+    volumes:
+      - ./dashboards:/app/dashboards
+    restart: unless-stopped
+    networks:
+      - aseagi-network
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:8501/_stcore/health"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+
+# ==============================================================================
+# VOLUMES - Persistent data storage
+# ==============================================================================
+volumes:
+  redis-data:
+    driver: local
+
+# ==============================================================================
+# NETWORKS - Internal communication
+# ==============================================================================
+networks:
+  aseagi-network:
+    driver: bridge
+    ipam:
+      config:
+        - subnet: 172.25.0.0/16
+
+# ==============================================================================
+# NOTES
+# ==============================================================================
+
+# This is a STANDARD deployment that includes:
+#   ✓ FastAPI (REST API)
+#   ✓ Telegram Bot (9 commands)
+#   ✓ Streamlit Dashboard
+#   ✓ Redis (caching for performance)
+#
+# This deployment EXCLUDES (can add later):
+#   ✗ n8n (automation)
+#   ✗ Qdrant (vector search)
+#   ✗ Neo4j (graph database)
+#
+# Resource Requirements:
+#   - RAM: ~4GB
+#   - CPU: 2-4 cores
+#   - Disk: ~10GB
+#
+# Deployment:
+#   docker-compose -f docker-compose.standard.yml up -d
+#
+# For Ashe. For Justice. For All Children. 🛡️
