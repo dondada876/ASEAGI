@@ -1,0 +1,288 @@
+{
+  "metadata": {
+    "file_path": "C:\\Users\\DonBucknor_n0ufqwv\\GettingStarted\\ASEAGI\\QUICK_REFERENCE_N8N_CLAUDE.md",
+    "file_name": "QUICK_REFERENCE_N8N_CLAUDE.md",
+    "file_type": "md",
+    "file_size": 7539,
+    "file_hash": "25c618c91e59207d1d0615a2613518c8",
+    "extraction_date": "2025-11-06T09:18:56.703722",
+    "extraction_method": "direct_read",
+    "title": "# 🚀 QUICK REFERENCE: N8N + CLAUDE CODE",
+    "author": null,
+    "created_date": "2025-11-05T11:53:59.550872",
+    "modified_date": "2025-11-05T11:53:59.551873",
+    "page_count": null,
+    "word_count": 1166,
+    "char_count": 6951
+  },
+  "content": "# 🚀 QUICK REFERENCE: N8N + CLAUDE CODE\n*Print this and keep it visible during setup*\n\n## DECISION TREE: WHICH TOOL TO USE?\n\n```\nQuestion to ask: \"Where and when does this need to run?\"\n\n┌─ Needs to run 24/7, accessible anywhere?\n│  └─→ Use n8n CLOUD ☁️\n│\n┌─ Needs to process local files or heavy data?\n│  └─→ Use n8n LOCAL 💻 or Claude Code 🤖\n│\n┌─ Need to generate/modify code?\n│  └─→ Use Claude Code 🤖\n│\n┌─ Simple routing/logic, external triggers?\n│  └─→ Use n8n CLOUD ☁️\n│\n└─ Complex AI analysis, development work?\n   └─→ Use Claude Code 🤖\n```\n\n---\n\n## N8N CLOUD - WHEN TO USE\n\n✅ **PERFECT FOR:**\n- Telegram bot listeners (24/7)\n- Email automation\n- Webhook endpoints\n- Simple task routing\n- Team-accessible workflows\n- Mobile-triggered actions\n- Scheduled reminders\n- External API integrations\n\n❌ **DON'T USE FOR:**\n- Heavy file processing\n- Large dataset analysis\n- Privacy-sensitive operations\n- Development/testing\n\n**Cost:** $20/mo (2,500 workflow executions)\n\n---\n\n## N8N LOCAL - WHEN TO USE\n\n✅ **PERFECT FOR:**\n- Document scanning (PROJ344)\n- Large file operations\n- Private/sensitive data\n- Complex data transformations\n- Development & testing\n- Backup workflows\n\n❌ **DON'T USE FOR:**\n- Need 24/7 availability\n- Team needs access\n- Mobile-triggered workflows\n\n**Cost:** Free (runs on your Mac)\n\n---\n\n## CLAUDE CODE - WHEN TO USE\n\n✅ **PERFECT FOR:**\n- Writing new code\n- Debugging existing scripts\n- Batch file operations\n- Complex AI analysis\n- Code refactoring\n- Project-wide changes\n- Generating documentation\n- Creating test suites\n\n❌ **DON'T USE FOR:**\n- Simple automations (use n8n)\n- 24/7 operations\n- Non-development tasks\n\n**Cost:** Uses your Claude API key (~$50-100/mo)\n\n---\n\n## SETUP CHECKLIST\n\n### n8n Cloud (15 min)\n- [ ] Sign up at n8n.io/cloud\n- [ ] Create workspace\n- [ ] Add Telegram credentials\n- [ ] Add Supabase credentials\n- [ ] Test simple workflow\n\n### Claude Code (10 min)\n- [ ] Install: `npm install -g @anthropic-ai/claude-code-cli`\n- [ ] Add API key: `export ANTHROPIC_API_KEY='sk-ant-...'`\n- [ ] Test: `claude-code \"hello\"`\n- [ ] Create project config\n\n### Integration (15 min)\n- [ ] Set up ngrok for local→cloud\n- [ ] Create webhook bridge\n- [ ] Test end-to-end flow\n\n---\n\n## COMMON WORKFLOWS\n\n### 1. TELEGRAM COMMAND HANDLER\n**Tool:** n8n Cloud ☁️\n**Why:** Must be always-on, mobile accessible\n```\n/status → n8n Cloud → Query DBs → Reply\n```\n\n### 2. DOCUMENT SCANNER\n**Tool:** Claude Code 🤖 (or n8n Local)\n**Why:** Heavy processing, local files\n```\nFiles → Claude Code → OCR + Analysis → Save\n```\n\n### 3. TASK ENRICHMENT\n**Tool:** n8n Cloud ☁️ + Claude API\n**Why:** User-facing, real-time response\n```\n/task [text] → n8n → Claude API → Airtable\n```\n\n### 4. CODE GENERATION\n**Tool:** Claude Code 🤖\n**Why:** Development work\n```\nclaude-code \"create [script]\" → Generated code\n```\n\n### 5. BATCH PROCESSING\n**Tool:** Claude Code 🤖\n**Why:** Many files, complex logic\n```\nFor each file → Process → Save results\n```\n\n---\n\n## QUICK START COMMANDS\n\n### n8n Cloud\n```bash\n# Access your instance\nhttps://yourname.app.n8n.cloud\n\n# Create workflow\nNew → Add Telegram Trigger → Configure\n\n# Test\nSend message to bot → Check execution log\n```\n\n### n8n Local\n```bash\n# Start local instance\nPATH=\"/opt/homebrew/opt/node@20/bin:$PATH\" n8n start\n\n# Access\nhttp://localhost:5678\n\n# Export workflow\nSettings → Export (save JSON)\n```\n\n### Claude Code\n```bash\n# Interactive session\nclaude-code\n\n# One-off command\nclaude-code \"analyze my Python files\"\n\n# Create new file\nclaude-code create \"script.py\"\n\n# With context\nclaude-code project\n```\n\n---\n\n## COST BREAKDOWN\n\n| Service | Monthly Cost | Worth It? |\n|---------|--------------|-----------|\n| n8n Cloud | $20 | ⭐⭐⭐⭐⭐ Yes! |\n| n8n Local | $0 | ⭐⭐⭐⭐ Free |\n| Claude API | $50-200 | ⭐⭐⭐⭐⭐ Yes! |\n| Claude Code CLI | $0 | ⭐⭐⭐⭐⭐ Free tool |\n| Supabase | $25 | ⭐⭐⭐⭐⭐ Yes! |\n| Airtable | $20 | ⭐⭐⭐⭐ Yes |\n| **TOTAL** | **$115-285** | **Priceless** |\n\n**ROI:** Run empire from phone = Worth 100x the cost\n\n---\n\n## TROUBLESHOOTING\n\n### n8n Cloud Can't Reach My Mac\n```bash\n# Install ngrok\nbrew install ngrok\nngrok http 5678\n\n# Use ngrok URL in cloud workflows\nhttps://abc123.ngrok.io/webhook/endpoint\n```\n\n### Claude Code Won't Start\n```bash\n# Check Node version\nnode --version  # Should be 18, 20, or 22\n\n# Reinstall\nnpm uninstall -g @anthropic-ai/claude-code-cli\nnpm install -g @anthropic-ai/claude-code-cli\n\n# Check API key\necho $ANTHROPIC_API_KEY\n```\n\n### n8n Workflow Fails\n```bash\n# Check execution log in n8n UI\n# Look for red error nodes\n# Click node → View details\n# Common issues:\n#   - Missing credentials\n#   - Wrong data format\n#   - Timeout (increase in settings)\n```\n\n### Claude API Rate Limit\n```python\n# Add retry logic to scripts\nimport time\n\nfor attempt in range(3):\n    try:\n        result = claude_api_call()\n        break\n    except RateLimitError:\n        time.sleep(2 ** attempt)  # 1s, 2s, 4s\n```\n\n---\n\n## YOUR FIRST 3 AUTOMATIONS\n\n### Today: Status Dashboard (30 min)\n```\n1. n8n Cloud: New workflow\n2. Telegram Trigger: /status\n3. Supabase node: Query revenue\n4. Telegram Send: Format and reply\n5. Test it!\n```\n\n### Tomorrow: Task Creation (45 min)\n```\n1. n8n Cloud: New workflow\n2. Telegram Trigger: /task\n3. HTTP node: Claude API (enrich task)\n4. Airtable node: Create record\n5. Telegram Send: Confirmation\n```\n\n### Day 3: Document Scanner (1 hour)\n```\n1. Terminal: claude-code\n2. \"Create document scanner script\"\n3. Test with sample file\n4. Connect to Supabase\n5. Schedule to run daily\n```\n\n---\n\n## KEYBOARD SHORTCUTS\n\n### n8n\n- `Ctrl/Cmd + K` - Quick search\n- `Tab` - Connect nodes\n- `Delete` - Remove node\n- `Ctrl/Cmd + S` - Save workflow\n- `Ctrl/Cmd + Enter` - Execute workflow\n\n### Claude Code\n- `Ctrl + C` - Stop generation\n- `Ctrl + D` - Exit session\n- `Up Arrow` - Previous command\n- `Tab` - Autocomplete\n\n---\n\n## MONITORING\n\n### Daily Checks (2 min)\n- [ ] n8n Cloud: Check execution history\n- [ ] Claude API: Check usage dashboard\n- [ ] Supabase: Check database size\n- [ ] Telegram: Test /status command\n\n### Weekly Reviews (15 min)\n- [ ] Review failed workflows\n- [ ] Optimize high-cost operations\n- [ ] Update workflows as needed\n- [ ] Check for new features\n\n---\n\n## SUPPORT RESOURCES\n\n**n8n:**\n- Docs: docs.n8n.io\n- Forum: community.n8n.io\n- Templates: n8n.io/workflows\n\n**Claude:**\n- Docs: docs.anthropic.com\n- Console: console.anthropic.com\n- Discord: discord.gg/anthropic\n\n**Your Setup:**\n- Main guide: CEO_N8N_CLAUDE_SETUP.md\n- Mobile guide: CEO_MOBILE_CLOUD_SETUP.md\n- Project context: /mnt/project/\n\n---\n\n## REMEMBER\n\n🎯 **Start Simple**\n- One workflow at a time\n- Test thoroughly\n- Add complexity gradually\n\n⚡ **Focus on Value**\n- Automate repetitive tasks first\n- Keep manual tasks that require judgment\n- Measure time saved vs cost\n\n👨‍👧 **Father First**\n- Automation serves your goals\n- More automation = More presence with Ashé\n- Business success = Resources for reunion\n\n---\n\nPrint this card and keep it visible!\n\nLast updated: Nov 4, 2025\n",
+  "content_preview": "# 🚀 QUICK REFERENCE: N8N + CLAUDE CODE\n*Print this and keep it visible during setup*\n\n## DECISION TREE: WHICH TOOL TO USE?\n\n```\nQuestion to ask: \"Where and when does this need to run?\"\n\n┌─ Needs to run 24/7, accessible anywhere?\n│  └─→ Use n8n CLOUD ☁️\n│\n┌─ Needs to process local files or heavy data?\n│  └─→ Use n8n LOCAL 💻 or Claude Code 🤖\n│\n┌─ Need to generate/modify code?\n│  └─→ Use Claude Code 🤖\n│\n┌─ Simple routing/logic, external triggers?\n│  └─→ Use n8n CLOUD ☁️\n│\n└─ Complex AI analysis, de...",
+  "sections": [
+    {
+      "title": "🚀 QUICK REFERENCE: N8N + CLAUDE CODE",
+      "content": "*Print this and keep it visible during setup*"
+    },
+    {
+      "title": "DECISION TREE: WHICH TOOL TO USE?",
+      "content": "```\nQuestion to ask: \"Where and when does this need to run?\"\n┌─ Needs to run 24/7, accessible anywhere?\n│  └─→ Use n8n CLOUD ☁️\n│\n┌─ Needs to process local files or heavy data?\n│  └─→ Use n8n LOCAL 💻 or Claude Code 🤖\n│\n┌─ Need to generate/modify code?\n│  └─→ Use Claude Code 🤖\n│\n┌─ Simple routing/logic, external triggers?\n│  └─→ Use n8n CLOUD ☁️\n│\n└─ Complex AI analysis, development work?\n   └─→ Use Claude Code 🤖\n```\n---"
+    },
+    {
+      "title": "N8N CLOUD - WHEN TO USE",
+      "content": ""
+    },
+    {
+      "title": "✅ **PERFECT FOR:**",
+      "content": "- Telegram bot listeners (24/7)\n- Email automation\n- Webhook endpoints\n- Simple task routing\n- Team-accessible workflows\n- Mobile-triggered actions\n- Scheduled reminders\n- External API integrations"
+    },
+    {
+      "title": "❌ **DON'T USE FOR:**",
+      "content": "- Heavy file processing\n- Large dataset analysis\n- Privacy-sensitive operations\n- Development/testing\n**Cost:** $20/mo (2,500 workflow executions)\n---"
+    },
+    {
+      "title": "N8N LOCAL - WHEN TO USE",
+      "content": ""
+    },
+    {
+      "title": "✅ **PERFECT FOR:**",
+      "content": "- Document scanning (PROJ344)\n- Large file operations\n- Private/sensitive data\n- Complex data transformations\n- Development & testing\n- Backup workflows"
+    },
+    {
+      "title": "❌ **DON'T USE FOR:**",
+      "content": "- Need 24/7 availability\n- Team needs access\n- Mobile-triggered workflows\n**Cost:** Free (runs on your Mac)\n---"
+    },
+    {
+      "title": "CLAUDE CODE - WHEN TO USE",
+      "content": ""
+    },
+    {
+      "title": "✅ **PERFECT FOR:**",
+      "content": "- Writing new code\n- Debugging existing scripts\n- Batch file operations\n- Complex AI analysis\n- Code refactoring\n- Project-wide changes\n- Generating documentation\n- Creating test suites"
+    },
+    {
+      "title": "❌ **DON'T USE FOR:**",
+      "content": "- Simple automations (use n8n)\n- 24/7 operations\n- Non-development tasks\n**Cost:** Uses your Claude API key (~$50-100/mo)\n---"
+    },
+    {
+      "title": "SETUP CHECKLIST",
+      "content": ""
+    },
+    {
+      "title": "n8n Cloud (15 min)",
+      "content": "- [ ] Sign up at n8n.io/cloud\n- [ ] Create workspace\n- [ ] Add Telegram credentials\n- [ ] Add Supabase credentials\n- [ ] Test simple workflow"
+    },
+    {
+      "title": "Claude Code (10 min)",
+      "content": "- [ ] Install: `npm install -g @anthropic-ai/claude-code-cli`\n- [ ] Add API key: `export ANTHROPIC_API_KEY='sk-ant-...'`\n- [ ] Test: `claude-code \"hello\"`\n- [ ] Create project config"
+    },
+    {
+      "title": "Integration (15 min)",
+      "content": "- [ ] Set up ngrok for local→cloud\n- [ ] Create webhook bridge\n- [ ] Test end-to-end flow\n---"
+    },
+    {
+      "title": "COMMON WORKFLOWS",
+      "content": ""
+    },
+    {
+      "title": "1. TELEGRAM COMMAND HANDLER",
+      "content": "**Tool:** n8n Cloud ☁️\n**Why:** Must be always-on, mobile accessible\n```\n/status → n8n Cloud → Query DBs → Reply\n```"
+    },
+    {
+      "title": "2. DOCUMENT SCANNER",
+      "content": "**Tool:** Claude Code 🤖 (or n8n Local)\n**Why:** Heavy processing, local files\n```\nFiles → Claude Code → OCR + Analysis → Save\n```"
+    },
+    {
+      "title": "3. TASK ENRICHMENT",
+      "content": "**Tool:** n8n Cloud ☁️ + Claude API\n**Why:** User-facing, real-time response\n```\n/task [text] → n8n → Claude API → Airtable\n```"
+    },
+    {
+      "title": "4. CODE GENERATION",
+      "content": "**Tool:** Claude Code 🤖\n**Why:** Development work\n```\nclaude-code \"create [script]\" → Generated code\n```"
+    },
+    {
+      "title": "5. BATCH PROCESSING",
+      "content": "**Tool:** Claude Code 🤖\n**Why:** Many files, complex logic\n```\nFor each file → Process → Save results\n```\n---"
+    },
+    {
+      "title": "QUICK START COMMANDS",
+      "content": ""
+    },
+    {
+      "title": "n8n Cloud",
+      "content": "```bash"
+    },
+    {
+      "title": "Access your instance",
+      "content": "https://yourname.app.n8n.cloud"
+    },
+    {
+      "title": "Create workflow",
+      "content": "New → Add Telegram Trigger → Configure"
+    },
+    {
+      "title": "Test",
+      "content": "Send message to bot → Check execution log\n```"
+    },
+    {
+      "title": "n8n Local",
+      "content": "```bash"
+    },
+    {
+      "title": "Start local instance",
+      "content": "PATH=\"/opt/homebrew/opt/node@20/bin:$PATH\" n8n start"
+    },
+    {
+      "title": "Access",
+      "content": "http://localhost:5678"
+    },
+    {
+      "title": "Export workflow",
+      "content": "Settings → Export (save JSON)\n```"
+    },
+    {
+      "title": "Claude Code",
+      "content": "```bash"
+    },
+    {
+      "title": "Interactive session",
+      "content": "claude-code"
+    },
+    {
+      "title": "One-off command",
+      "content": "claude-code \"analyze my Python files\""
+    },
+    {
+      "title": "Create new file",
+      "content": "claude-code create \"script.py\""
+    },
+    {
+      "title": "With context",
+      "content": "claude-code project\n```\n---"
+    },
+    {
+      "title": "COST BREAKDOWN",
+      "content": "| Service | Monthly Cost | Worth It? |\n|---------|--------------|-----------|\n| n8n Cloud | $20 | ⭐⭐⭐⭐⭐ Yes! |\n| n8n Local | $0 | ⭐⭐⭐⭐ Free |\n| Claude API | $50-200 | ⭐⭐⭐⭐⭐ Yes! |\n| Claude Code CLI | $0 | ⭐⭐⭐⭐⭐ Free tool |\n| Supabase | $25 | ⭐⭐⭐⭐⭐ Yes! |\n| Airtable | $20 | ⭐⭐⭐⭐ Yes |\n| **TOTAL** | **$115-285** | **Priceless** |\n**ROI:** Run empire from phone = Worth 100x the cost\n---"
+    },
+    {
+      "title": "TROUBLESHOOTING",
+      "content": ""
+    },
+    {
+      "title": "n8n Cloud Can't Reach My Mac",
+      "content": "```bash"
+    },
+    {
+      "title": "Install ngrok",
+      "content": "brew install ngrok\nngrok http 5678"
+    },
+    {
+      "title": "Use ngrok URL in cloud workflows",
+      "content": "https://abc123.ngrok.io/webhook/endpoint\n```"
+    },
+    {
+      "title": "Claude Code Won't Start",
+      "content": "```bash"
+    },
+    {
+      "title": "Check Node version",
+      "content": "node --version  # Should be 18, 20, or 22"
+    },
+    {
+      "title": "Reinstall",
+      "content": "npm uninstall -g @anthropic-ai/claude-code-cli\nnpm install -g @anthropic-ai/claude-code-cli"
+    },
+    {
+      "title": "Check API key",
+      "content": "echo $ANTHROPIC_API_KEY\n```"
+    },
+    {
+      "title": "n8n Workflow Fails",
+      "content": "```bash"
+    },
+    {
+      "title": "Check execution log in n8n UI",
+      "content": ""
+    },
+    {
+      "title": "Look for red error nodes",
+      "content": ""
+    },
+    {
+      "title": "Click node → View details",
+      "content": ""
+    },
+    {
+      "title": "Common issues:",
+      "content": ""
+    },
+    {
+      "title": "- Missing credentials",
+      "content": ""
+    },
+    {
+      "title": "- Wrong data format",
+      "content": ""
+    },
+    {
+      "title": "- Timeout (increase in settings)",
+      "content": "```"
+    },
+    {
+      "title": "Claude API Rate Limit",
+      "content": "```python"
+    },
+    {
+      "title": "Add retry logic to scripts",
+      "content": "import time\nfor attempt in range(3):\n    try:\n        result = claude_api_call()\n        break\n    except RateLimitError:\n        time.sleep(2 ** attempt)  # 1s, 2s, 4s\n```\n---"
+    },
+    {
+      "title": "YOUR FIRST 3 AUTOMATIONS",
+      "content": ""
+    },
+    {
+      "title": "Today: Status Dashboard (30 min)",
+      "content": "```\n1. n8n Cloud: New workflow\n2. Telegram Trigger: /status\n3. Supabase node: Query revenue\n4. Telegram Send: Format and reply\n5. Test it!\n```"
+    },
+    {
+      "title": "Tomorrow: Task Creation (45 min)",
+      "content": "```\n1. n8n Cloud: New workflow\n2. Telegram Trigger: /task\n3. HTTP node: Claude API (enrich task)\n4. Airtable node: Create record\n5. Telegram Send: Confirmation\n```"
+    },
+    {
+      "title": "Day 3: Document Scanner (1 hour)",
+      "content": "```\n1. Terminal: claude-code\n2. \"Create document scanner script\"\n3. Test with sample file\n4. Connect to Supabase\n5. Schedule to run daily\n```\n---"
+    },
+    {
+      "title": "KEYBOARD SHORTCUTS",
+      "content": ""
+    },
+    {
+      "title": "n8n",
+      "content": "- `Ctrl/Cmd + K` - Quick search\n- `Tab` - Connect nodes\n- `Delete` - Remove node\n- `Ctrl/Cmd + S` - Save workflow\n- `Ctrl/Cmd + Enter` - Execute workflow"
+    },
+    {
+      "title": "Claude Code",
+      "content": "- `Ctrl + C` - Stop generation\n- `Ctrl + D` - Exit session\n- `Up Arrow` - Previous command\n- `Tab` - Autocomplete\n---"
+    },
+    {
+      "title": "MONITORING",
+      "content": ""
+    },
+    {
+      "title": "Daily Checks (2 min)",
+      "content": "- [ ] n8n Cloud: Check execution history\n- [ ] Claude API: Check usage dashboard\n- [ ] Supabase: Check database size\n- [ ] Telegram: Test /status command"
+    },
+    {
+      "title": "Weekly Reviews (15 min)",
+      "content": "- [ ] Review failed workflows\n- [ ] Optimize high-cost operations\n- [ ] Update workflows as needed\n- [ ] Check for new features\n---"
+    },
+    {
+      "title": "SUPPORT RESOURCES",
+      "content": "**n8n:**\n- Docs: docs.n8n.io\n- Forum: community.n8n.io\n- Templates: n8n.io/workflows\n**Claude:**\n- Docs: docs.anthropic.com\n- Console: console.anthropic.com\n- Discord: discord.gg/anthropic\n**Your Setup:**\n- Main guide: CEO_N8N_CLAUDE_SETUP.md\n- Mobile guide: CEO_MOBILE_CLOUD_SETUP.md\n- Project context: /mnt/project/\n---"
+    },
+    {
+      "title": "REMEMBER",
+      "content": "🎯 **Start Simple**\n- One workflow at a time\n- Test thoroughly\n- Add complexity gradually\n⚡ **Focus on Value**\n- Automate repetitive tasks first\n- Keep manual tasks that require judgment\n- Measure time saved vs cost\n👨‍👧 **Father First**\n- Automation serves your goals\n- More automation = More presence with Ashé\n- Business success = Resources for reunion\n---\nPrint this card and keep it visible!\nLast updated: Nov 4, 2025"
+    }
+  ],
+  "extraction_success": true,
+  "extraction_error": null
+}

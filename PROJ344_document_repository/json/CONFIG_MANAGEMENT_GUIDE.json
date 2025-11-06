@@ -1,0 +1,340 @@
+{
+  "metadata": {
+    "file_path": "C:\\Users\\DonBucknor_n0ufqwv\\GettingStarted\\ASEAGI\\CONFIG_MANAGEMENT_GUIDE.md",
+    "file_name": "CONFIG_MANAGEMENT_GUIDE.md",
+    "file_type": "md",
+    "file_size": 10449,
+    "file_hash": "ae8605cfe6cf031ee7b47534cd3c8bac",
+    "extraction_date": "2025-11-06T09:18:56.596703",
+    "extraction_method": "direct_read",
+    "title": "# Configuration Management Guide",
+    "author": null,
+    "created_date": "2025-11-06T08:49:01.632947",
+    "modified_date": "2025-11-06T08:49:01.632947",
+    "page_count": null,
+    "word_count": 1269,
+    "char_count": 10414
+  },
+  "content": "# Configuration Management Guide\n\n**Universal secret management system for PROJ344 across all repositories**\n\nCreated: 2025-11-06\nStatus: Production Ready\n\n---\n\n## Overview\n\nIndustry-standard configuration management system that works across:\n- ✅ Streamlit apps (secrets.toml)\n- ✅ Python scripts (.env files)\n- ✅ Multiple repositories (shared secrets directory)\n- ✅ Production environments (environment variables)\n- ✅ Cloud deployments (AWS, Azure, GCP)\n\n---\n\n## Quick Start (2 Minutes)\n\n### Step 1: Setup Shared Secrets (Already Done!)\n\n```bash\ncd ASEAGI\npython setup_shared_secrets.py\n```\n\n**Created:**\n- `~/.proj344_secrets/.env` - Shared secrets directory\n- All secrets converted from Streamlit secrets.toml\n\n### Step 2: Use in Any Script\n\n```python\nfrom config_loader import get_secret\n\n# Get secrets (works everywhere!)\nsupabase_url = get_secret('SUPABASE_URL')\nopenai_key = get_secret('OPENAI_API_KEY')\nanthropic_key = get_secret('ANTHROPIC_API_KEY')\n```\n\n### Step 3: Copy to Other Repos\n\n```bash\n# Copy config_loader.py to any other repo\ncp config_loader.py ../other_repo/\n\n# Use immediately - secrets load automatically!\n```\n\n---\n\n## How It Works\n\n### Priority Order (Automatic)\n\n1. **Streamlit secrets** - If running in Streamlit app\n2. **Specified .env file** - If you provide a path\n3. **Local .env** - In current directory\n4. **Shared secrets** - `~/.proj344_secrets/.env`\n5. **Environment variables** - System-wide\n\n**No configuration needed!** The loader automatically finds your secrets.\n\n---\n\n## Files Created\n\n### 1. config_loader.py (Universal Loader)\n\n**Purpose:** Load secrets from any source\n**Usage:** Works with all scripts, all repos, all environments\n\n```python\nfrom config_loader import ConfigLoader\n\n# Load configuration\nconfig = ConfigLoader()\nsecrets = config.load()\n\n# Get individual secrets\nsupabase_url = config.get('SUPABASE_URL')\n\n# Or use convenience function\nfrom config_loader import get_secret\napi_key = get_secret('OPENAI_API_KEY')\n```\n\n### 2. setup_shared_secrets.py (Setup Script)\n\n**Purpose:** Create shared secrets directory\n**Usage:** Run once to setup\n\n```bash\npython setup_shared_secrets.py\n```\n\n**What it does:**\n- Creates `~/.proj344_secrets/` directory\n- Converts Streamlit secrets to .env format\n- Tests the config loader\n- Displays status\n\n### 3. .env.example (Template)\n\n**Purpose:** Template for new repos\n**Usage:** Copy to .env and fill in values\n\n```bash\ncp .env.example .env\n# Edit .env with your actual secrets\n```\n\n---\n\n## Usage Examples\n\n### Example 1: Simple Script\n\n```python\n# my_script.py\nfrom config_loader import get_secret\nfrom supabase import create_client\n\n# Secrets load automatically!\nsupabase = create_client(\n    get_secret('SUPABASE_URL'),\n    get_secret('SUPABASE_KEY')\n)\n\ndocuments = supabase.table('documents').select('*').execute()\nprint(f\"Found {len(documents.data)} documents\")\n```\n\n### Example 2: Streamlit App\n\n```python\n# streamlit_app.py\nimport streamlit as st\nfrom config_loader import get_secret\n\n# Works with both secrets.toml and shared secrets!\nst.title(\"PROJ344 Dashboard\")\n\nsupabase_url = get_secret('SUPABASE_URL')\nst.write(f\"Connected to: {supabase_url}\")\n```\n\n### Example 3: Check Configuration Status\n\n```python\nfrom config_loader import print_config_status\n\n# Print detailed status\nprint_config_status()\n```\n\n**Output:**\n```\n================================================================================\nCONFIGURATION STATUS\n================================================================================\nSource: Streamlit secrets.toml\nSecrets loaded: 5\n\nAvailable secrets:\n  ANTHROPIC_API_KEY: sk-ant-api...A-Z6RI0AAA\n  OPENAI_API_KEY: sk-proj-Tj...3BO3t8-SoA\n  SUPABASE_KEY: eyJhbGciOi...x3IbxfPh8c\n  SUPABASE_URL: https://jv...upabase.co\n  TELEGRAM_BOT_TOKEN: 8564713661...KT8rjBAhKw\n================================================================================\n```\n\n---\n\n## Cross-Repository Setup\n\n### Scenario: New Repository Needs Secrets\n\n**Option 1: Copy config_loader.py (Recommended)**\n\n```bash\n# In new repo\ncp ~/path/to/ASEAGI/config_loader.py .\n\n# Use immediately\nfrom config_loader import get_secret\nsupabase_url = get_secret('SUPABASE_URL')  # Works!\n```\n\n**Option 2: Create Local .env**\n\n```bash\n# In new repo\ncp ~/path/to/ASEAGI/.env.example .env\n# Edit .env with your values\n```\n\n**Option 3: Use Shared Secrets (Already Setup)**\n\n```bash\n# Nothing to do!\n# config_loader.py automatically reads from ~/.proj344_secrets/.env\n```\n\n---\n\n## Industry Best Practices\n\n### ✅ Security Best Practices\n\n1. **Never commit secrets to git**\n   ```bash\n   # .gitignore (already configured)\n   .env\n   .env.local\n   .streamlit/secrets.toml\n   config.local.yaml\n   ```\n\n2. **Use different secrets for dev/staging/production**\n   ```python\n   # config_loader.py supports environment-specific files\n   config = ConfigLoader(env_file='.env.production')\n   ```\n\n3. **Rotate secrets regularly**\n   - Change API keys every 90 days\n   - Immediately rotate if compromised\n   - Keep rotation log in secure location\n\n4. **Use secret management services for production**\n   - AWS Secrets Manager\n   - Azure Key Vault\n   - Google Cloud Secret Manager\n   - HashiCorp Vault\n\n### ✅ Development Best Practices\n\n1. **Always use .env.example for documentation**\n   ```bash\n   # Commit .env.example (no real secrets)\n   git add .env.example\n   git commit -m \"Add environment template\"\n   ```\n\n2. **Use type hints**\n   ```python\n   def connect_to_db() -> Client:\n       url: str = get_secret('SUPABASE_URL')\n       key: str = get_secret('SUPABASE_KEY')\n       return create_client(url, key)\n   ```\n\n3. **Validate secrets on startup**\n   ```python\n   required_secrets = ['SUPABASE_URL', 'SUPABASE_KEY', 'OPENAI_API_KEY']\n\n   for secret in required_secrets:\n       if not get_secret(secret):\n           raise ValueError(f\"Missing required secret: {secret}\")\n   ```\n\n---\n\n## Cloud Deployment\n\n### Streamlit Community Cloud\n\n1. Deploy app to Streamlit Cloud\n2. Go to app settings → Secrets\n3. Paste your secrets:\n\n```toml\nSUPABASE_URL = \"https://jvjlhxodmbkodzmggwpu.supabase.co\"\nSUPABASE_KEY = \"eyJhbGciOi...\"\nOPENAI_API_KEY = \"sk-proj-...\"\nANTHROPIC_API_KEY = \"sk-ant-...\"\nTELEGRAM_BOT_TOKEN = \"8564713661:...\"\n```\n\n4. App automatically uses these secrets (config_loader.py detects Streamlit)\n\n### AWS Lambda / EC2\n\n```bash\n# Set environment variables\nexport SUPABASE_URL=https://jvjlhxodmbkodzmggwpu.supabase.co\nexport SUPABASE_KEY=eyJhbGciOi...\nexport OPENAI_API_KEY=sk-proj-...\n\n# config_loader.py automatically reads from environment\n```\n\n### Docker\n\n```dockerfile\n# Dockerfile\nFROM python:3.11\n\n# Copy code\nCOPY . /app\nWORKDIR /app\n\n# Secrets passed as environment variables at runtime\n# docker run -e SUPABASE_URL=... -e SUPABASE_KEY=... myapp\n```\n\n### Heroku\n\n```bash\n# Set config vars\nheroku config:set SUPABASE_URL=https://...\nheroku config:set SUPABASE_KEY=eyJhbGciOi...\nheroku config:set OPENAI_API_KEY=sk-proj-...\n```\n\n---\n\n## Available Secrets\n\nYour system currently has these secrets configured:\n\n| Secret | Description | Usage |\n|--------|-------------|-------|\n| `SUPABASE_URL` | Supabase project URL | Database connection |\n| `SUPABASE_KEY` | Supabase anon key | Database authentication |\n| `OPENAI_API_KEY` | OpenAI API key | Embeddings, GPT models |\n| `ANTHROPIC_API_KEY` | Anthropic API key | Claude models |\n| `TELEGRAM_BOT_TOKEN` | Telegram bot token | Bot communication |\n| `NEO4J_URI` | Neo4j connection URI | Graph database (optional) |\n| `NEO4J_USER` | Neo4j username | Graph database (optional) |\n| `NEO4J_PASSWORD` | Neo4j password | Graph database (optional) |\n| `QDRANT_URL` | Qdrant API URL | Vector search (optional) |\n| `QDRANT_API_KEY` | Qdrant API key | Vector search (optional) |\n| `PINECONE_API_KEY` | Pinecone API key | Vector search (optional) |\n| `PINECONE_ENVIRONMENT` | Pinecone environment | Vector search (optional) |\n\n---\n\n## Troubleshooting\n\n### Issue: \"No secrets found\"\n\n**Solution:**\n```bash\n# Check where config loader is looking\npython config_loader.py\n\n# Output shows priority order and what was found\n```\n\n### Issue: \"Can't find config_loader.py\"\n\n**Solution:**\n```bash\n# Copy from ASEAGI repo\ncp ~/path/to/ASEAGI/config_loader.py .\n```\n\n### Issue: \"Secrets work locally but not in production\"\n\n**Solution:**\n```python\n# Debug in production\nfrom config_loader import print_config_status\nprint_config_status()\n\n# Shows which source was used and what secrets were found\n```\n\n### Issue: \"Need different secrets for different environments\"\n\n**Solution:**\n```python\n# Use environment-specific files\nimport os\nenv = os.getenv('ENVIRONMENT', 'development')\nconfig = ConfigLoader(env_file=f'.env.{env}')\n\n# Then:\n# .env.development\n# .env.staging\n# .env.production\n```\n\n---\n\n## Migration Guide\n\n### From Streamlit Secrets Only\n\n**Before:**\n```python\nimport streamlit as st\nsupabase_url = st.secrets['SUPABASE_URL']  # Only works in Streamlit\n```\n\n**After:**\n```python\nfrom config_loader import get_secret\nsupabase_url = get_secret('SUPABASE_URL')  # Works everywhere!\n```\n\n### From Environment Variables Only\n\n**Before:**\n```python\nimport os\nsupabase_url = os.getenv('SUPABASE_URL')  # Must set in environment\n```\n\n**After:**\n```python\nfrom config_loader import get_secret\nsupabase_url = get_secret('SUPABASE_URL')  # Tries multiple sources\n```\n\n### From Hardcoded Secrets (Never Do This!)\n\n**Before:**\n```python\napi_key = \"sk-proj-abc123...\"  # ❌ NEVER DO THIS\n```\n\n**After:**\n```python\nfrom config_loader import get_secret\napi_key = get_secret('OPENAI_API_KEY')  # ✅ Industry best practice\n```\n\n---\n\n## Summary\n\n**What You Have Now:**\n\n✅ **Universal config loader** - Works with Streamlit, scripts, any repo\n✅ **Shared secrets directory** - `~/.proj344_secrets/.env`\n✅ **Industry best practices** - Follows standard patterns\n✅ **Zero breaking changes** - Existing code still works\n✅ **Production ready** - Works in cloud deployments\n\n**Setup Time:** 2 minutes\n**Maintenance:** Zero - it just works!\n\n**Usage:**\n```python\nfrom config_loader import get_secret\n\n# That's it! Use anywhere, anytime\nsupabase_url = get_secret('SUPABASE_URL')\n```\n\n---\n\n## For Ashe. For Justice. For All Children. 🛡️\n\nSecure configuration management ensures your secrets stay safe while being easily accessible across all your PROJ344 systems.\n\n**Created:** 2025-11-06\n**Files:** config_loader.py, setup_shared_secrets.py, .env.example\n**Status:** Production Ready\n**Shared Secrets:** ~/.proj344_secrets/.env\n",
+  "content_preview": "# Configuration Management Guide\n\n**Universal secret management system for PROJ344 across all repositories**\n\nCreated: 2025-11-06\nStatus: Production Ready\n\n---\n\n## Overview\n\nIndustry-standard configuration management system that works across:\n- ✅ Streamlit apps (secrets.toml)\n- ✅ Python scripts (.env files)\n- ✅ Multiple repositories (shared secrets directory)\n- ✅ Production environments (environment variables)\n- ✅ Cloud deployments (AWS, Azure, GCP)\n\n---\n\n## Quick Start (2 Minutes)\n\n### Step 1: ...",
+  "sections": [
+    {
+      "title": "Configuration Management Guide",
+      "content": "**Universal secret management system for PROJ344 across all repositories**\nCreated: 2025-11-06\nStatus: Production Ready\n---"
+    },
+    {
+      "title": "Overview",
+      "content": "Industry-standard configuration management system that works across:\n- ✅ Streamlit apps (secrets.toml)\n- ✅ Python scripts (.env files)\n- ✅ Multiple repositories (shared secrets directory)\n- ✅ Production environments (environment variables)\n- ✅ Cloud deployments (AWS, Azure, GCP)\n---"
+    },
+    {
+      "title": "Quick Start (2 Minutes)",
+      "content": ""
+    },
+    {
+      "title": "Step 1: Setup Shared Secrets (Already Done!)",
+      "content": "```bash\ncd ASEAGI\npython setup_shared_secrets.py\n```\n**Created:**\n- `~/.proj344_secrets/.env` - Shared secrets directory\n- All secrets converted from Streamlit secrets.toml"
+    },
+    {
+      "title": "Step 2: Use in Any Script",
+      "content": "```python\nfrom config_loader import get_secret"
+    },
+    {
+      "title": "Get secrets (works everywhere!)",
+      "content": "supabase_url = get_secret('SUPABASE_URL')\nopenai_key = get_secret('OPENAI_API_KEY')\nanthropic_key = get_secret('ANTHROPIC_API_KEY')\n```"
+    },
+    {
+      "title": "Step 3: Copy to Other Repos",
+      "content": "```bash"
+    },
+    {
+      "title": "Copy config_loader.py to any other repo",
+      "content": "cp config_loader.py ../other_repo/"
+    },
+    {
+      "title": "Use immediately - secrets load automatically!",
+      "content": "```\n---"
+    },
+    {
+      "title": "How It Works",
+      "content": ""
+    },
+    {
+      "title": "Priority Order (Automatic)",
+      "content": "1. **Streamlit secrets** - If running in Streamlit app\n2. **Specified .env file** - If you provide a path\n3. **Local .env** - In current directory\n4. **Shared secrets** - `~/.proj344_secrets/.env`\n5. **Environment variables** - System-wide\n**No configuration needed!** The loader automatically finds your secrets.\n---"
+    },
+    {
+      "title": "Files Created",
+      "content": ""
+    },
+    {
+      "title": "1. config_loader.py (Universal Loader)",
+      "content": "**Purpose:** Load secrets from any source\n**Usage:** Works with all scripts, all repos, all environments\n```python\nfrom config_loader import ConfigLoader"
+    },
+    {
+      "title": "Load configuration",
+      "content": "config = ConfigLoader()\nsecrets = config.load()"
+    },
+    {
+      "title": "Get individual secrets",
+      "content": "supabase_url = config.get('SUPABASE_URL')"
+    },
+    {
+      "title": "Or use convenience function",
+      "content": "from config_loader import get_secret\napi_key = get_secret('OPENAI_API_KEY')\n```"
+    },
+    {
+      "title": "2. setup_shared_secrets.py (Setup Script)",
+      "content": "**Purpose:** Create shared secrets directory\n**Usage:** Run once to setup\n```bash\npython setup_shared_secrets.py\n```\n**What it does:**\n- Creates `~/.proj344_secrets/` directory\n- Converts Streamlit secrets to .env format\n- Tests the config loader\n- Displays status"
+    },
+    {
+      "title": "3. .env.example (Template)",
+      "content": "**Purpose:** Template for new repos\n**Usage:** Copy to .env and fill in values\n```bash\ncp .env.example .env"
+    },
+    {
+      "title": "Edit .env with your actual secrets",
+      "content": "```\n---"
+    },
+    {
+      "title": "Usage Examples",
+      "content": ""
+    },
+    {
+      "title": "Example 1: Simple Script",
+      "content": "```python"
+    },
+    {
+      "title": "my_script.py",
+      "content": "from config_loader import get_secret\nfrom supabase import create_client"
+    },
+    {
+      "title": "Secrets load automatically!",
+      "content": "supabase = create_client(\n    get_secret('SUPABASE_URL'),\n    get_secret('SUPABASE_KEY')\n)\ndocuments = supabase.table('documents').select('*').execute()\nprint(f\"Found {len(documents.data)} documents\")\n```"
+    },
+    {
+      "title": "Example 2: Streamlit App",
+      "content": "```python"
+    },
+    {
+      "title": "streamlit_app.py",
+      "content": "import streamlit as st\nfrom config_loader import get_secret"
+    },
+    {
+      "title": "Works with both secrets.toml and shared secrets!",
+      "content": "st.title(\"PROJ344 Dashboard\")\nsupabase_url = get_secret('SUPABASE_URL')\nst.write(f\"Connected to: {supabase_url}\")\n```"
+    },
+    {
+      "title": "Example 3: Check Configuration Status",
+      "content": "```python\nfrom config_loader import print_config_status"
+    },
+    {
+      "title": "Print detailed status",
+      "content": "print_config_status()\n```\n**Output:**\n```\n================================================================================"
+    },
+    {
+      "title": "CONFIGURATION STATUS",
+      "content": "================================================================================\nSource: Streamlit secrets.toml\nSecrets loaded: 5\nAvailable secrets:\n  ANTHROPIC_API_KEY: sk-ant-api...A-Z6RI0AAA\n  OPENAI_API_KEY: sk-proj-Tj...3BO3t8-SoA\n  SUPABASE_KEY: eyJhbGciOi...x3IbxfPh8c\n  SUPABASE_URL: https://jv...upabase.co\n  TELEGRAM_BOT_TOKEN: 8564713661...KT8rjBAhKw\n================================================================================\n```\n---"
+    },
+    {
+      "title": "Cross-Repository Setup",
+      "content": ""
+    },
+    {
+      "title": "Scenario: New Repository Needs Secrets",
+      "content": "**Option 1: Copy config_loader.py (Recommended)**\n```bash"
+    },
+    {
+      "title": "In new repo",
+      "content": "cp ~/path/to/ASEAGI/config_loader.py ."
+    },
+    {
+      "title": "Use immediately",
+      "content": "from config_loader import get_secret\nsupabase_url = get_secret('SUPABASE_URL')  # Works!\n```\n**Option 2: Create Local .env**\n```bash"
+    },
+    {
+      "title": "In new repo",
+      "content": "cp ~/path/to/ASEAGI/.env.example .env"
+    },
+    {
+      "title": "Edit .env with your values",
+      "content": "```\n**Option 3: Use Shared Secrets (Already Setup)**\n```bash"
+    },
+    {
+      "title": "Nothing to do!",
+      "content": ""
+    },
+    {
+      "title": "config_loader.py automatically reads from ~/.proj344_secrets/.env",
+      "content": "```\n---"
+    },
+    {
+      "title": "Industry Best Practices",
+      "content": ""
+    },
+    {
+      "title": "✅ Security Best Practices",
+      "content": "1. **Never commit secrets to git**\n   ```bash"
+    },
+    {
+      "title": ".gitignore (already configured)",
+      "content": ".env\n   .env.local\n   .streamlit/secrets.toml\n   config.local.yaml\n   ```\n2. **Use different secrets for dev/staging/production**\n   ```python"
+    },
+    {
+      "title": "config_loader.py supports environment-specific files",
+      "content": "config = ConfigLoader(env_file='.env.production')\n   ```\n3. **Rotate secrets regularly**\n   - Change API keys every 90 days\n   - Immediately rotate if compromised\n   - Keep rotation log in secure location\n4. **Use secret management services for production**\n   - AWS Secrets Manager\n   - Azure Key Vault\n   - Google Cloud Secret Manager\n   - HashiCorp Vault"
+    },
+    {
+      "title": "✅ Development Best Practices",
+      "content": "1. **Always use .env.example for documentation**\n   ```bash"
+    },
+    {
+      "title": "Commit .env.example (no real secrets)",
+      "content": "git add .env.example\n   git commit -m \"Add environment template\"\n   ```\n2. **Use type hints**\n   ```python\n   def connect_to_db() -> Client:\n       url: str = get_secret('SUPABASE_URL')\n       key: str = get_secret('SUPABASE_KEY')\n       return create_client(url, key)\n   ```\n3. **Validate secrets on startup**\n   ```python\n   required_secrets = ['SUPABASE_URL', 'SUPABASE_KEY', 'OPENAI_API_KEY']\n   for secret in required_secrets:\n       if not get_secret(secret):\n           raise ValueError(f\"Missing required secret: {secret}\")\n   ```\n---"
+    },
+    {
+      "title": "Cloud Deployment",
+      "content": ""
+    },
+    {
+      "title": "Streamlit Community Cloud",
+      "content": "1. Deploy app to Streamlit Cloud\n2. Go to app settings → Secrets\n3. Paste your secrets:\n```toml\nSUPABASE_URL = \"https://jvjlhxodmbkodzmggwpu.supabase.co\"\nSUPABASE_KEY = \"eyJhbGciOi...\"\nOPENAI_API_KEY = \"sk-proj-...\"\nANTHROPIC_API_KEY = \"sk-ant-...\""
+    },
+    {
+      "title": "TELEGRAM_BOT_TOKEN = \"8564713661:...\"",
+      "content": "```\n4. App automatically uses these secrets (config_loader.py detects Streamlit)"
+    },
+    {
+      "title": "AWS Lambda / EC2",
+      "content": "```bash"
+    },
+    {
+      "title": "Set environment variables",
+      "content": "export SUPABASE_URL=https://jvjlhxodmbkodzmggwpu.supabase.co\nexport SUPABASE_KEY=eyJhbGciOi...\nexport OPENAI_API_KEY=sk-proj-..."
+    },
+    {
+      "title": "config_loader.py automatically reads from environment",
+      "content": "```"
+    },
+    {
+      "title": "Docker",
+      "content": "```dockerfile"
+    },
+    {
+      "title": "Dockerfile",
+      "content": "FROM python:3.11"
+    },
+    {
+      "title": "Copy code",
+      "content": "COPY . /app\nWORKDIR /app"
+    },
+    {
+      "title": "Secrets passed as environment variables at runtime",
+      "content": ""
+    },
+    {
+      "title": "docker run -e SUPABASE_URL=... -e SUPABASE_KEY=... myapp",
+      "content": "```"
+    },
+    {
+      "title": "Heroku",
+      "content": "```bash"
+    },
+    {
+      "title": "Set config vars",
+      "content": "heroku config:set SUPABASE_URL=https://...\nheroku config:set SUPABASE_KEY=eyJhbGciOi...\nheroku config:set OPENAI_API_KEY=sk-proj-...\n```\n---"
+    },
+    {
+      "title": "Available Secrets",
+      "content": "Your system currently has these secrets configured:\n| Secret | Description | Usage |\n|--------|-------------|-------|\n| `SUPABASE_URL` | Supabase project URL | Database connection |\n| `SUPABASE_KEY` | Supabase anon key | Database authentication |\n| `OPENAI_API_KEY` | OpenAI API key | Embeddings, GPT models |\n| `ANTHROPIC_API_KEY` | Anthropic API key | Claude models |\n| `TELEGRAM_BOT_TOKEN` | Telegram bot token | Bot communication |\n| `NEO4J_URI` | Neo4j connection URI | Graph database (optional) |\n| `NEO4J_USER` | Neo4j username | Graph database (optional) |\n| `NEO4J_PASSWORD` | Neo4j password | Graph database (optional) |\n| `QDRANT_URL` | Qdrant API URL | Vector search (optional) |\n| `QDRANT_API_KEY` | Qdrant API key | Vector search (optional) |\n| `PINECONE_API_KEY` | Pinecone API key | Vector search (optional) |\n| `PINECONE_ENVIRONMENT` | Pinecone environment | Vector search (optional) |\n---"
+    },
+    {
+      "title": "Troubleshooting",
+      "content": ""
+    },
+    {
+      "title": "Issue: \"No secrets found\"",
+      "content": "**Solution:**\n```bash"
+    },
+    {
+      "title": "Check where config loader is looking",
+      "content": "python config_loader.py"
+    },
+    {
+      "title": "Output shows priority order and what was found",
+      "content": "```"
+    },
+    {
+      "title": "Issue: \"Can't find config_loader.py\"",
+      "content": "**Solution:**\n```bash"
+    },
+    {
+      "title": "Copy from ASEAGI repo",
+      "content": "cp ~/path/to/ASEAGI/config_loader.py .\n```"
+    },
+    {
+      "title": "Issue: \"Secrets work locally but not in production\"",
+      "content": "**Solution:**\n```python"
+    },
+    {
+      "title": "Debug in production",
+      "content": "from config_loader import print_config_status\nprint_config_status()"
+    },
+    {
+      "title": "Shows which source was used and what secrets were found",
+      "content": "```"
+    },
+    {
+      "title": "Issue: \"Need different secrets for different environments\"",
+      "content": "**Solution:**\n```python"
+    },
+    {
+      "title": "Use environment-specific files",
+      "content": "import os\nenv = os.getenv('ENVIRONMENT', 'development')\nconfig = ConfigLoader(env_file=f'.env.{env}')"
+    },
+    {
+      "title": "Then:",
+      "content": ""
+    },
+    {
+      "title": ".env.development",
+      "content": ""
+    },
+    {
+      "title": ".env.staging",
+      "content": ""
+    },
+    {
+      "title": ".env.production",
+      "content": "```\n---"
+    },
+    {
+      "title": "Migration Guide",
+      "content": ""
+    },
+    {
+      "title": "From Streamlit Secrets Only",
+      "content": "**Before:**\n```python\nimport streamlit as st\nsupabase_url = st.secrets['SUPABASE_URL']  # Only works in Streamlit\n```\n**After:**\n```python\nfrom config_loader import get_secret\nsupabase_url = get_secret('SUPABASE_URL')  # Works everywhere!\n```"
+    },
+    {
+      "title": "From Environment Variables Only",
+      "content": "**Before:**\n```python\nimport os\nsupabase_url = os.getenv('SUPABASE_URL')  # Must set in environment\n```\n**After:**\n```python\nfrom config_loader import get_secret\nsupabase_url = get_secret('SUPABASE_URL')  # Tries multiple sources\n```"
+    },
+    {
+      "title": "From Hardcoded Secrets (Never Do This!)",
+      "content": "**Before:**\n```python\napi_key = \"sk-proj-abc123...\"  # ❌ NEVER DO THIS\n```\n**After:**\n```python\nfrom config_loader import get_secret\napi_key = get_secret('OPENAI_API_KEY')  # ✅ Industry best practice\n```\n---"
+    },
+    {
+      "title": "Summary",
+      "content": "**What You Have Now:**\n✅ **Universal config loader** - Works with Streamlit, scripts, any repo\n✅ **Shared secrets directory** - `~/.proj344_secrets/.env`\n✅ **Industry best practices** - Follows standard patterns\n✅ **Zero breaking changes** - Existing code still works\n✅ **Production ready** - Works in cloud deployments\n**Setup Time:** 2 minutes\n**Maintenance:** Zero - it just works!\n**Usage:**\n```python\nfrom config_loader import get_secret"
+    },
+    {
+      "title": "That's it! Use anywhere, anytime",
+      "content": "supabase_url = get_secret('SUPABASE_URL')\n```\n---"
+    },
+    {
+      "title": "For Ashe. For Justice. For All Children. 🛡️",
+      "content": "Secure configuration management ensures your secrets stay safe while being easily accessible across all your PROJ344 systems.\n**Created:** 2025-11-06\n**Files:** config_loader.py, setup_shared_secrets.py, .env.example\n**Status:** Production Ready\n**Shared Secrets:** ~/.proj344_secrets/.env"
+    }
+  ],
+  "extraction_success": true,
+  "extraction_error": null
+}

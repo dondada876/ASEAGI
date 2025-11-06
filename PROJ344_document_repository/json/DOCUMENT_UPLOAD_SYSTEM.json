@@ -1,0 +1,720 @@
+{
+  "metadata": {
+    "file_path": "C:\\Users\\DonBucknor_n0ufqwv\\GettingStarted\\ASEAGI\\DOCUMENT_UPLOAD_SYSTEM.md",
+    "file_name": "DOCUMENT_UPLOAD_SYSTEM.md",
+    "file_type": "md",
+    "file_size": 50655,
+    "file_hash": "40f592e9cc485cddd3bd927f0661f964",
+    "extraction_date": "2025-11-06T09:18:56.649668",
+    "extraction_method": "direct_read",
+    "title": "# Legal Document Upload & Processing System",
+    "author": null,
+    "created_date": "2025-11-05T21:30:09.316313",
+    "modified_date": "2025-11-05T21:30:09.316313",
+    "page_count": null,
+    "word_count": 4534,
+    "char_count": 48740
+  },
+  "content": "# Legal Document Upload & Processing System\n\n**Purpose:** WordPress-based document intake system with multi-tier AI processing\n**Use Case:** Upload screenshots/documents from phone/email for legal processing\n**Tech Stack:** WordPress + ACF Forms + Amelia Booking + AstroPro + Multi-LLM API\n\n---\n\n## 🎯 System Overview\n\n### **Workflow:**\n```\nUser (Phone/Email)\n    ↓\nWordPress Upload Form (ACF)\n    ↓\nTier 1: Pre-Processing (Document Classification)\n    ↓\nTier 2: Multi-LLM Processing (Fraud Detection, Truth Scoring, etc.)\n    ↓\nSupabase Storage (Context Preservation)\n    ↓\nDashboard Visualization (Streamlit)\n```\n\n---\n\n## 📱 **Part 1: WordPress Upload Form (ACF + Amelia)**\n\n### **ACF Form Configuration**\n\nCreate a custom ACF form for document upload:\n\n**Form Fields:**\n```php\n// File: wp-content/themes/your-theme/acf-document-upload.php\n\n<?php\n// ACF Form Configuration\nacf_form(array(\n    'id' => 'legal-document-upload',\n    'post_id' => 'new_post',\n    'post_title' => true,\n    'post_content' => false,\n    'new_post' => array(\n        'post_type' => 'legal_document',\n        'post_status' => 'pending'\n    ),\n    'submit_value' => 'Upload & Process Document',\n    'updated_message' => 'Document uploaded successfully! Processing...',\n    'fields' => array(\n        'field_document_file',        // File upload\n        'field_document_type',         // Document type (dropdown)\n        'field_document_date',         // Date of document\n        'field_document_source',       // Source (email/phone/scan)\n        'field_document_description',  // Brief description\n        'field_case_reference',        // Case reference number\n        'field_urgency_level',         // Urgency (low/medium/high/critical)\n        'field_phone_email'            // Contact info\n    )\n));\n?>\n```\n\n### **ACF Field Groups Setup**\n\n```php\n// Register ACF Field Group\nif( function_exists('acf_add_local_field_group') ):\n\nacf_add_local_field_group(array(\n    'key' => 'group_legal_document_upload',\n    'title' => 'Legal Document Upload',\n    'fields' => array(\n\n        // FILE UPLOAD\n        array(\n            'key' => 'field_document_file',\n            'label' => 'Upload Document',\n            'name' => 'document_file',\n            'type' => 'file',\n            'required' => 1,\n            'return_format' => 'array',\n            'library' => 'all',\n            'mime_types' => 'pdf,jpg,jpeg,png,doc,docx,txt',\n            'instructions' => 'Upload your document (PDF, image, or Word document)'\n        ),\n\n        // DOCUMENT TYPE\n        array(\n            'key' => 'field_document_type',\n            'label' => 'Document Type',\n            'name' => 'document_type',\n            'type' => 'select',\n            'required' => 1,\n            'choices' => array(\n                'DECL' => 'Declaration',\n                'MOTN' => 'Motion',\n                'ORDR' => 'Court Order',\n                'CORR' => 'Correspondence',\n                'EVID' => 'Evidence',\n                'POLR' => 'Police Report',\n                'PHOT' => 'Photo/Screenshot',\n                'EMAI' => 'Email',\n                'TEXT' => 'Text Message',\n                'OTHR' => 'Other'\n            )\n        ),\n\n        // DOCUMENT DATE\n        array(\n            'key' => 'field_document_date',\n            'label' => 'Document Date',\n            'name' => 'document_date',\n            'type' => 'date_picker',\n            'required' => 1,\n            'display_format' => 'm/d/Y',\n            'return_format' => 'Y-m-d'\n        ),\n\n        // SOURCE\n        array(\n            'key' => 'field_document_source',\n            'label' => 'Source',\n            'name' => 'document_source',\n            'type' => 'radio',\n            'choices' => array(\n                'phone' => 'Phone Screenshot',\n                'email' => 'Email Attachment',\n                'scan' => 'Scanned Document',\n                'digital' => 'Digital File'\n            ),\n            'default_value' => 'phone'\n        ),\n\n        // DESCRIPTION\n        array(\n            'key' => 'field_document_description',\n            'label' => 'Brief Description',\n            'name' => 'document_description',\n            'type' => 'textarea',\n            'rows' => 3,\n            'instructions' => 'What is this document about?'\n        ),\n\n        // CASE REFERENCE\n        array(\n            'key' => 'field_case_reference',\n            'label' => 'Case Reference',\n            'name' => 'case_reference',\n            'type' => 'text',\n            'default_value' => 'PROJ344',\n            'instructions' => 'Your case reference number'\n        ),\n\n        // URGENCY\n        array(\n            'key' => 'field_urgency_level',\n            'label' => 'Urgency Level',\n            'name' => 'urgency_level',\n            'type' => 'select',\n            'choices' => array(\n                'LOW' => 'Low - Informational',\n                'MEDIUM' => 'Medium - Standard Processing',\n                'HIGH' => 'High - Priority Review',\n                'CRITICAL' => 'Critical - Immediate Attention'\n            ),\n            'default_value' => 'MEDIUM'\n        ),\n\n        // CONTACT\n        array(\n            'key' => 'field_phone_email',\n            'label' => 'Your Email/Phone',\n            'name' => 'contact_info',\n            'type' => 'text',\n            'instructions' => 'For processing updates'\n        )\n    ),\n    'location' => array(\n        array(\n            array(\n                'param' => 'post_type',\n                'operator' => '==',\n                'value' => 'legal_document',\n            ),\n        ),\n    ),\n));\n\nendif;\n```\n\n---\n\n## 🔄 **Part 2: Tier 1 Pre-Processing (WordPress Backend)**\n\n### **Process Document on Upload**\n\n```php\n// File: wp-content/themes/your-theme/functions.php\n\n// Hook into ACF form submission\nadd_action('acf/save_post', 'process_uploaded_document', 20);\n\nfunction process_uploaded_document($post_id) {\n\n    // Only process legal_document post type\n    if (get_post_type($post_id) !== 'legal_document') {\n        return;\n    }\n\n    // Get uploaded file\n    $file = get_field('document_file', $post_id);\n    $document_type = get_field('document_type', $post_id);\n    $urgency = get_field('urgency_level', $post_id);\n\n    if (!$file) {\n        return;\n    }\n\n    // TIER 1: PRE-PROCESSING\n    $tier1_result = tier1_preprocessing($file, $document_type, $post_id);\n\n    // Update post meta with Tier 1 results\n    update_post_meta($post_id, 'tier1_status', $tier1_result['status']);\n    update_post_meta($post_id, 'tier1_classification', $tier1_result['classification']);\n    update_post_meta($post_id, 'file_hash', $tier1_result['file_hash']);\n\n    // TIER 2: Queue for Multi-LLM Processing\n    if ($tier1_result['status'] === 'ready') {\n        queue_tier2_processing($post_id, $tier1_result, $urgency);\n    }\n\n    // Send to Supabase\n    send_to_supabase($post_id, $tier1_result);\n}\n\nfunction tier1_preprocessing($file, $document_type, $post_id) {\n\n    $file_path = get_attached_file($file['ID']);\n    $file_extension = pathinfo($file_path, PATHINFO_EXTENSION);\n\n    // Calculate file hash (prevent duplicates)\n    $file_hash = md5_file($file_path);\n\n    // Check for duplicate\n    $existing = get_posts(array(\n        'post_type' => 'legal_document',\n        'meta_key' => 'file_hash',\n        'meta_value' => $file_hash,\n        'post__not_in' => array($post_id)\n    ));\n\n    if (!empty($existing)) {\n        return array(\n            'status' => 'duplicate',\n            'file_hash' => $file_hash,\n            'duplicate_of' => $existing[0]->ID\n        );\n    }\n\n    // Extract text based on file type\n    $extracted_text = '';\n\n    if (in_array($file_extension, ['jpg', 'jpeg', 'png'])) {\n        // OCR for images (requires Tesseract or cloud OCR)\n        $extracted_text = perform_ocr($file_path);\n    } elseif ($file_extension === 'pdf') {\n        // Extract PDF text\n        $extracted_text = extract_pdf_text($file_path);\n    } elseif (in_array($file_extension, ['doc', 'docx'])) {\n        // Extract Word text\n        $extracted_text = extract_word_text($file_path);\n    }\n\n    // Basic classification\n    $classification = array(\n        'document_type' => $document_type,\n        'file_type' => $file_extension,\n        'file_size' => filesize($file_path),\n        'text_length' => strlen($extracted_text),\n        'has_text' => !empty($extracted_text),\n        'word_count' => str_word_count($extracted_text)\n    );\n\n    // Store extracted text\n    update_post_meta($post_id, 'extracted_text', $extracted_text);\n\n    return array(\n        'status' => 'ready',\n        'file_hash' => $file_hash,\n        'classification' => $classification,\n        'extracted_text' => $extracted_text\n    );\n}\n\nfunction perform_ocr($file_path) {\n    // Option 1: Google Cloud Vision API\n    // Option 2: AWS Textract\n    // Option 3: Azure Computer Vision\n    // Option 4: Local Tesseract\n\n    // Example using Google Cloud Vision\n    // (requires google/cloud-vision package)\n    /*\n    $vision = new VisionClient([\n        'keyFilePath' => '/path/to/service-account.json'\n    ]);\n\n    $image = $vision->image(file_get_contents($file_path), [\n        'TEXT_DETECTION'\n    ]);\n\n    $annotation = $vision->annotate($image);\n    $text = $annotation->text();\n\n    return $text ? $text->description() : '';\n    */\n\n    // Placeholder - implement based on your OCR choice\n    return '';\n}\n\nfunction extract_pdf_text($file_path) {\n    // Using Smalot PDF Parser\n    // composer require smalot/pdfparser\n\n    require_once get_template_directory() . '/vendor/autoload.php';\n\n    $parser = new \\Smalot\\PdfParser\\Parser();\n    $pdf = $parser->parseFile($file_path);\n    $text = $pdf->getText();\n\n    return $text;\n}\n\nfunction extract_word_text($file_path) {\n    // Using PHPWord\n    // composer require phpoffice/phpword\n\n    $phpWord = \\PhpOffice\\PhpWord\\IOFactory::load($file_path);\n    $text = '';\n\n    foreach ($phpWord->getSections() as $section) {\n        $elements = $section->getElements();\n        foreach ($elements as $element) {\n            if (method_exists($element, 'getText')) {\n                $text .= $element->getText() . \"\\n\";\n            }\n        }\n    }\n\n    return $text;\n}\n```\n\n---\n\n## 🤖 **Part 3: Tier 2 Multi-LLM Processing**\n\n### **Queue System for Tier 2**\n\n```php\n// Queue Tier 2 processing\nfunction queue_tier2_processing($post_id, $tier1_result, $urgency) {\n\n    // Create processing job\n    $job_data = array(\n        'post_id' => $post_id,\n        'tier1_result' => $tier1_result,\n        'urgency' => $urgency,\n        'status' => 'queued',\n        'created_at' => current_time('mysql')\n    );\n\n    // Option 1: Store in WordPress options (simple)\n    $queue = get_option('tier2_processing_queue', array());\n    $queue[] = $job_data;\n    update_option('tier2_processing_queue', $queue);\n\n    // Option 2: Use WP-Cron for background processing\n    wp_schedule_single_event(time() + 10, 'process_tier2_job', array($post_id));\n\n    // Send notification\n    send_processing_notification($post_id, 'queued');\n}\n\n// Process Tier 2 job\nadd_action('process_tier2_job', 'execute_tier2_processing');\n\nfunction execute_tier2_processing($post_id) {\n\n    $extracted_text = get_post_meta($post_id, 'extracted_text', true);\n    $document_type = get_field('document_type', $post_id);\n    $case_reference = get_field('case_reference', $post_id);\n\n    // MULTI-LLM PROCESSING\n    $llm_results = array();\n\n    // LLM 1: Claude (Fraud Detection)\n    $llm_results['claude'] = process_with_claude($extracted_text, $document_type);\n\n    // LLM 2: GPT-4 (Truth Scoring)\n    $llm_results['gpt4'] = process_with_gpt4($extracted_text, $document_type);\n\n    // LLM 3: Gemini (Legal Analysis)\n    $llm_results['gemini'] = process_with_gemini($extracted_text, $document_type);\n\n    // Aggregate results\n    $final_result = aggregate_llm_results($llm_results);\n\n    // Update post with results\n    update_post_meta($post_id, 'tier2_results', $final_result);\n    update_post_meta($post_id, 'processing_status', 'completed');\n    update_post_meta($post_id, 'processed_at', current_time('mysql'));\n\n    // Send to Supabase\n    update_supabase_with_tier2_results($post_id, $final_result);\n\n    // Notify user\n    send_processing_notification($post_id, 'completed');\n}\n```\n\n---\n\n## 🔌 **Part 4: API Integration - Python Processing Service**\n\nCreate a Python service to handle the heavy LLM processing:\n\n```python\n# File: wp-content/processing-service/document_processor.py\n\nfrom flask import Flask, request, jsonify\nimport anthropic\nimport openai\nimport google.generativeai as genai\nfrom supabase import create_client\nimport os\n\napp = Flask(__name__)\n\n# Initialize LLM clients\nclaude = anthropic.Anthropic(api_key=os.environ['ANTHROPIC_API_KEY'])\nopenai.api_key = os.environ['OPENAI_API_KEY']\ngenai.configure(api_key=os.environ['GOOGLE_API_KEY'])\n\n# Initialize Supabase\nsupabase = create_client(\n    os.environ['SUPABASE_URL'],\n    os.environ['SUPABASE_KEY']\n)\n\n@app.route('/process', methods=['POST'])\ndef process_document():\n    \"\"\"\n    Process document through multiple LLMs\n    \"\"\"\n    data = request.json\n\n    post_id = data['post_id']\n    extracted_text = data['extracted_text']\n    document_type = data['document_type']\n\n    results = {\n        'post_id': post_id,\n        'llm_results': {}\n    }\n\n    # TIER 2: Multi-LLM Processing\n\n    # 1. Claude - Fraud Detection\n    results['llm_results']['claude'] = process_with_claude(\n        extracted_text,\n        document_type\n    )\n\n    # 2. GPT-4 - Truth Scoring\n    results['llm_results']['gpt4'] = process_with_gpt4(\n        extracted_text,\n        document_type\n    )\n\n    # 3. Gemini - Legal Analysis\n    results['llm_results']['gemini'] = process_with_gemini(\n        extracted_text,\n        document_type\n    )\n\n    # Aggregate results\n    final_analysis = aggregate_results(results['llm_results'])\n\n    # Save to Supabase\n    save_to_supabase(post_id, final_analysis)\n\n    return jsonify({\n        'status': 'success',\n        'results': final_analysis\n    })\n\ndef process_with_claude(text, doc_type):\n    \"\"\"Claude: Fraud detection and pattern analysis\"\"\"\n\n    prompt = f\"\"\"Analyze this legal document for fraud indicators:\n\nDocument Type: {doc_type}\nDocument Text:\n{text}\n\nProvide analysis in JSON format:\n{{\n    \"fraud_score\": 0-100,\n    \"fraud_indicators\": [\"list\", \"of\", \"red\", \"flags\"],\n    \"confidence\": 0-100,\n    \"summary\": \"brief summary\",\n    \"key_findings\": [\"finding1\", \"finding2\"]\n}}\n\"\"\"\n\n    response = claude.messages.create(\n        model=\"claude-sonnet-4-20250514\",\n        max_tokens=2000,\n        messages=[{\n            \"role\": \"user\",\n            \"content\": prompt\n        }]\n    )\n\n    return parse_claude_response(response.content[0].text)\n\ndef process_with_gpt4(text, doc_type):\n    \"\"\"GPT-4: Truth scoring and fact verification\"\"\"\n\n    prompt = f\"\"\"Score this legal document for truthfulness using 5W+H framework:\n\nDocument Type: {doc_type}\nDocument Text:\n{text}\n\nProvide analysis in JSON format:\n{{\n    \"truth_score\": 0-100,\n    \"when\": \"when did this happen\",\n    \"where\": \"where did this happen\",\n    \"who\": [\"list\", \"of\", \"people\"],\n    \"what\": \"what occurred\",\n    \"why\": \"why it occurred\",\n    \"how\": \"how it occurred\",\n    \"verifiable_facts\": [\"fact1\", \"fact2\"],\n    \"unverifiable_claims\": [\"claim1\", \"claim2\"]\n}}\n\"\"\"\n\n    response = openai.ChatCompletion.create(\n        model=\"gpt-4-turbo\",\n        messages=[{\n            \"role\": \"user\",\n            \"content\": prompt\n        }],\n        response_format={\"type\": \"json_object\"}\n    )\n\n    return json.loads(response.choices[0].message.content)\n\ndef process_with_gemini(text, doc_type):\n    \"\"\"Gemini: Legal analysis and categorization\"\"\"\n\n    model = genai.GenerativeModel('gemini-1.5-pro')\n\n    prompt = f\"\"\"Perform legal analysis on this document:\n\nDocument Type: {doc_type}\nDocument Text:\n{text}\n\nProvide analysis in JSON format:\n{{\n    \"legal_issues\": [\"issue1\", \"issue2\"],\n    \"relevant_laws\": [\"law1\", \"law2\"],\n    \"importance_level\": \"CRITICAL/HIGH/MEDIUM/LOW\",\n    \"category\": \"MOTION/FILING/EVIDENCE/etc\",\n    \"actionable_items\": [\"action1\", \"action2\"],\n    \"timeline_relevance\": \"description\"\n}}\n\"\"\"\n\n    response = model.generate_content(prompt)\n    return parse_gemini_response(response.text)\n\ndef aggregate_results(llm_results):\n    \"\"\"Aggregate results from multiple LLMs\"\"\"\n\n    aggregated = {\n        'fraud_score': llm_results['claude']['fraud_score'],\n        'truth_score': llm_results['gpt4']['truth_score'],\n        'importance_level': llm_results['gemini']['importance_level'],\n        'category': llm_results['gemini']['category'],\n\n        # Combined analysis\n        'combined_score': (\n            llm_results['claude']['fraud_score'] * 0.3 +\n            llm_results['gpt4']['truth_score'] * 0.4 +\n            (100 if llm_results['gemini']['importance_level'] == 'CRITICAL' else 75) * 0.3\n        ),\n\n        # All findings\n        'key_findings': (\n            llm_results['claude']['key_findings'] +\n            llm_results['gpt4']['verifiable_facts'] +\n            llm_results['gemini']['legal_issues']\n        ),\n\n        # 5W+H\n        'when_happened': llm_results['gpt4']['when'],\n        'where_happened': llm_results['gpt4']['where'],\n        'who_involved': llm_results['gpt4']['who'],\n        'what_occurred': llm_results['gpt4']['what'],\n        'why_occurred': llm_results['gpt4']['why'],\n        'how_occurred': llm_results['gpt4']['how'],\n\n        # Metadata\n        'processed_at': datetime.now().isoformat(),\n        'llm_versions': {\n            'claude': 'sonnet-4',\n            'gpt4': 'gpt-4-turbo',\n            'gemini': 'gemini-1.5-pro'\n        }\n    }\n\n    return aggregated\n\ndef save_to_supabase(post_id, analysis):\n    \"\"\"Save analysis to Supabase\"\"\"\n\n    # Save to legal_documents table\n    supabase.table('legal_documents').upsert({\n        'wordpress_post_id': post_id,\n        'document_type': analysis['category'],\n        'fraud_score': analysis['fraud_score'],\n        'truth_score': analysis['truth_score'],\n        'importance_level': analysis['importance_level'],\n        'processed_at': analysis['processed_at']\n    }).execute()\n\n    # Save to truth_score_history\n    supabase.table('truth_score_history').insert({\n        'item_id': str(post_id),\n        'item_type': analysis['category'],\n        'truth_score': analysis['truth_score'],\n        'when_happened': analysis['when_happened'],\n        'where_happened': analysis['where_happened'],\n        'who_involved': analysis['who_involved'],\n        'what_occurred': analysis['what_occurred'],\n        'why_occurred': analysis['why_occurred'],\n        'how_occurred': analysis['how_occurred'],\n        'importance_level': analysis['importance_level']\n    }).execute()\n\n    # Log AI analysis\n    from utilities.context_manager import ContextManager\n    cm = ContextManager()\n\n    cm.log_ai_analysis(\n        analysis_type='document_processing',\n        model_name='multi-llm',\n        source_id=str(post_id),\n        source_table='wordpress_uploads',\n        structured_output=analysis,\n        tokens_used=5000,  # Estimate\n        api_cost_usd=0.15  # Estimate\n    )\n\nif __name__ == '__main__':\n    app.run(host='0.0.0.0', port=5000)\n```\n\n---\n\n## 📧 **Part 5: Email Integration**\n\n### **Process Documents from Email**\n\n```python\n# File: email_to_wordpress.py\n\nimport imaplib\nimport email\nfrom email.header import decode_header\nimport requests\nimport os\n\ndef process_email_attachments():\n    \"\"\"\n    Check email for new attachments and upload to WordPress\n    \"\"\"\n\n    # Connect to email\n    mail = imaplib.IMAP4_SSL('imap.gmail.com')\n    mail.login('your-email@gmail.com', os.environ['EMAIL_PASSWORD'])\n    mail.select('INBOX')\n\n    # Search for unread emails with attachments\n    status, messages = mail.search(None, '(UNSEEN)')\n\n    for msg_num in messages[0].split():\n        status, msg_data = mail.fetch(msg_num, '(RFC822)')\n\n        for response_part in msg_data:\n            if isinstance(response_part, tuple):\n                msg = email.message_from_bytes(response_part[1])\n\n                # Process attachments\n                for part in msg.walk():\n                    if part.get_content_maintype() == 'multipart':\n                        continue\n                    if part.get('Content-Disposition') is None:\n                        continue\n\n                    filename = part.get_filename()\n                    if filename:\n                        # Upload to WordPress\n                        upload_to_wordpress(\n                            filename=filename,\n                            file_data=part.get_payload(decode=True),\n                            email_subject=msg['subject'],\n                            email_from=msg['from'],\n                            email_date=msg['date']\n                        )\n\n    mail.close()\n    mail.logout()\n\ndef upload_to_wordpress(filename, file_data, email_subject, email_from, email_date):\n    \"\"\"\n    Upload file to WordPress via REST API\n    \"\"\"\n\n    wp_url = 'https://your-site.com/wp-json/wp/v2/media'\n    wp_user = 'your-username'\n    wp_password = 'your-app-password'\n\n    headers = {\n        'Content-Disposition': f'attachment; filename={filename}'\n    }\n\n    response = requests.post(\n        wp_url,\n        auth=(wp_user, wp_password),\n        headers=headers,\n        data=file_data\n    )\n\n    if response.status_code == 201:\n        media_id = response.json()['id']\n\n        # Create legal_document post\n        create_document_post(\n            media_id=media_id,\n            title=email_subject,\n            source='email',\n            metadata={\n                'email_from': email_from,\n                'email_date': email_date\n            }\n        )\n```\n\n---\n\n## 🔗 **Part 6: WordPress REST API Webhook**\n\n```php\n// Register REST route for processing status\nadd_action('rest_api_init', function () {\n    register_rest_route('legal/v1', '/process-status/(?P<id>\\d+)', array(\n        'methods' => 'GET',\n        'callback' => 'get_processing_status',\n    ));\n\n    register_rest_route('legal/v1', '/upload', array(\n        'methods' => 'POST',\n        'callback' => 'handle_api_upload',\n    ));\n});\n\nfunction get_processing_status($request) {\n    $post_id = $request['id'];\n\n    $status = get_post_meta($post_id, 'processing_status', true);\n    $tier1 = get_post_meta($post_id, 'tier1_status', true);\n    $tier2 = get_post_meta($post_id, 'tier2_results', true);\n\n    return new WP_REST_Response(array(\n        'post_id' => $post_id,\n        'status' => $status,\n        'tier1_status' => $tier1,\n        'tier2_results' => $tier2\n    ), 200);\n}\n\nfunction handle_api_upload($request) {\n    // Handle uploads from external sources (email, mobile app, etc.)\n\n    $files = $request->get_file_params();\n    $params = $request->get_params();\n\n    // Process upload\n    $upload = wp_handle_upload($files['file'], array('test_form' => false));\n\n    if (!isset($upload['error'])) {\n        // Create attachment\n        $attachment_id = wp_insert_attachment(array(\n            'post_mime_type' => $upload['type'],\n            'post_title' => sanitize_file_name($upload['file']),\n            'post_content' => '',\n            'post_status' => 'inherit'\n        ), $upload['file']);\n\n        // Create legal_document post\n        $post_id = wp_insert_post(array(\n            'post_type' => 'legal_document',\n            'post_title' => $params['title'] ?? 'Uploaded Document',\n            'post_status' => 'pending'\n        ));\n\n        // Link attachment\n        update_field('document_file', $attachment_id, $post_id);\n        update_field('document_type', $params['document_type'] ?? 'OTHR', $post_id);\n        update_field('document_source', $params['source'] ?? 'api', $post_id);\n\n        // Trigger processing\n        do_action('acf/save_post', $post_id);\n\n        return new WP_REST_Response(array(\n            'success' => true,\n            'post_id' => $post_id,\n            'message' => 'Document uploaded and queued for processing'\n        ), 201);\n    }\n\n    return new WP_REST_Response(array(\n        'success' => false,\n        'error' => $upload['error']\n    ), 400);\n}\n```\n\n---\n\n## 📱 **Part 7: Mobile Upload (Bonus)**\n\nCreate a simple mobile-friendly upload page:\n\n```html\n<!-- File: wp-content/themes/your-theme/page-mobile-upload.php -->\n\n<?php\n/* Template Name: Mobile Upload */\nget_header();\n?>\n\n<div class=\"mobile-upload-container\">\n    <h1>Quick Document Upload</h1>\n\n    <form id=\"mobile-upload-form\" enctype=\"multipart/form-data\">\n\n        <div class=\"form-group\">\n            <label>Take Photo or Choose File</label>\n            <input type=\"file\"\n                   name=\"document\"\n                   accept=\"image/*,application/pdf\"\n                   capture=\"environment\"\n                   required>\n        </div>\n\n        <div class=\"form-group\">\n            <label>Document Type</label>\n            <select name=\"document_type\" required>\n                <option value=\"PHOT\">Photo/Screenshot</option>\n                <option value=\"EMAI\">Email</option>\n                <option value=\"TEXT\">Text Message</option>\n                <option value=\"EVID\">Evidence</option>\n                <option value=\"OTHR\">Other</option>\n            </select>\n        </div>\n\n        <div class=\"form-group\">\n            <label>Quick Description</label>\n            <textarea name=\"description\" rows=\"3\"></textarea>\n        </div>\n\n        <div class=\"form-group\">\n            <label>Urgency</label>\n            <select name=\"urgency\">\n                <option value=\"MEDIUM\">Normal</option>\n                <option value=\"HIGH\">High Priority</option>\n                <option value=\"CRITICAL\">Urgent</option>\n            </select>\n        </div>\n\n        <button type=\"submit\" class=\"btn-upload\">\n            Upload & Process\n        </button>\n\n        <div id=\"upload-status\"></div>\n    </form>\n</div>\n\n<script>\ndocument.getElementById('mobile-upload-form').addEventListener('submit', async function(e) {\n    e.preventDefault();\n\n    const formData = new FormData(this);\n    const statusDiv = document.getElementById('upload-status');\n\n    statusDiv.innerHTML = '<p>Uploading...</p>';\n\n    try {\n        const response = await fetch('/wp-json/legal/v1/upload', {\n            method: 'POST',\n            body: formData\n        });\n\n        const result = await response.json();\n\n        if (result.success) {\n            statusDiv.innerHTML = `\n                <div class=\"success\">\n                    <h3>✅ Upload Successful!</h3>\n                    <p>Your document is being processed.</p>\n                    <p>Reference: #${result.post_id}</p>\n                </div>\n            `;\n            this.reset();\n        } else {\n            statusDiv.innerHTML = `<p class=\"error\">Error: ${result.error}</p>`;\n        }\n    } catch (error) {\n        statusDiv.innerHTML = `<p class=\"error\">Upload failed: ${error.message}</p>`;\n    }\n});\n</script>\n\n<style>\n.mobile-upload-container {\n    max-width: 500px;\n    margin: 20px auto;\n    padding: 20px;\n}\n\n.form-group {\n    margin-bottom: 20px;\n}\n\n.form-group label {\n    display: block;\n    margin-bottom: 5px;\n    font-weight: bold;\n}\n\n.form-group input,\n.form-group select,\n.form-group textarea {\n    width: 100%;\n    padding: 10px;\n    font-size: 16px;\n}\n\n.btn-upload {\n    width: 100%;\n    padding: 15px;\n    background: #0073aa;\n    color: white;\n    border: none;\n    font-size: 18px;\n    cursor: pointer;\n}\n\n.success {\n    padding: 20px;\n    background: #d4edda;\n    border: 1px solid #c3e6cb;\n    border-radius: 5px;\n    margin-top: 20px;\n}\n\n.error {\n    padding: 20px;\n    background: #f8d7da;\n    border: 1px solid #f5c6cb;\n    border-radius: 5px;\n    margin-top: 20px;\n}\n</style>\n\n<?php get_footer(); ?>\n```\n\n---\n\n## 📊 **Part 8: Integration with Existing Dashboards**\n\nConnect processed documents to your Streamlit dashboards:\n\n```python\n# File: ASEAGI/wordpress_integration.py\n\nfrom supabase import create_client\nimport requests\n\nclass WordPressIntegration:\n\n    def __init__(self):\n        self.wp_url = \"https://your-site.com\"\n        self.wp_user = \"your-username\"\n        self.wp_password = \"your-app-password\"\n\n        self.supabase = create_client(\n            os.environ['SUPABASE_URL'],\n            os.environ['SUPABASE_KEY']\n        )\n\n    def fetch_recent_uploads(self, days=7):\n        \"\"\"Fetch recent document uploads from WordPress\"\"\"\n\n        url = f\"{self.wp_url}/wp-json/wp/v2/legal_document\"\n        params = {\n            'per_page': 100,\n            'after': (datetime.now() - timedelta(days=days)).isoformat()\n        }\n\n        response = requests.get(\n            url,\n            auth=(self.wp_user, self.wp_password),\n            params=params\n        )\n\n        return response.json()\n\n    def sync_to_supabase(self):\n        \"\"\"Sync WordPress uploads to Supabase\"\"\"\n\n        documents = self.fetch_recent_uploads()\n\n        for doc in documents:\n            # Check if already in Supabase\n            existing = self.supabase.table('legal_documents')\\\n                .select('*')\\\n                .eq('wordpress_post_id', doc['id'])\\\n                .execute()\n\n            if not existing.data:\n                # Insert into Supabase\n                self.supabase.table('legal_documents').insert({\n                    'wordpress_post_id': doc['id'],\n                    'original_filename': doc['title']['rendered'],\n                    # ... other fields\n                }).execute()\n```\n\n---\n\n## 📅 **Part 9: Amelia Booking Integration**\n\n### **Schedule Document Review Appointments**\n\nIntegrate Amelia to schedule appointments for document review meetings:\n\n```php\n// File: wp-content/themes/your-theme/amelia-integration.php\n\n// Hook into Amelia appointment booking\nadd_action('AmeliaBookingAdded', 'handle_document_review_booking', 10, 3);\n\nfunction handle_document_review_booking($appointment, $booking, $recurring) {\n\n    // Check if this is a document review appointment\n    $service_id = $appointment['serviceId'];\n    $document_review_service_id = 1; // Your document review service ID\n\n    if ($service_id != $document_review_service_id) {\n        return;\n    }\n\n    // Get custom fields from booking\n    $custom_fields = $booking['customFields'];\n    $document_ids = array();\n\n    foreach ($custom_fields as $field) {\n        if ($field['label'] === 'Document IDs') {\n            $document_ids = explode(',', $field['value']);\n        }\n    }\n\n    // Create processing job for these documents\n    if (!empty($document_ids)) {\n        schedule_document_review_preparation(\n            $appointment['id'],\n            $document_ids,\n            $appointment['bookingStart']\n        );\n    }\n}\n\nfunction schedule_document_review_preparation($appointment_id, $document_ids, $review_date) {\n\n    // Queue all documents for priority processing\n    foreach ($document_ids as $doc_id) {\n        $doc_id = trim($doc_id);\n\n        // Set priority processing\n        update_post_meta($doc_id, 'scheduled_review_date', $review_date);\n        update_post_meta($doc_id, 'amelia_appointment_id', $appointment_id);\n        update_field('urgency_level', 'HIGH', $doc_id);\n\n        // Trigger immediate Tier 2 processing\n        do_action('process_tier2_job', $doc_id);\n    }\n\n    // Send preparation email\n    send_review_preparation_email($appointment_id, $document_ids);\n}\n\n// Add custom field to Amelia service for document selection\nadd_filter('ameliaBookingAddCustomFields', 'add_document_selection_field');\n\nfunction add_document_selection_field($custom_fields) {\n    $custom_fields[] = array(\n        'label' => 'Document IDs',\n        'type' => 'text',\n        'required' => false,\n        'placeholder' => 'Enter document IDs separated by commas (e.g., 123, 456, 789)'\n    );\n\n    return $custom_fields;\n}\n\n// Create Amelia service for document reviews\nfunction create_document_review_service() {\n    // This should be done via Amelia admin UI, but here's the structure:\n    /*\n    Service Name: Document Review Consultation\n    Duration: 60 minutes\n    Price: $0 (or set your price)\n    Category: Legal Services\n    Buffer Time Before: 15 minutes (for document preparation)\n    Custom Fields:\n      - Document IDs (text field)\n      - Review Focus Areas (textarea)\n      - Urgency Notes (textarea)\n    */\n}\n```\n\n### **Amelia Service Configuration (Admin UI)**\n\nCreate a service in Amelia admin:\n\n1. **Go to:** Amelia > Services > Add Service\n2. **Configure:**\n   - **Name:** Document Review Consultation\n   - **Duration:** 60 minutes\n   - **Buffer Time Before:** 15 minutes\n   - **Capacity:** 1 person\n   - **Custom Fields:**\n     - Document IDs (text)\n     - Review Focus (textarea)\n     - Special Instructions (textarea)\n\n3. **Notifications:**\n   - **To Customer:** \"Your document review is scheduled for %appointment_date_time%. Please upload documents with IDs: %custom_field_1%\"\n   - **To Employee:** \"Document review scheduled. Process documents: %custom_field_1% before appointment.\"\n\n---\n\n## 🚀 **Part 10: Deployment Options**\n\n### **Option 1: SiteGround Hosting (Current)**\n\n**For WordPress + Simple Processing:**\n\n```bash\n# Install required PHP packages via Composer\ncd ~/public_html/wp-content/themes/your-theme\ncomposer require smalot/pdfparser\ncomposer require phpoffice/phpword\n\n# Configure WP-Cron for background processing\n# Add to wp-config.php:\ndefine('DISABLE_WP_CRON', true);\n\n# Add to cPanel cron jobs (every 5 minutes):\n*/5 * * * * cd ~/public_html && php wp-cron.php\n```\n\n**Limitations:**\n- No Python processing on SiteGround shared hosting\n- Must use external API for Tier 2 processing\n- Use webhook to call Python service on Digital Ocean\n\n---\n\n### **Option 2: Digital Ocean + Docker (Recommended)**\n\n**Complete WordPress + Python Processing Stack:**\n\n#### **Docker Compose Setup**\n\n```yaml\n# File: docker-compose.yml\n\nversion: '3.8'\n\nservices:\n  # WordPress\n  wordpress:\n    image: wordpress:latest\n    container_name: legal-wordpress\n    ports:\n      - \"80:80\"\n      - \"443:443\"\n    environment:\n      WORDPRESS_DB_HOST: db\n      WORDPRESS_DB_USER: wordpress\n      WORDPRESS_DB_PASSWORD: ${DB_PASSWORD}\n      WORDPRESS_DB_NAME: legal_documents\n    volumes:\n      - ./wordpress:/var/www/html\n      - ./uploads:/var/www/html/wp-content/uploads\n    depends_on:\n      - db\n    restart: always\n\n  # MySQL Database\n  db:\n    image: mysql:8.0\n    container_name: legal-mysql\n    environment:\n      MYSQL_DATABASE: legal_documents\n      MYSQL_USER: wordpress\n      MYSQL_PASSWORD: ${DB_PASSWORD}\n      MYSQL_ROOT_PASSWORD: ${DB_ROOT_PASSWORD}\n    volumes:\n      - db_data:/var/lib/mysql\n    restart: always\n\n  # Python Processing Service\n  processing-service:\n    build: ./processing-service\n    container_name: legal-processing\n    ports:\n      - \"5000:5000\"\n    environment:\n      ANTHROPIC_API_KEY: ${ANTHROPIC_API_KEY}\n      OPENAI_API_KEY: ${OPENAI_API_KEY}\n      GOOGLE_API_KEY: ${GOOGLE_API_KEY}\n      SUPABASE_URL: ${SUPABASE_URL}\n      SUPABASE_KEY: ${SUPABASE_KEY}\n    volumes:\n      - ./processing-service:/app\n      - ./uploads:/uploads\n    restart: always\n\n  # Redis for queue management\n  redis:\n    image: redis:alpine\n    container_name: legal-redis\n    ports:\n      - \"6379:6379\"\n    restart: always\n\n  # Celery worker for async processing\n  celery-worker:\n    build: ./processing-service\n    container_name: legal-celery\n    command: celery -A tasks worker --loglevel=info\n    environment:\n      ANTHROPIC_API_KEY: ${ANTHROPIC_API_KEY}\n      OPENAI_API_KEY: ${OPENAI_API_KEY}\n      GOOGLE_API_KEY: ${GOOGLE_API_KEY}\n      SUPABASE_URL: ${SUPABASE_URL}\n      SUPABASE_KEY: ${SUPABASE_KEY}\n    volumes:\n      - ./processing-service:/app\n      - ./uploads:/uploads\n    depends_on:\n      - redis\n    restart: always\n\nvolumes:\n  db_data:\n  wordpress_data:\n```\n\n#### **Processing Service Dockerfile**\n\n```dockerfile\n# File: processing-service/Dockerfile\n\nFROM python:3.11-slim\n\nWORKDIR /app\n\n# Install system dependencies for OCR\nRUN apt-get update && apt-get install -y \\\n    tesseract-ocr \\\n    tesseract-ocr-eng \\\n    poppler-utils \\\n    && rm -rf /var/lib/apt/lists/*\n\n# Copy requirements\nCOPY requirements.txt .\n\n# Install Python packages\nRUN pip install --no-cache-dir -r requirements.txt\n\n# Copy application code\nCOPY . .\n\nEXPOSE 5000\n\nCMD [\"gunicorn\", \"--bind\", \"0.0.0.0:5000\", \"--workers\", \"4\", \"--timeout\", \"300\", \"app:app\"]\n```\n\n#### **Python Requirements**\n\n```txt\n# File: processing-service/requirements.txt\n\nflask==3.0.0\ngunicorn==21.2.0\nanthropic==0.18.0\nopenai==1.12.0\ngoogle-generativeai==0.4.0\nsupabase==2.3.4\ncelery==5.3.6\nredis==5.0.1\npytesseract==0.3.10\npdf2image==1.17.0\nPillow==10.2.0\nrequests==2.31.0\npython-dotenv==1.0.1\n```\n\n#### **Environment Variables**\n\n```bash\n# File: .env\n\n# Database\nDB_PASSWORD=your_secure_password\nDB_ROOT_PASSWORD=your_root_password\n\n# LLM APIs\nANTHROPIC_API_KEY=sk-ant-xxxxx\nOPENAI_API_KEY=sk-xxxxx\nGOOGLE_API_KEY=xxxxx\n\n# Supabase\nSUPABASE_URL=https://jvjlhxodmbkodzmggwpu.supabase.co\nSUPABASE_KEY=eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9...\n\n# WordPress\nWP_ADMIN_USER=admin\nWP_ADMIN_EMAIL=admin@example.com\n```\n\n#### **Deploy to Digital Ocean**\n\n```bash\n# 1. Create Digital Ocean Droplet\n# Size: $24/month (4GB RAM, 2 vCPUs) - sufficient for this workload\n\n# 2. SSH into droplet\nssh root@your-droplet-ip\n\n# 3. Install Docker\ncurl -fsSL https://get.docker.com -o get-docker.sh\nsh get-docker.sh\n\n# 4. Install Docker Compose\napt-get update\napt-get install docker-compose-plugin\n\n# 5. Clone your repository\ngit clone https://github.com/yourusername/legal-document-system.git\ncd legal-document-system\n\n# 6. Create .env file\nnano .env\n# (paste environment variables)\n\n# 7. Start services\ndocker compose up -d\n\n# 8. Install WordPress\n# Visit http://your-droplet-ip and complete WordPress setup\n\n# 9. Install plugins\n# - Advanced Custom Fields Pro\n# - Amelia Booking\n# - WP REST API authentication\n\n# 10. Configure DNS\n# Point your domain to droplet IP\n# Enable SSL with Let's Encrypt\n```\n\n---\n\n### **Option 3: Vast.ai GPU Processing (For Heavy AI Workloads)**\n\nUse Vast.ai for GPU-accelerated LLM inference:\n\n```python\n# File: processing-service/vast_ai_client.py\n\nimport requests\n\nclass VastAIClient:\n    \"\"\"\n    Use Vast.ai for GPU-accelerated LLM processing\n    \"\"\"\n\n    def __init__(self, api_key, instance_id):\n        self.api_key = api_key\n        self.instance_id = instance_id\n        self.base_url = f\"http://{self.get_instance_ip()}:8000\"\n\n    def get_instance_ip(self):\n        \"\"\"Get Vast.ai instance IP\"\"\"\n        response = requests.get(\n            f\"https://console.vast.ai/api/v0/instances/{self.instance_id}\",\n            headers={\"Authorization\": f\"Bearer {self.api_key}\"}\n        )\n        return response.json()['public_ipaddr']\n\n    def process_with_local_llm(self, text, model=\"llama-3-70b\"):\n        \"\"\"\n        Process document with local LLM on Vast.ai GPU\n        \"\"\"\n        response = requests.post(\n            f\"{self.base_url}/v1/completions\",\n            json={\n                \"model\": model,\n                \"prompt\": text,\n                \"max_tokens\": 2000,\n                \"temperature\": 0.7\n            }\n        )\n        return response.json()\n\n# Use for cost-effective processing\n# Vast.ai: ~$0.50/hour for RTX 4090\n# vs OpenAI: ~$0.03 per 1K tokens\n```\n\n**Vast.ai Setup:**\n\n```bash\n# 1. Create Vast.ai account\n# 2. Rent GPU instance (RTX 4090 recommended)\n# 3. Deploy vLLM or llama.cpp server\n# 4. Point processing service to Vast.ai endpoint\n\n# Docker image for Vast.ai instance:\ndocker run -d \\\n  --gpus all \\\n  -p 8000:8000 \\\n  vllm/vllm-openai:latest \\\n  --model meta-llama/Llama-3-70b-chat-hf \\\n  --tensor-parallel-size 2\n```\n\n---\n\n### **Option 4: Paperspace (Alternative to Vast.ai)**\n\n```python\n# File: processing-service/paperspace_client.py\n\nimport gradient\n\nclass PaperspaceClient:\n    \"\"\"\n    Use Paperspace Gradient for LLM processing\n    \"\"\"\n\n    def __init__(self, api_key):\n        self.client = gradient.Gradient(api_key=api_key)\n\n    def process_document(self, text):\n        deployment = self.client.get_deployment(\n            deployment_id=\"your-deployment-id\"\n        )\n\n        response = deployment.complete(\n            prompt=text,\n            max_tokens=2000\n        )\n\n        return response.generated_text\n```\n\n---\n\n## 📋 **Part 11: Complete Installation Guide**\n\n### **Quick Start: SiteGround + Digital Ocean Hybrid**\n\n**Step 1: WordPress on SiteGround**\n\n```bash\n# 1. Install WordPress via SiteGround Site Tools\n# 2. Install plugins:\n#    - Advanced Custom Fields Pro\n#    - Amelia Booking\n#    - WP Mail SMTP (for email processing)\n\n# 3. Upload theme files\n# Copy files from /wordpress-theme/ folder to:\n# ~/public_html/wp-content/themes/legal-document-theme/\n\n# 4. Activate theme\n\n# 5. Configure ACF forms\n# Import ACF field groups from /acf-config/legal-document-fields.json\n```\n\n**Step 2: Python Service on Digital Ocean**\n\n```bash\n# 1. Create $24/month droplet (4GB RAM)\n\n# 2. Install dependencies\napt update && apt upgrade -y\napt install -y python3-pip python3-venv tesseract-ocr\n\n# 3. Clone processing service\ngit clone https://github.com/yourusername/document-processing-service.git\ncd document-processing-service\n\n# 4. Create virtual environment\npython3 -m venv venv\nsource venv/bin/activate\n\n# 5. Install requirements\npip install -r requirements.txt\n\n# 6. Configure environment\nnano .env\n# Add API keys\n\n# 7. Start service with systemd\nsudo nano /etc/systemd/system/document-processing.service\n```\n\n**Systemd Service File:**\n\n```ini\n[Unit]\nDescription=Legal Document Processing Service\nAfter=network.target\n\n[Service]\nType=simple\nUser=root\nWorkingDirectory=/root/document-processing-service\nEnvironment=\"PATH=/root/document-processing-service/venv/bin\"\nExecStart=/root/document-processing-service/venv/bin/gunicorn --bind 0.0.0.0:5000 --workers 4 app:app\nRestart=always\n\n[Install]\nWantedBy=multi-user.target\n```\n\n```bash\n# Enable and start service\nsystemctl enable document-processing\nsystemctl start document-processing\nsystemctl status document-processing\n\n# 8. Configure firewall\nufw allow 5000/tcp\nufw allow 80/tcp\nufw allow 443/tcp\nufw enable\n\n# 9. Setup SSL with Certbot\napt install certbot\ncertbot certonly --standalone -d api.yoursite.com\n```\n\n**Step 3: Connect WordPress to Processing Service**\n\n```php\n// Add to wp-config.php\ndefine('PROCESSING_SERVICE_URL', 'https://api.yoursite.com:5000');\ndefine('PROCESSING_SERVICE_KEY', 'your-secure-api-key');\n```\n\n**Step 4: Configure Email Processing**\n\n```python\n# Run email processor as cron job on Digital Ocean\ncrontab -e\n\n# Add line:\n*/5 * * * * /root/document-processing-service/venv/bin/python /root/document-processing-service/email_processor.py >> /var/log/email-processing.log 2>&1\n```\n\n---\n\n## 🔐 **Part 12: Security Configuration**\n\n```php\n// File: wp-content/themes/your-theme/security.php\n\n// Add API authentication\nadd_filter('rest_pre_dispatch', 'verify_api_key', 10, 3);\n\nfunction verify_api_key($result, $server, $request) {\n\n    // Skip auth for non-legal routes\n    if (strpos($request->get_route(), '/legal/') !== 0) {\n        return $result;\n    }\n\n    // Check API key\n    $api_key = $request->get_header('X-API-Key');\n    $valid_key = get_option('legal_api_key');\n\n    if ($api_key !== $valid_key) {\n        return new WP_Error(\n            'rest_forbidden',\n            'Invalid API key',\n            array('status' => 403)\n        );\n    }\n\n    return $result;\n}\n\n// Rate limiting\nfunction check_rate_limit($ip_address) {\n    $cache_key = 'rate_limit_' . md5($ip_address);\n    $requests = get_transient($cache_key) ?: 0;\n\n    if ($requests > 60) { // 60 requests per hour\n        return false;\n    }\n\n    set_transient($cache_key, $requests + 1, HOUR_IN_SECONDS);\n    return true;\n}\n```\n\n---\n\n## 📊 **Part 13: Monitoring & Analytics**\n\n```python\n# File: processing-service/monitoring.py\n\nfrom utilities.context_manager import ContextManager\nimport time\n\nclass ProcessingMonitor:\n    \"\"\"\n    Monitor document processing performance and costs\n    \"\"\"\n\n    def __init__(self):\n        self.cm = ContextManager()\n\n    def log_processing_metrics(self, post_id, start_time, llm_results):\n        \"\"\"Log processing metrics to Supabase\"\"\"\n\n        processing_time = time.time() - start_time\n\n        total_cost = (\n            llm_results['claude']['cost'] +\n            llm_results['gpt4']['cost'] +\n            llm_results['gemini']['cost']\n        )\n\n        total_tokens = (\n            llm_results['claude']['tokens'] +\n            llm_results['gpt4']['tokens'] +\n            llm_results['gemini']['tokens']\n        )\n\n        # Save to processing_jobs_log\n        self.cm.supabase.table('processing_jobs_log').insert({\n            'job_type': 'document_processing',\n            'source_id': str(post_id),\n            'processing_time_seconds': processing_time,\n            'total_items_processed': 1,\n            'status': 'completed',\n            'metadata': {\n                'llm_breakdown': llm_results,\n                'total_cost': total_cost,\n                'total_tokens': total_tokens\n            }\n        }).execute()\n\n        # Log each LLM call separately\n        for llm_name, result in llm_results.items():\n            self.cm.log_ai_analysis(\n                analysis_type='document_processing',\n                model_name=result['model'],\n                source_id=str(post_id),\n                source_table='wordpress_uploads',\n                tokens_used=result['tokens'],\n                api_cost_usd=result['cost'],\n                metadata={'llm': llm_name}\n            )\n\n    def get_daily_stats(self):\n        \"\"\"Get daily processing statistics\"\"\"\n\n        result = self.cm.supabase.rpc(\n            'get_processing_stats',\n            {'days': 1}\n        ).execute()\n\n        return result.data\n```\n\n---\n\n## ✅ **Part 14: Testing Checklist**\n\n### **Test Plan:**\n\n```markdown\n## WordPress Upload Form\n- [ ] Upload PDF document\n- [ ] Upload JPEG screenshot\n- [ ] Upload Word document\n- [ ] Verify ACF fields save correctly\n- [ ] Check file uploaded to media library\n\n## Tier 1 Processing\n- [ ] PDF text extraction works\n- [ ] Image OCR works\n- [ ] Duplicate detection works\n- [ ] File hash calculated correctly\n- [ ] Metadata saved to post meta\n\n## Tier 2 Processing\n- [ ] WordPress calls Python service\n- [ ] Claude fraud detection returns results\n- [ ] GPT-4 truth scoring returns results\n- [ ] Gemini legal analysis returns results\n- [ ] Results aggregated correctly\n- [ ] Results saved to Supabase\n\n## Amelia Integration\n- [ ] Can book document review appointment\n- [ ] Custom fields appear in booking form\n- [ ] Documents queued for priority processing\n- [ ] Email notifications sent\n\n## Email Integration\n- [ ] Email processor detects new messages\n- [ ] Attachments extracted correctly\n- [ ] Files uploaded to WordPress via API\n- [ ] Processing triggered automatically\n\n## Mobile Upload\n- [ ] Mobile page loads correctly\n- [ ] Camera capture works\n- [ ] File upload works\n- [ ] Progress indicator shows\n- [ ] Success message displays\n\n## Supabase Integration\n- [ ] Documents saved to legal_documents table\n- [ ] Truth scores saved to truth_score_history\n- [ ] AI costs logged to ai_analysis_results\n- [ ] Cache working correctly\n- [ ] Snapshots saving\n\n## Security\n- [ ] API key authentication works\n- [ ] Rate limiting enforces limits\n- [ ] Unauthorized requests blocked\n- [ ] File upload restrictions enforced\n```\n\n---\n\n## 🎉 **Summary**\n\n### **Complete System Includes:**\n\n1. ✅ **WordPress Upload Form** - ACF-based document intake\n2. ✅ **Tier 1 Pre-Processing** - OCR, text extraction, classification\n3. ✅ **Tier 2 Multi-LLM Processing** - Claude + GPT-4 + Gemini\n4. ✅ **Amelia Booking** - Schedule document review appointments\n5. ✅ **Email Integration** - Auto-process email attachments\n6. ✅ **Mobile Upload** - Phone-friendly quick upload\n7. ✅ **Supabase Storage** - All results stored in context preservation system\n8. ✅ **Multiple Deployment Options** - SiteGround, Digital Ocean, Vast.ai, Paperspace\n9. ✅ **Security & Authentication** - API keys, rate limiting\n10. ✅ **Monitoring & Analytics** - Cost tracking, performance metrics\n\n### **Deployment Recommendation:**\n\n**Best Setup for Your Use Case:**\n- **WordPress:** SiteGround (current hosting)\n- **Python Processing:** Digital Ocean $24/month droplet\n- **Heavy AI Processing:** Vast.ai GPU instance ($0.50/hour when needed)\n- **Database:** Supabase (current setup)\n\n**Estimated Monthly Costs:**\n- SiteGround: $15/month (current)\n- Digital Ocean: $24/month\n- LLM APIs: ~$50-200/month (depending on volume)\n- Vast.ai: $0-50/month (on-demand)\n- **Total: ~$90-290/month**\n\n---\n\n**Status:** ✅ Complete WordPress Document Upload System\n\n**Next Steps:**\n1. Set up Digital Ocean droplet\n2. Deploy Python processing service\n3. Install WordPress plugins\n4. Configure Amelia booking\n5. Test end-to-end workflow\n",
+  "content_preview": "# Legal Document Upload & Processing System\n\n**Purpose:** WordPress-based document intake system with multi-tier AI processing\n**Use Case:** Upload screenshots/documents from phone/email for legal processing\n**Tech Stack:** WordPress + ACF Forms + Amelia Booking + AstroPro + Multi-LLM API\n\n---\n\n## 🎯 System Overview\n\n### **Workflow:**\n```\nUser (Phone/Email)\n    ↓\nWordPress Upload Form (ACF)\n    ↓\nTier 1: Pre-Processing (Document Classification)\n    ↓\nTier 2: Multi-LLM Processing (Fraud Detection,...",
+  "sections": [
+    {
+      "title": "Legal Document Upload & Processing System",
+      "content": "**Purpose:** WordPress-based document intake system with multi-tier AI processing\n**Use Case:** Upload screenshots/documents from phone/email for legal processing\n**Tech Stack:** WordPress + ACF Forms + Amelia Booking + AstroPro + Multi-LLM API\n---"
+    },
+    {
+      "title": "🎯 System Overview",
+      "content": ""
+    },
+    {
+      "title": "**Workflow:**",
+      "content": "```\nUser (Phone/Email)\n    ↓\nWordPress Upload Form (ACF)\n    ↓\nTier 1: Pre-Processing (Document Classification)\n    ↓\nTier 2: Multi-LLM Processing (Fraud Detection, Truth Scoring, etc.)\n    ↓\nSupabase Storage (Context Preservation)\n    ↓\nDashboard Visualization (Streamlit)\n```\n---"
+    },
+    {
+      "title": "📱 **Part 1: WordPress Upload Form (ACF + Amelia)**",
+      "content": ""
+    },
+    {
+      "title": "**ACF Form Configuration**",
+      "content": "Create a custom ACF form for document upload:\n**Form Fields:**\n```php\n// File: wp-content/themes/your-theme/acf-document-upload.php\n<?php\n// ACF Form Configuration\nacf_form(array(\n    'id' => 'legal-document-upload',\n    'post_id' => 'new_post',\n    'post_title' => true,\n    'post_content' => false,\n    'new_post' => array(\n        'post_type' => 'legal_document',\n        'post_status' => 'pending'\n    ),\n    'submit_value' => 'Upload & Process Document',\n    'updated_message' => 'Document uploaded successfully! Processing...',\n    'fields' => array(\n        'field_document_file',        // File upload\n        'field_document_type',         // Document type (dropdown)\n        'field_document_date',         // Date of document\n        'field_document_source',       // Source (email/phone/scan)\n        'field_document_description',  // Brief description\n        'field_case_reference',        // Case reference number\n        'field_urgency_level',         // Urgency (low/medium/high/critical)\n        'field_phone_email'            // Contact info\n    )\n));\n?>\n```"
+    },
+    {
+      "title": "**ACF Field Groups Setup**",
+      "content": "```php\n// Register ACF Field Group\nif( function_exists('acf_add_local_field_group') ):\nacf_add_local_field_group(array(\n    'key' => 'group_legal_document_upload',\n    'title' => 'Legal Document Upload',\n    'fields' => array("
+    },
+    {
+      "title": "// FILE UPLOAD",
+      "content": "array(\n            'key' => 'field_document_file',\n            'label' => 'Upload Document',\n            'name' => 'document_file',\n            'type' => 'file',\n            'required' => 1,\n            'return_format' => 'array',\n            'library' => 'all',\n            'mime_types' => 'pdf,jpg,jpeg,png,doc,docx,txt',\n            'instructions' => 'Upload your document (PDF, image, or Word document)'\n        ),"
+    },
+    {
+      "title": "// DOCUMENT TYPE",
+      "content": "array(\n            'key' => 'field_document_type',\n            'label' => 'Document Type',\n            'name' => 'document_type',\n            'type' => 'select',\n            'required' => 1,\n            'choices' => array(\n                'DECL' => 'Declaration',\n                'MOTN' => 'Motion',\n                'ORDR' => 'Court Order',\n                'CORR' => 'Correspondence',\n                'EVID' => 'Evidence',\n                'POLR' => 'Police Report',\n                'PHOT' => 'Photo/Screenshot',\n                'EMAI' => 'Email',\n                'TEXT' => 'Text Message',\n                'OTHR' => 'Other'\n            )\n        ),"
+    },
+    {
+      "title": "// DOCUMENT DATE",
+      "content": "array(\n            'key' => 'field_document_date',\n            'label' => 'Document Date',\n            'name' => 'document_date',\n            'type' => 'date_picker',\n            'required' => 1,\n            'display_format' => 'm/d/Y',\n            'return_format' => 'Y-m-d'\n        ),"
+    },
+    {
+      "title": "// SOURCE",
+      "content": "array(\n            'key' => 'field_document_source',\n            'label' => 'Source',\n            'name' => 'document_source',\n            'type' => 'radio',\n            'choices' => array(\n                'phone' => 'Phone Screenshot',\n                'email' => 'Email Attachment',\n                'scan' => 'Scanned Document',\n                'digital' => 'Digital File'\n            ),\n            'default_value' => 'phone'\n        ),"
+    },
+    {
+      "title": "// DESCRIPTION",
+      "content": "array(\n            'key' => 'field_document_description',\n            'label' => 'Brief Description',\n            'name' => 'document_description',\n            'type' => 'textarea',\n            'rows' => 3,\n            'instructions' => 'What is this document about?'\n        ),"
+    },
+    {
+      "title": "// CASE REFERENCE",
+      "content": "array(\n            'key' => 'field_case_reference',\n            'label' => 'Case Reference',\n            'name' => 'case_reference',\n            'type' => 'text',\n            'default_value' => 'PROJ344',\n            'instructions' => 'Your case reference number'\n        ),"
+    },
+    {
+      "title": "// URGENCY",
+      "content": "array(\n            'key' => 'field_urgency_level',\n            'label' => 'Urgency Level',\n            'name' => 'urgency_level',\n            'type' => 'select',\n            'choices' => array(\n                'LOW' => 'Low - Informational',\n                'MEDIUM' => 'Medium - Standard Processing',\n                'HIGH' => 'High - Priority Review',\n                'CRITICAL' => 'Critical - Immediate Attention'\n            ),\n            'default_value' => 'MEDIUM'\n        ),"
+    },
+    {
+      "title": "// CONTACT",
+      "content": "array(\n            'key' => 'field_phone_email',\n            'label' => 'Your Email/Phone',\n            'name' => 'contact_info',\n            'type' => 'text',\n            'instructions' => 'For processing updates'\n        )\n    ),\n    'location' => array(\n        array(\n            array(\n                'param' => 'post_type',\n                'operator' => '==',\n                'value' => 'legal_document',\n            ),\n        ),\n    ),\n));\nendif;\n```\n---"
+    },
+    {
+      "title": "🔄 **Part 2: Tier 1 Pre-Processing (WordPress Backend)**",
+      "content": ""
+    },
+    {
+      "title": "**Process Document on Upload**",
+      "content": "```php\n// File: wp-content/themes/your-theme/functions.php\n// Hook into ACF form submission\nadd_action('acf/save_post', 'process_uploaded_document', 20);\nfunction process_uploaded_document($post_id) {\n    // Only process legal_document post type\n    if (get_post_type($post_id) !== 'legal_document') {\n        return;\n    }\n    // Get uploaded file\n    $file = get_field('document_file', $post_id);\n    $document_type = get_field('document_type', $post_id);\n    $urgency = get_field('urgency_level', $post_id);\n    if (!$file) {\n        return;\n    }"
+    },
+    {
+      "title": "// TIER 1: PRE-PROCESSING",
+      "content": "$tier1_result = tier1_preprocessing($file, $document_type, $post_id);\n    // Update post meta with Tier 1 results\n    update_post_meta($post_id, 'tier1_status', $tier1_result['status']);\n    update_post_meta($post_id, 'tier1_classification', $tier1_result['classification']);\n    update_post_meta($post_id, 'file_hash', $tier1_result['file_hash']);\n    // TIER 2: Queue for Multi-LLM Processing\n    if ($tier1_result['status'] === 'ready') {\n        queue_tier2_processing($post_id, $tier1_result, $urgency);\n    }\n    // Send to Supabase\n    send_to_supabase($post_id, $tier1_result);\n}\nfunction tier1_preprocessing($file, $document_type, $post_id) {\n    $file_path = get_attached_file($file['ID']);\n    $file_extension = pathinfo($file_path, PATHINFO_EXTENSION);\n    // Calculate file hash (prevent duplicates)\n    $file_hash = md5_file($file_path);\n    // Check for duplicate\n    $existing = get_posts(array(\n        'post_type' => 'legal_document',\n        'meta_key' => 'file_hash',\n        'meta_value' => $file_hash,\n        'post__not_in' => array($post_id)\n    ));\n    if (!empty($existing)) {\n        return array(\n            'status' => 'duplicate',\n            'file_hash' => $file_hash,\n            'duplicate_of' => $existing[0]->ID\n        );\n    }\n    // Extract text based on file type\n    $extracted_text = '';\n    if (in_array($file_extension, ['jpg', 'jpeg', 'png'])) {\n        // OCR for images (requires Tesseract or cloud OCR)\n        $extracted_text = perform_ocr($file_path);\n    } elseif ($file_extension === 'pdf') {\n        // Extract PDF text\n        $extracted_text = extract_pdf_text($file_path);\n    } elseif (in_array($file_extension, ['doc', 'docx'])) {\n        // Extract Word text\n        $extracted_text = extract_word_text($file_path);\n    }\n    // Basic classification\n    $classification = array(\n        'document_type' => $document_type,\n        'file_type' => $file_extension,\n        'file_size' => filesize($file_path),\n        'text_length' => strlen($extracted_text),\n        'has_text' => !empty($extracted_text),\n        'word_count' => str_word_count($extracted_text)\n    );\n    // Store extracted text\n    update_post_meta($post_id, 'extracted_text', $extracted_text);\n    return array(\n        'status' => 'ready',\n        'file_hash' => $file_hash,\n        'classification' => $classification,\n        'extracted_text' => $extracted_text\n    );\n}\nfunction perform_ocr($file_path) {\n    // Option 1: Google Cloud Vision API\n    // Option 2: AWS Textract\n    // Option 3: Azure Computer Vision\n    // Option 4: Local Tesseract\n    // Example using Google Cloud Vision\n    // (requires google/cloud-vision package)\n    /*\n    $vision = new VisionClient([\n        'keyFilePath' => '/path/to/service-account.json'\n    ]);\n    $image = $vision->image(file_get_contents($file_path), ["
+    },
+    {
+      "title": "'TEXT_DETECTION'",
+      "content": "]);\n    $annotation = $vision->annotate($image);\n    $text = $annotation->text();\n    return $text ? $text->description() : '';\n    */\n    // Placeholder - implement based on your OCR choice\n    return '';\n}\nfunction extract_pdf_text($file_path) {\n    // Using Smalot PDF Parser\n    // composer require smalot/pdfparser\n    require_once get_template_directory() . '/vendor/autoload.php';\n    $parser = new \\Smalot\\PdfParser\\Parser();\n    $pdf = $parser->parseFile($file_path);\n    $text = $pdf->getText();\n    return $text;\n}\nfunction extract_word_text($file_path) {\n    // Using PHPWord\n    // composer require phpoffice/phpword\n    $phpWord = \\PhpOffice\\PhpWord\\IOFactory::load($file_path);\n    $text = '';\n    foreach ($phpWord->getSections() as $section) {\n        $elements = $section->getElements();\n        foreach ($elements as $element) {\n            if (method_exists($element, 'getText')) {\n                $text .= $element->getText() . \"\\n\";\n            }\n        }\n    }\n    return $text;\n}\n```\n---"
+    },
+    {
+      "title": "🤖 **Part 3: Tier 2 Multi-LLM Processing**",
+      "content": ""
+    },
+    {
+      "title": "**Queue System for Tier 2**",
+      "content": "```php\n// Queue Tier 2 processing\nfunction queue_tier2_processing($post_id, $tier1_result, $urgency) {\n    // Create processing job\n    $job_data = array(\n        'post_id' => $post_id,\n        'tier1_result' => $tier1_result,\n        'urgency' => $urgency,\n        'status' => 'queued',\n        'created_at' => current_time('mysql')\n    );\n    // Option 1: Store in WordPress options (simple)\n    $queue = get_option('tier2_processing_queue', array());\n    $queue[] = $job_data;\n    update_option('tier2_processing_queue', $queue);\n    // Option 2: Use WP-Cron for background processing\n    wp_schedule_single_event(time() + 10, 'process_tier2_job', array($post_id));\n    // Send notification\n    send_processing_notification($post_id, 'queued');\n}\n// Process Tier 2 job\nadd_action('process_tier2_job', 'execute_tier2_processing');\nfunction execute_tier2_processing($post_id) {\n    $extracted_text = get_post_meta($post_id, 'extracted_text', true);\n    $document_type = get_field('document_type', $post_id);\n    $case_reference = get_field('case_reference', $post_id);"
+    },
+    {
+      "title": "// MULTI-LLM PROCESSING",
+      "content": "$llm_results = array();\n    // LLM 1: Claude (Fraud Detection)\n    $llm_results['claude'] = process_with_claude($extracted_text, $document_type);\n    // LLM 2: GPT-4 (Truth Scoring)\n    $llm_results['gpt4'] = process_with_gpt4($extracted_text, $document_type);\n    // LLM 3: Gemini (Legal Analysis)\n    $llm_results['gemini'] = process_with_gemini($extracted_text, $document_type);\n    // Aggregate results\n    $final_result = aggregate_llm_results($llm_results);\n    // Update post with results\n    update_post_meta($post_id, 'tier2_results', $final_result);\n    update_post_meta($post_id, 'processing_status', 'completed');\n    update_post_meta($post_id, 'processed_at', current_time('mysql'));\n    // Send to Supabase\n    update_supabase_with_tier2_results($post_id, $final_result);\n    // Notify user\n    send_processing_notification($post_id, 'completed');\n}\n```\n---"
+    },
+    {
+      "title": "🔌 **Part 4: API Integration - Python Processing Service**",
+      "content": "Create a Python service to handle the heavy LLM processing:\n```python"
+    },
+    {
+      "title": "File: wp-content/processing-service/document_processor.py",
+      "content": "from flask import Flask, request, jsonify\nimport anthropic\nimport openai\nimport google.generativeai as genai\nfrom supabase import create_client\nimport os\napp = Flask(__name__)"
+    },
+    {
+      "title": "Initialize LLM clients",
+      "content": "claude = anthropic.Anthropic(api_key=os.environ['ANTHROPIC_API_KEY'])\nopenai.api_key = os.environ['OPENAI_API_KEY']\ngenai.configure(api_key=os.environ['GOOGLE_API_KEY'])"
+    },
+    {
+      "title": "Initialize Supabase",
+      "content": "supabase = create_client(\n    os.environ['SUPABASE_URL'],\n    os.environ['SUPABASE_KEY']\n)\n@app.route('/process', methods=['POST'])\ndef process_document():\n    \"\"\"\n    Process document through multiple LLMs\n    \"\"\"\n    data = request.json\n    post_id = data['post_id']\n    extracted_text = data['extracted_text']\n    document_type = data['document_type']\n    results = {\n        'post_id': post_id,\n        'llm_results': {}\n    }"
+    },
+    {
+      "title": "TIER 2: Multi-LLM Processing",
+      "content": ""
+    },
+    {
+      "title": "1. Claude - Fraud Detection",
+      "content": "results['llm_results']['claude'] = process_with_claude(\n        extracted_text,\n        document_type\n    )"
+    },
+    {
+      "title": "2. GPT-4 - Truth Scoring",
+      "content": "results['llm_results']['gpt4'] = process_with_gpt4(\n        extracted_text,\n        document_type\n    )"
+    },
+    {
+      "title": "3. Gemini - Legal Analysis",
+      "content": "results['llm_results']['gemini'] = process_with_gemini(\n        extracted_text,\n        document_type\n    )"
+    },
+    {
+      "title": "Aggregate results",
+      "content": "final_analysis = aggregate_results(results['llm_results'])"
+    },
+    {
+      "title": "Save to Supabase",
+      "content": "save_to_supabase(post_id, final_analysis)\n    return jsonify({\n        'status': 'success',\n        'results': final_analysis\n    })\ndef process_with_claude(text, doc_type):\n    \"\"\"Claude: Fraud detection and pattern analysis\"\"\"\n    prompt = f\"\"\"Analyze this legal document for fraud indicators:\nDocument Type: {doc_type}\nDocument Text:\n{text}\nProvide analysis in JSON format:\n{{\n    \"fraud_score\": 0-100,\n    \"fraud_indicators\": [\"list\", \"of\", \"red\", \"flags\"],\n    \"confidence\": 0-100,\n    \"summary\": \"brief summary\",\n    \"key_findings\": [\"finding1\", \"finding2\"]\n}}\n\"\"\"\n    response = claude.messages.create(\n        model=\"claude-sonnet-4-20250514\",\n        max_tokens=2000,\n        messages=[{\n            \"role\": \"user\",\n            \"content\": prompt\n        }]\n    )\n    return parse_claude_response(response.content[0].text)\ndef process_with_gpt4(text, doc_type):\n    \"\"\"GPT-4: Truth scoring and fact verification\"\"\"\n    prompt = f\"\"\"Score this legal document for truthfulness using 5W+H framework:\nDocument Type: {doc_type}\nDocument Text:\n{text}\nProvide analysis in JSON format:\n{{\n    \"truth_score\": 0-100,\n    \"when\": \"when did this happen\",\n    \"where\": \"where did this happen\",\n    \"who\": [\"list\", \"of\", \"people\"],\n    \"what\": \"what occurred\",\n    \"why\": \"why it occurred\",\n    \"how\": \"how it occurred\",\n    \"verifiable_facts\": [\"fact1\", \"fact2\"],\n    \"unverifiable_claims\": [\"claim1\", \"claim2\"]\n}}\n\"\"\"\n    response = openai.ChatCompletion.create(\n        model=\"gpt-4-turbo\",\n        messages=[{\n            \"role\": \"user\",\n            \"content\": prompt\n        }],\n        response_format={\"type\": \"json_object\"}\n    )\n    return json.loads(response.choices[0].message.content)\ndef process_with_gemini(text, doc_type):\n    \"\"\"Gemini: Legal analysis and categorization\"\"\"\n    model = genai.GenerativeModel('gemini-1.5-pro')\n    prompt = f\"\"\"Perform legal analysis on this document:\nDocument Type: {doc_type}\nDocument Text:\n{text}\nProvide analysis in JSON format:\n{{\n    \"legal_issues\": [\"issue1\", \"issue2\"],\n    \"relevant_laws\": [\"law1\", \"law2\"],\n    \"importance_level\": \"CRITICAL/HIGH/MEDIUM/LOW\",\n    \"category\": \"MOTION/FILING/EVIDENCE/etc\",\n    \"actionable_items\": [\"action1\", \"action2\"],\n    \"timeline_relevance\": \"description\"\n}}\n\"\"\"\n    response = model.generate_content(prompt)\n    return parse_gemini_response(response.text)\ndef aggregate_results(llm_results):\n    \"\"\"Aggregate results from multiple LLMs\"\"\"\n    aggregated = {\n        'fraud_score': llm_results['claude']['fraud_score'],\n        'truth_score': llm_results['gpt4']['truth_score'],\n        'importance_level': llm_results['gemini']['importance_level'],\n        'category': llm_results['gemini']['category'],"
+    },
+    {
+      "title": "Combined analysis",
+      "content": "'combined_score': (\n            llm_results['claude']['fraud_score'] * 0.3 +\n            llm_results['gpt4']['truth_score'] * 0.4 +\n            (100 if llm_results['gemini']['importance_level'] == 'CRITICAL' else 75) * 0.3\n        ),"
+    },
+    {
+      "title": "All findings",
+      "content": "'key_findings': (\n            llm_results['claude']['key_findings'] +\n            llm_results['gpt4']['verifiable_facts'] +\n            llm_results['gemini']['legal_issues']\n        ),"
+    },
+    {
+      "title": "5W+H",
+      "content": "'when_happened': llm_results['gpt4']['when'],\n        'where_happened': llm_results['gpt4']['where'],\n        'who_involved': llm_results['gpt4']['who'],\n        'what_occurred': llm_results['gpt4']['what'],\n        'why_occurred': llm_results['gpt4']['why'],\n        'how_occurred': llm_results['gpt4']['how'],"
+    },
+    {
+      "title": "Metadata",
+      "content": "'processed_at': datetime.now().isoformat(),\n        'llm_versions': {\n            'claude': 'sonnet-4',\n            'gpt4': 'gpt-4-turbo',\n            'gemini': 'gemini-1.5-pro'\n        }\n    }\n    return aggregated\ndef save_to_supabase(post_id, analysis):\n    \"\"\"Save analysis to Supabase\"\"\""
+    },
+    {
+      "title": "Save to legal_documents table",
+      "content": "supabase.table('legal_documents').upsert({\n        'wordpress_post_id': post_id,\n        'document_type': analysis['category'],\n        'fraud_score': analysis['fraud_score'],\n        'truth_score': analysis['truth_score'],\n        'importance_level': analysis['importance_level'],\n        'processed_at': analysis['processed_at']\n    }).execute()"
+    },
+    {
+      "title": "Save to truth_score_history",
+      "content": "supabase.table('truth_score_history').insert({\n        'item_id': str(post_id),\n        'item_type': analysis['category'],\n        'truth_score': analysis['truth_score'],\n        'when_happened': analysis['when_happened'],\n        'where_happened': analysis['where_happened'],\n        'who_involved': analysis['who_involved'],\n        'what_occurred': analysis['what_occurred'],\n        'why_occurred': analysis['why_occurred'],\n        'how_occurred': analysis['how_occurred'],\n        'importance_level': analysis['importance_level']\n    }).execute()"
+    },
+    {
+      "title": "Log AI analysis",
+      "content": "from utilities.context_manager import ContextManager\n    cm = ContextManager()\n    cm.log_ai_analysis(\n        analysis_type='document_processing',\n        model_name='multi-llm',\n        source_id=str(post_id),\n        source_table='wordpress_uploads',\n        structured_output=analysis,\n        tokens_used=5000,  # Estimate\n        api_cost_usd=0.15  # Estimate\n    )\nif __name__ == '__main__':\n    app.run(host='0.0.0.0', port=5000)\n```\n---"
+    },
+    {
+      "title": "📧 **Part 5: Email Integration**",
+      "content": ""
+    },
+    {
+      "title": "**Process Documents from Email**",
+      "content": "```python"
+    },
+    {
+      "title": "File: email_to_wordpress.py",
+      "content": "import imaplib\nimport email\nfrom email.header import decode_header\nimport requests\nimport os\ndef process_email_attachments():\n    \"\"\"\n    Check email for new attachments and upload to WordPress\n    \"\"\""
+    },
+    {
+      "title": "Connect to email",
+      "content": "mail = imaplib.IMAP4_SSL('imap.gmail.com')\n    mail.login('your-email@gmail.com', os.environ['EMAIL_PASSWORD'])\n    mail.select('INBOX')"
+    },
+    {
+      "title": "Search for unread emails with attachments",
+      "content": "status, messages = mail.search(None, '(UNSEEN)')\n    for msg_num in messages[0].split():\n        status, msg_data = mail.fetch(msg_num, '(RFC822)')\n        for response_part in msg_data:\n            if isinstance(response_part, tuple):\n                msg = email.message_from_bytes(response_part[1])"
+    },
+    {
+      "title": "Process attachments",
+      "content": "for part in msg.walk():\n                    if part.get_content_maintype() == 'multipart':\n                        continue\n                    if part.get('Content-Disposition') is None:\n                        continue\n                    filename = part.get_filename()\n                    if filename:"
+    },
+    {
+      "title": "Upload to WordPress",
+      "content": "upload_to_wordpress(\n                            filename=filename,\n                            file_data=part.get_payload(decode=True),\n                            email_subject=msg['subject'],\n                            email_from=msg['from'],\n                            email_date=msg['date']\n                        )\n    mail.close()\n    mail.logout()\ndef upload_to_wordpress(filename, file_data, email_subject, email_from, email_date):\n    \"\"\"\n    Upload file to WordPress via REST API\n    \"\"\"\n    wp_url = 'https://your-site.com/wp-json/wp/v2/media'\n    wp_user = 'your-username'\n    wp_password = 'your-app-password'\n    headers = {\n        'Content-Disposition': f'attachment; filename={filename}'\n    }\n    response = requests.post(\n        wp_url,\n        auth=(wp_user, wp_password),\n        headers=headers,\n        data=file_data\n    )\n    if response.status_code == 201:\n        media_id = response.json()['id']"
+    },
+    {
+      "title": "Create legal_document post",
+      "content": "create_document_post(\n            media_id=media_id,\n            title=email_subject,\n            source='email',\n            metadata={\n                'email_from': email_from,\n                'email_date': email_date\n            }\n        )\n```\n---"
+    },
+    {
+      "title": "🔗 **Part 6: WordPress REST API Webhook**",
+      "content": "```php\n// Register REST route for processing status\nadd_action('rest_api_init', function () {\n    register_rest_route('legal/v1', '/process-status/(?P<id>\\d+)', array(\n        'methods' => 'GET',\n        'callback' => 'get_processing_status',\n    ));\n    register_rest_route('legal/v1', '/upload', array(\n        'methods' => 'POST',\n        'callback' => 'handle_api_upload',\n    ));\n});\nfunction get_processing_status($request) {\n    $post_id = $request['id'];\n    $status = get_post_meta($post_id, 'processing_status', true);\n    $tier1 = get_post_meta($post_id, 'tier1_status', true);\n    $tier2 = get_post_meta($post_id, 'tier2_results', true);\n    return new WP_REST_Response(array(\n        'post_id' => $post_id,\n        'status' => $status,\n        'tier1_status' => $tier1,\n        'tier2_results' => $tier2\n    ), 200);\n}\nfunction handle_api_upload($request) {\n    // Handle uploads from external sources (email, mobile app, etc.)\n    $files = $request->get_file_params();\n    $params = $request->get_params();\n    // Process upload\n    $upload = wp_handle_upload($files['file'], array('test_form' => false));\n    if (!isset($upload['error'])) {\n        // Create attachment\n        $attachment_id = wp_insert_attachment(array(\n            'post_mime_type' => $upload['type'],\n            'post_title' => sanitize_file_name($upload['file']),\n            'post_content' => '',\n            'post_status' => 'inherit'\n        ), $upload['file']);\n        // Create legal_document post\n        $post_id = wp_insert_post(array(\n            'post_type' => 'legal_document',\n            'post_title' => $params['title'] ?? 'Uploaded Document',\n            'post_status' => 'pending'\n        ));\n        // Link attachment\n        update_field('document_file', $attachment_id, $post_id);\n        update_field('document_type', $params['document_type'] ?? 'OTHR', $post_id);\n        update_field('document_source', $params['source'] ?? 'api', $post_id);\n        // Trigger processing\n        do_action('acf/save_post', $post_id);\n        return new WP_REST_Response(array(\n            'success' => true,\n            'post_id' => $post_id,\n            'message' => 'Document uploaded and queued for processing'\n        ), 201);\n    }\n    return new WP_REST_Response(array(\n        'success' => false,\n        'error' => $upload['error']\n    ), 400);\n}\n```\n---"
+    },
+    {
+      "title": "📱 **Part 7: Mobile Upload (Bonus)**",
+      "content": "Create a simple mobile-friendly upload page:\n```html\n<!-- File: wp-content/themes/your-theme/page-mobile-upload.php -->\n<?php\n/* Template Name: Mobile Upload */\nget_header();\n?>\n<div class=\"mobile-upload-container\">\n    <h1>Quick Document Upload</h1>\n    <form id=\"mobile-upload-form\" enctype=\"multipart/form-data\">\n        <div class=\"form-group\">\n            <label>Take Photo or Choose File</label>\n            <input type=\"file\"\n                   name=\"document\"\n                   accept=\"image/*,application/pdf\"\n                   capture=\"environment\"\n                   required>\n        </div>\n        <div class=\"form-group\">\n            <label>Document Type</label>\n            <select name=\"document_type\" required>\n                <option value=\"PHOT\">Photo/Screenshot</option>\n                <option value=\"EMAI\">Email</option>\n                <option value=\"TEXT\">Text Message</option>\n                <option value=\"EVID\">Evidence</option>\n                <option value=\"OTHR\">Other</option>\n            </select>\n        </div>\n        <div class=\"form-group\">\n            <label>Quick Description</label>\n            <textarea name=\"description\" rows=\"3\"></textarea>\n        </div>\n        <div class=\"form-group\">\n            <label>Urgency</label>\n            <select name=\"urgency\">\n                <option value=\"MEDIUM\">Normal</option>\n                <option value=\"HIGH\">High Priority</option>\n                <option value=\"CRITICAL\">Urgent</option>\n            </select>\n        </div>\n        <button type=\"submit\" class=\"btn-upload\">\n            Upload & Process\n        </button>\n        <div id=\"upload-status\"></div>\n    </form>\n</div>\n<script>\ndocument.getElementById('mobile-upload-form').addEventListener('submit', async function(e) {\n    e.preventDefault();\n    const formData = new FormData(this);\n    const statusDiv = document.getElementById('upload-status');\n    statusDiv.innerHTML = '<p>Uploading...</p>';\n    try {\n        const response = await fetch('/wp-json/legal/v1/upload', {\n            method: 'POST',\n            body: formData\n        });\n        const result = await response.json();\n        if (result.success) {\n            statusDiv.innerHTML = `\n                <div class=\"success\">\n                    <h3>✅ Upload Successful!</h3>\n                    <p>Your document is being processed.</p>\n                    <p>Reference: #${result.post_id}</p>\n                </div>\n            `;\n            this.reset();\n        } else {\n            statusDiv.innerHTML = `<p class=\"error\">Error: ${result.error}</p>`;\n        }\n    } catch (error) {\n        statusDiv.innerHTML = `<p class=\"error\">Upload failed: ${error.message}</p>`;\n    }\n});\n</script>\n<style>\n.mobile-upload-container {\n    max-width: 500px;\n    margin: 20px auto;\n    padding: 20px;\n}\n.form-group {\n    margin-bottom: 20px;\n}\n.form-group label {\n    display: block;\n    margin-bottom: 5px;\n    font-weight: bold;\n}\n.form-group input,\n.form-group select,\n.form-group textarea {\n    width: 100%;\n    padding: 10px;\n    font-size: 16px;\n}\n.btn-upload {\n    width: 100%;\n    padding: 15px;\n    background: #0073aa;\n    color: white;\n    border: none;\n    font-size: 18px;\n    cursor: pointer;\n}\n.success {\n    padding: 20px;\n    background: #d4edda;\n    border: 1px solid #c3e6cb;\n    border-radius: 5px;\n    margin-top: 20px;\n}\n.error {\n    padding: 20px;\n    background: #f8d7da;\n    border: 1px solid #f5c6cb;\n    border-radius: 5px;\n    margin-top: 20px;\n}\n</style>\n<?php get_footer(); ?>\n```\n---"
+    },
+    {
+      "title": "📊 **Part 8: Integration with Existing Dashboards**",
+      "content": "Connect processed documents to your Streamlit dashboards:\n```python"
+    },
+    {
+      "title": "File: ASEAGI/wordpress_integration.py",
+      "content": "from supabase import create_client\nimport requests\nclass WordPressIntegration:\n    def __init__(self):\n        self.wp_url = \"https://your-site.com\"\n        self.wp_user = \"your-username\"\n        self.wp_password = \"your-app-password\"\n        self.supabase = create_client(\n            os.environ['SUPABASE_URL'],\n            os.environ['SUPABASE_KEY']\n        )\n    def fetch_recent_uploads(self, days=7):\n        \"\"\"Fetch recent document uploads from WordPress\"\"\"\n        url = f\"{self.wp_url}/wp-json/wp/v2/legal_document\"\n        params = {\n            'per_page': 100,\n            'after': (datetime.now() - timedelta(days=days)).isoformat()\n        }\n        response = requests.get(\n            url,\n            auth=(self.wp_user, self.wp_password),\n            params=params\n        )\n        return response.json()\n    def sync_to_supabase(self):\n        \"\"\"Sync WordPress uploads to Supabase\"\"\"\n        documents = self.fetch_recent_uploads()\n        for doc in documents:"
+    },
+    {
+      "title": "Check if already in Supabase",
+      "content": "existing = self.supabase.table('legal_documents')\\\n                .select('*')\\\n                .eq('wordpress_post_id', doc['id'])\\\n                .execute()\n            if not existing.data:"
+    },
+    {
+      "title": "Insert into Supabase",
+      "content": "self.supabase.table('legal_documents').insert({\n                    'wordpress_post_id': doc['id'],\n                    'original_filename': doc['title']['rendered'],"
+    },
+    {
+      "title": "... other fields",
+      "content": "}).execute()\n```\n---"
+    },
+    {
+      "title": "📅 **Part 9: Amelia Booking Integration**",
+      "content": ""
+    },
+    {
+      "title": "**Schedule Document Review Appointments**",
+      "content": "Integrate Amelia to schedule appointments for document review meetings:\n```php\n// File: wp-content/themes/your-theme/amelia-integration.php\n// Hook into Amelia appointment booking\nadd_action('AmeliaBookingAdded', 'handle_document_review_booking', 10, 3);\nfunction handle_document_review_booking($appointment, $booking, $recurring) {\n    // Check if this is a document review appointment\n    $service_id = $appointment['serviceId'];\n    $document_review_service_id = 1; // Your document review service ID\n    if ($service_id != $document_review_service_id) {\n        return;\n    }\n    // Get custom fields from booking\n    $custom_fields = $booking['customFields'];\n    $document_ids = array();\n    foreach ($custom_fields as $field) {\n        if ($field['label'] === 'Document IDs') {\n            $document_ids = explode(',', $field['value']);\n        }\n    }\n    // Create processing job for these documents\n    if (!empty($document_ids)) {\n        schedule_document_review_preparation(\n            $appointment['id'],\n            $document_ids,\n            $appointment['bookingStart']\n        );\n    }\n}\nfunction schedule_document_review_preparation($appointment_id, $document_ids, $review_date) {\n    // Queue all documents for priority processing\n    foreach ($document_ids as $doc_id) {\n        $doc_id = trim($doc_id);\n        // Set priority processing\n        update_post_meta($doc_id, 'scheduled_review_date', $review_date);\n        update_post_meta($doc_id, 'amelia_appointment_id', $appointment_id);\n        update_field('urgency_level', 'HIGH', $doc_id);\n        // Trigger immediate Tier 2 processing\n        do_action('process_tier2_job', $doc_id);\n    }\n    // Send preparation email\n    send_review_preparation_email($appointment_id, $document_ids);\n}\n// Add custom field to Amelia service for document selection\nadd_filter('ameliaBookingAddCustomFields', 'add_document_selection_field');\nfunction add_document_selection_field($custom_fields) {\n    $custom_fields[] = array(\n        'label' => 'Document IDs',\n        'type' => 'text',\n        'required' => false,\n        'placeholder' => 'Enter document IDs separated by commas (e.g., 123, 456, 789)'\n    );\n    return $custom_fields;\n}\n// Create Amelia service for document reviews\nfunction create_document_review_service() {\n    // This should be done via Amelia admin UI, but here's the structure:\n    /*\n    Service Name: Document Review Consultation\n    Duration: 60 minutes\n    Price: $0 (or set your price)\n    Category: Legal Services\n    Buffer Time Before: 15 minutes (for document preparation)\n    Custom Fields:\n      - Document IDs (text field)\n      - Review Focus Areas (textarea)\n      - Urgency Notes (textarea)\n    */\n}\n```"
+    },
+    {
+      "title": "**Amelia Service Configuration (Admin UI)**",
+      "content": "Create a service in Amelia admin:\n1. **Go to:** Amelia > Services > Add Service\n2. **Configure:**\n   - **Name:** Document Review Consultation\n   - **Duration:** 60 minutes\n   - **Buffer Time Before:** 15 minutes\n   - **Capacity:** 1 person\n   - **Custom Fields:**\n     - Document IDs (text)\n     - Review Focus (textarea)\n     - Special Instructions (textarea)\n3. **Notifications:**\n   - **To Customer:** \"Your document review is scheduled for %appointment_date_time%. Please upload documents with IDs: %custom_field_1%\"\n   - **To Employee:** \"Document review scheduled. Process documents: %custom_field_1% before appointment.\"\n---"
+    },
+    {
+      "title": "🚀 **Part 10: Deployment Options**",
+      "content": ""
+    },
+    {
+      "title": "**Option 1: SiteGround Hosting (Current)**",
+      "content": "**For WordPress + Simple Processing:**\n```bash"
+    },
+    {
+      "title": "Install required PHP packages via Composer",
+      "content": "cd ~/public_html/wp-content/themes/your-theme\ncomposer require smalot/pdfparser\ncomposer require phpoffice/phpword"
+    },
+    {
+      "title": "Configure WP-Cron for background processing",
+      "content": ""
+    },
+    {
+      "title": "Add to wp-config.php:",
+      "content": "define('DISABLE_WP_CRON', true);"
+    },
+    {
+      "title": "Add to cPanel cron jobs (every 5 minutes):",
+      "content": "*/5 * * * * cd ~/public_html && php wp-cron.php\n```\n**Limitations:**\n- No Python processing on SiteGround shared hosting\n- Must use external API for Tier 2 processing\n- Use webhook to call Python service on Digital Ocean\n---"
+    },
+    {
+      "title": "**Option 2: Digital Ocean + Docker (Recommended)**",
+      "content": "**Complete WordPress + Python Processing Stack:**"
+    },
+    {
+      "title": "**Docker Compose Setup**",
+      "content": "```yaml"
+    },
+    {
+      "title": "File: docker-compose.yml",
+      "content": "version: '3.8'\nservices:"
+    },
+    {
+      "title": "WordPress",
+      "content": "wordpress:\n    image: wordpress:latest\n    container_name: legal-wordpress\n    ports:\n      - \"80:80\"\n      - \"443:443\"\n    environment:\n      WORDPRESS_DB_HOST: db\n      WORDPRESS_DB_USER: wordpress"
+    },
+    {
+      "title": "WORDPRESS_DB_PASSWORD: ${DB_PASSWORD}",
+      "content": "WORDPRESS_DB_NAME: legal_documents\n    volumes:\n      - ./wordpress:/var/www/html\n      - ./uploads:/var/www/html/wp-content/uploads\n    depends_on:\n      - db\n    restart: always"
+    },
+    {
+      "title": "MySQL Database",
+      "content": "db:\n    image: mysql:8.0\n    container_name: legal-mysql\n    environment:\n      MYSQL_DATABASE: legal_documents\n      MYSQL_USER: wordpress"
+    },
+    {
+      "title": "MYSQL_PASSWORD: ${DB_PASSWORD}",
+      "content": ""
+    },
+    {
+      "title": "MYSQL_ROOT_PASSWORD: ${DB_ROOT_PASSWORD}",
+      "content": "volumes:\n      - db_data:/var/lib/mysql\n    restart: always"
+    },
+    {
+      "title": "Python Processing Service",
+      "content": "processing-service:\n    build: ./processing-service\n    container_name: legal-processing\n    ports:\n      - \"5000:5000\"\n    environment:"
+    },
+    {
+      "title": "ANTHROPIC_API_KEY: ${ANTHROPIC_API_KEY}",
+      "content": ""
+    },
+    {
+      "title": "OPENAI_API_KEY: ${OPENAI_API_KEY}",
+      "content": ""
+    },
+    {
+      "title": "GOOGLE_API_KEY: ${GOOGLE_API_KEY}",
+      "content": ""
+    },
+    {
+      "title": "SUPABASE_URL: ${SUPABASE_URL}",
+      "content": ""
+    },
+    {
+      "title": "SUPABASE_KEY: ${SUPABASE_KEY}",
+      "content": "volumes:\n      - ./processing-service:/app\n      - ./uploads:/uploads\n    restart: always"
+    },
+    {
+      "title": "Redis for queue management",
+      "content": "redis:\n    image: redis:alpine\n    container_name: legal-redis\n    ports:\n      - \"6379:6379\"\n    restart: always"
+    },
+    {
+      "title": "Celery worker for async processing",
+      "content": "celery-worker:\n    build: ./processing-service\n    container_name: legal-celery\n    command: celery -A tasks worker --loglevel=info\n    environment:"
+    },
+    {
+      "title": "ANTHROPIC_API_KEY: ${ANTHROPIC_API_KEY}",
+      "content": ""
+    },
+    {
+      "title": "OPENAI_API_KEY: ${OPENAI_API_KEY}",
+      "content": ""
+    },
+    {
+      "title": "GOOGLE_API_KEY: ${GOOGLE_API_KEY}",
+      "content": ""
+    },
+    {
+      "title": "SUPABASE_URL: ${SUPABASE_URL}",
+      "content": ""
+    },
+    {
+      "title": "SUPABASE_KEY: ${SUPABASE_KEY}",
+      "content": "volumes:\n      - ./processing-service:/app\n      - ./uploads:/uploads\n    depends_on:\n      - redis\n    restart: always\nvolumes:\n  db_data:\n  wordpress_data:\n```"
+    },
+    {
+      "title": "**Processing Service Dockerfile**",
+      "content": "```dockerfile"
+    },
+    {
+      "title": "File: processing-service/Dockerfile",
+      "content": "FROM python:3.11-slim\nWORKDIR /app"
+    },
+    {
+      "title": "Install system dependencies for OCR",
+      "content": "RUN apt-get update && apt-get install -y \\\n    tesseract-ocr \\\n    tesseract-ocr-eng \\\n    poppler-utils \\\n    && rm -rf /var/lib/apt/lists/*"
+    },
+    {
+      "title": "Copy requirements",
+      "content": "COPY requirements.txt ."
+    },
+    {
+      "title": "Install Python packages",
+      "content": "RUN pip install --no-cache-dir -r requirements.txt"
+    },
+    {
+      "title": "Copy application code",
+      "content": ""
+    },
+    {
+      "title": "COPY . .",
+      "content": ""
+    },
+    {
+      "title": "EXPOSE 5000",
+      "content": "CMD [\"gunicorn\", \"--bind\", \"0.0.0.0:5000\", \"--workers\", \"4\", \"--timeout\", \"300\", \"app:app\"]\n```"
+    },
+    {
+      "title": "**Python Requirements**",
+      "content": "```txt"
+    },
+    {
+      "title": "File: processing-service/requirements.txt",
+      "content": "flask==3.0.0\ngunicorn==21.2.0\nanthropic==0.18.0\nopenai==1.12.0\ngoogle-generativeai==0.4.0\nsupabase==2.3.4\ncelery==5.3.6\nredis==5.0.1\npytesseract==0.3.10\npdf2image==1.17.0\nPillow==10.2.0\nrequests==2.31.0\npython-dotenv==1.0.1\n```"
+    },
+    {
+      "title": "**Environment Variables**",
+      "content": "```bash"
+    },
+    {
+      "title": "File: .env",
+      "content": ""
+    },
+    {
+      "title": "Database",
+      "content": "DB_PASSWORD=your_secure_password\nDB_ROOT_PASSWORD=your_root_password"
+    },
+    {
+      "title": "LLM APIs",
+      "content": "ANTHROPIC_API_KEY=sk-ant-xxxxx\nOPENAI_API_KEY=sk-xxxxx\nGOOGLE_API_KEY=xxxxx"
+    },
+    {
+      "title": "Supabase",
+      "content": "SUPABASE_URL=https://jvjlhxodmbkodzmggwpu.supabase.co\nSUPABASE_KEY=eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9..."
+    },
+    {
+      "title": "WordPress",
+      "content": "WP_ADMIN_USER=admin\nWP_ADMIN_EMAIL=admin@example.com\n```"
+    },
+    {
+      "title": "**Deploy to Digital Ocean**",
+      "content": "```bash"
+    },
+    {
+      "title": "1. Create Digital Ocean Droplet",
+      "content": ""
+    },
+    {
+      "title": "Size: $24/month (4GB RAM, 2 vCPUs) - sufficient for this workload",
+      "content": ""
+    },
+    {
+      "title": "2. SSH into droplet",
+      "content": "ssh root@your-droplet-ip"
+    },
+    {
+      "title": "3. Install Docker",
+      "content": "curl -fsSL https://get.docker.com -o get-docker.sh\nsh get-docker.sh"
+    },
+    {
+      "title": "4. Install Docker Compose",
+      "content": "apt-get update\napt-get install docker-compose-plugin"
+    },
+    {
+      "title": "5. Clone your repository",
+      "content": "git clone https://github.com/yourusername/legal-document-system.git\ncd legal-document-system"
+    },
+    {
+      "title": "6. Create .env file",
+      "content": "nano .env"
+    },
+    {
+      "title": "(paste environment variables)",
+      "content": ""
+    },
+    {
+      "title": "7. Start services",
+      "content": "docker compose up -d"
+    },
+    {
+      "title": "8. Install WordPress",
+      "content": ""
+    },
+    {
+      "title": "Visit http://your-droplet-ip and complete WordPress setup",
+      "content": ""
+    },
+    {
+      "title": "9. Install plugins",
+      "content": ""
+    },
+    {
+      "title": "- Advanced Custom Fields Pro",
+      "content": ""
+    },
+    {
+      "title": "- Amelia Booking",
+      "content": ""
+    },
+    {
+      "title": "- WP REST API authentication",
+      "content": ""
+    },
+    {
+      "title": "10. Configure DNS",
+      "content": ""
+    },
+    {
+      "title": "Point your domain to droplet IP",
+      "content": ""
+    },
+    {
+      "title": "Enable SSL with Let's Encrypt",
+      "content": "```\n---"
+    },
+    {
+      "title": "**Option 3: Vast.ai GPU Processing (For Heavy AI Workloads)**",
+      "content": "Use Vast.ai for GPU-accelerated LLM inference:\n```python"
+    },
+    {
+      "title": "File: processing-service/vast_ai_client.py",
+      "content": "import requests\nclass VastAIClient:\n    \"\"\"\n    Use Vast.ai for GPU-accelerated LLM processing\n    \"\"\"\n    def __init__(self, api_key, instance_id):\n        self.api_key = api_key\n        self.instance_id = instance_id\n        self.base_url = f\"http://{self.get_instance_ip()}:8000\"\n    def get_instance_ip(self):\n        \"\"\"Get Vast.ai instance IP\"\"\"\n        response = requests.get(\n            f\"https://console.vast.ai/api/v0/instances/{self.instance_id}\",\n            headers={\"Authorization\": f\"Bearer {self.api_key}\"}\n        )\n        return response.json()['public_ipaddr']\n    def process_with_local_llm(self, text, model=\"llama-3-70b\"):\n        \"\"\"\n        Process document with local LLM on Vast.ai GPU\n        \"\"\"\n        response = requests.post(\n            f\"{self.base_url}/v1/completions\",\n            json={\n                \"model\": model,\n                \"prompt\": text,\n                \"max_tokens\": 2000,\n                \"temperature\": 0.7\n            }\n        )\n        return response.json()"
+    },
+    {
+      "title": "Use for cost-effective processing",
+      "content": ""
+    },
+    {
+      "title": "Vast.ai: ~$0.50/hour for RTX 4090",
+      "content": ""
+    },
+    {
+      "title": "vs OpenAI: ~$0.03 per 1K tokens",
+      "content": "```\n**Vast.ai Setup:**\n```bash"
+    },
+    {
+      "title": "1. Create Vast.ai account",
+      "content": ""
+    },
+    {
+      "title": "2. Rent GPU instance (RTX 4090 recommended)",
+      "content": ""
+    },
+    {
+      "title": "3. Deploy vLLM or llama.cpp server",
+      "content": ""
+    },
+    {
+      "title": "4. Point processing service to Vast.ai endpoint",
+      "content": ""
+    },
+    {
+      "title": "Docker image for Vast.ai instance:",
+      "content": "docker run -d \\\n  --gpus all \\\n  -p 8000:8000 \\\n  vllm/vllm-openai:latest \\\n  --model meta-llama/Llama-3-70b-chat-hf \\\n  --tensor-parallel-size 2\n```\n---"
+    },
+    {
+      "title": "**Option 4: Paperspace (Alternative to Vast.ai)**",
+      "content": "```python"
+    },
+    {
+      "title": "File: processing-service/paperspace_client.py",
+      "content": "import gradient\nclass PaperspaceClient:\n    \"\"\"\n    Use Paperspace Gradient for LLM processing\n    \"\"\"\n    def __init__(self, api_key):\n        self.client = gradient.Gradient(api_key=api_key)\n    def process_document(self, text):\n        deployment = self.client.get_deployment(\n            deployment_id=\"your-deployment-id\"\n        )\n        response = deployment.complete(\n            prompt=text,\n            max_tokens=2000\n        )\n        return response.generated_text\n```\n---"
+    },
+    {
+      "title": "📋 **Part 11: Complete Installation Guide**",
+      "content": ""
+    },
+    {
+      "title": "**Quick Start: SiteGround + Digital Ocean Hybrid**",
+      "content": "**Step 1: WordPress on SiteGround**\n```bash"
+    },
+    {
+      "title": "1. Install WordPress via SiteGround Site Tools",
+      "content": ""
+    },
+    {
+      "title": "2. Install plugins:",
+      "content": ""
+    },
+    {
+      "title": "- Advanced Custom Fields Pro",
+      "content": ""
+    },
+    {
+      "title": "- Amelia Booking",
+      "content": ""
+    },
+    {
+      "title": "- WP Mail SMTP (for email processing)",
+      "content": ""
+    },
+    {
+      "title": "3. Upload theme files",
+      "content": ""
+    },
+    {
+      "title": "Copy files from /wordpress-theme/ folder to:",
+      "content": ""
+    },
+    {
+      "title": "~/public_html/wp-content/themes/legal-document-theme/",
+      "content": ""
+    },
+    {
+      "title": "4. Activate theme",
+      "content": ""
+    },
+    {
+      "title": "5. Configure ACF forms",
+      "content": ""
+    },
+    {
+      "title": "Import ACF field groups from /acf-config/legal-document-fields.json",
+      "content": "```\n**Step 2: Python Service on Digital Ocean**\n```bash"
+    },
+    {
+      "title": "1. Create $24/month droplet (4GB RAM)",
+      "content": ""
+    },
+    {
+      "title": "2. Install dependencies",
+      "content": "apt update && apt upgrade -y\napt install -y python3-pip python3-venv tesseract-ocr"
+    },
+    {
+      "title": "3. Clone processing service",
+      "content": "git clone https://github.com/yourusername/document-processing-service.git\ncd document-processing-service"
+    },
+    {
+      "title": "4. Create virtual environment",
+      "content": "python3 -m venv venv\nsource venv/bin/activate"
+    },
+    {
+      "title": "5. Install requirements",
+      "content": "pip install -r requirements.txt"
+    },
+    {
+      "title": "6. Configure environment",
+      "content": "nano .env"
+    },
+    {
+      "title": "Add API keys",
+      "content": ""
+    },
+    {
+      "title": "7. Start service with systemd",
+      "content": "sudo nano /etc/systemd/system/document-processing.service\n```\n**Systemd Service File:**\n```ini\n[Unit]\nDescription=Legal Document Processing Service\nAfter=network.target\n[Service]\nType=simple\nUser=root\nWorkingDirectory=/root/document-processing-service\nEnvironment=\"PATH=/root/document-processing-service/venv/bin\"\nExecStart=/root/document-processing-service/venv/bin/gunicorn --bind 0.0.0.0:5000 --workers 4 app:app\nRestart=always\n[Install]\nWantedBy=multi-user.target\n```\n```bash"
+    },
+    {
+      "title": "Enable and start service",
+      "content": "systemctl enable document-processing\nsystemctl start document-processing\nsystemctl status document-processing"
+    },
+    {
+      "title": "8. Configure firewall",
+      "content": "ufw allow 5000/tcp\nufw allow 80/tcp\nufw allow 443/tcp\nufw enable"
+    },
+    {
+      "title": "9. Setup SSL with Certbot",
+      "content": "apt install certbot\ncertbot certonly --standalone -d api.yoursite.com\n```\n**Step 3: Connect WordPress to Processing Service**\n```php\n// Add to wp-config.php\ndefine('PROCESSING_SERVICE_URL', 'https://api.yoursite.com:5000');\ndefine('PROCESSING_SERVICE_KEY', 'your-secure-api-key');\n```\n**Step 4: Configure Email Processing**\n```python"
+    },
+    {
+      "title": "Run email processor as cron job on Digital Ocean",
+      "content": "crontab -e"
+    },
+    {
+      "title": "Add line:",
+      "content": "*/5 * * * * /root/document-processing-service/venv/bin/python /root/document-processing-service/email_processor.py >> /var/log/email-processing.log 2>&1\n```\n---"
+    },
+    {
+      "title": "🔐 **Part 12: Security Configuration**",
+      "content": "```php\n// File: wp-content/themes/your-theme/security.php\n// Add API authentication\nadd_filter('rest_pre_dispatch', 'verify_api_key', 10, 3);\nfunction verify_api_key($result, $server, $request) {\n    // Skip auth for non-legal routes\n    if (strpos($request->get_route(), '/legal/') !== 0) {\n        return $result;\n    }\n    // Check API key\n    $api_key = $request->get_header('X-API-Key');\n    $valid_key = get_option('legal_api_key');\n    if ($api_key !== $valid_key) {\n        return new WP_Error(\n            'rest_forbidden',\n            'Invalid API key',\n            array('status' => 403)\n        );\n    }\n    return $result;\n}\n// Rate limiting\nfunction check_rate_limit($ip_address) {\n    $cache_key = 'rate_limit_' . md5($ip_address);\n    $requests = get_transient($cache_key) ?: 0;\n    if ($requests > 60) { // 60 requests per hour\n        return false;\n    }\n    set_transient($cache_key, $requests + 1, HOUR_IN_SECONDS);\n    return true;\n}\n```\n---"
+    },
+    {
+      "title": "📊 **Part 13: Monitoring & Analytics**",
+      "content": "```python"
+    },
+    {
+      "title": "File: processing-service/monitoring.py",
+      "content": "from utilities.context_manager import ContextManager\nimport time\nclass ProcessingMonitor:\n    \"\"\"\n    Monitor document processing performance and costs\n    \"\"\"\n    def __init__(self):\n        self.cm = ContextManager()\n    def log_processing_metrics(self, post_id, start_time, llm_results):\n        \"\"\"Log processing metrics to Supabase\"\"\"\n        processing_time = time.time() - start_time\n        total_cost = (\n            llm_results['claude']['cost'] +\n            llm_results['gpt4']['cost'] +\n            llm_results['gemini']['cost']\n        )\n        total_tokens = (\n            llm_results['claude']['tokens'] +\n            llm_results['gpt4']['tokens'] +\n            llm_results['gemini']['tokens']\n        )"
+    },
+    {
+      "title": "Save to processing_jobs_log",
+      "content": "self.cm.supabase.table('processing_jobs_log').insert({\n            'job_type': 'document_processing',\n            'source_id': str(post_id),\n            'processing_time_seconds': processing_time,\n            'total_items_processed': 1,\n            'status': 'completed',\n            'metadata': {\n                'llm_breakdown': llm_results,\n                'total_cost': total_cost,\n                'total_tokens': total_tokens\n            }\n        }).execute()"
+    },
+    {
+      "title": "Log each LLM call separately",
+      "content": "for llm_name, result in llm_results.items():\n            self.cm.log_ai_analysis(\n                analysis_type='document_processing',\n                model_name=result['model'],\n                source_id=str(post_id),\n                source_table='wordpress_uploads',\n                tokens_used=result['tokens'],\n                api_cost_usd=result['cost'],\n                metadata={'llm': llm_name}\n            )\n    def get_daily_stats(self):\n        \"\"\"Get daily processing statistics\"\"\"\n        result = self.cm.supabase.rpc(\n            'get_processing_stats',\n            {'days': 1}\n        ).execute()\n        return result.data\n```\n---"
+    },
+    {
+      "title": "✅ **Part 14: Testing Checklist**",
+      "content": ""
+    },
+    {
+      "title": "**Test Plan:**",
+      "content": "```markdown"
+    },
+    {
+      "title": "WordPress Upload Form",
+      "content": "- [ ] Upload PDF document\n- [ ] Upload JPEG screenshot\n- [ ] Upload Word document\n- [ ] Verify ACF fields save correctly\n- [ ] Check file uploaded to media library"
+    },
+    {
+      "title": "Tier 1 Processing",
+      "content": "- [ ] PDF text extraction works\n- [ ] Image OCR works\n- [ ] Duplicate detection works\n- [ ] File hash calculated correctly\n- [ ] Metadata saved to post meta"
+    },
+    {
+      "title": "Tier 2 Processing",
+      "content": "- [ ] WordPress calls Python service\n- [ ] Claude fraud detection returns results\n- [ ] GPT-4 truth scoring returns results\n- [ ] Gemini legal analysis returns results\n- [ ] Results aggregated correctly\n- [ ] Results saved to Supabase"
+    },
+    {
+      "title": "Amelia Integration",
+      "content": "- [ ] Can book document review appointment\n- [ ] Custom fields appear in booking form\n- [ ] Documents queued for priority processing\n- [ ] Email notifications sent"
+    },
+    {
+      "title": "Email Integration",
+      "content": "- [ ] Email processor detects new messages\n- [ ] Attachments extracted correctly\n- [ ] Files uploaded to WordPress via API\n- [ ] Processing triggered automatically"
+    },
+    {
+      "title": "Mobile Upload",
+      "content": "- [ ] Mobile page loads correctly\n- [ ] Camera capture works\n- [ ] File upload works\n- [ ] Progress indicator shows\n- [ ] Success message displays"
+    },
+    {
+      "title": "Supabase Integration",
+      "content": "- [ ] Documents saved to legal_documents table\n- [ ] Truth scores saved to truth_score_history\n- [ ] AI costs logged to ai_analysis_results\n- [ ] Cache working correctly\n- [ ] Snapshots saving"
+    },
+    {
+      "title": "Security",
+      "content": "- [ ] API key authentication works\n- [ ] Rate limiting enforces limits\n- [ ] Unauthorized requests blocked\n- [ ] File upload restrictions enforced\n```\n---"
+    },
+    {
+      "title": "🎉 **Summary**",
+      "content": ""
+    },
+    {
+      "title": "**Complete System Includes:**",
+      "content": "1. ✅ **WordPress Upload Form** - ACF-based document intake\n2. ✅ **Tier 1 Pre-Processing** - OCR, text extraction, classification\n3. ✅ **Tier 2 Multi-LLM Processing** - Claude + GPT-4 + Gemini\n4. ✅ **Amelia Booking** - Schedule document review appointments\n5. ✅ **Email Integration** - Auto-process email attachments\n6. ✅ **Mobile Upload** - Phone-friendly quick upload\n7. ✅ **Supabase Storage** - All results stored in context preservation system\n8. ✅ **Multiple Deployment Options** - SiteGround, Digital Ocean, Vast.ai, Paperspace\n9. ✅ **Security & Authentication** - API keys, rate limiting\n10. ✅ **Monitoring & Analytics** - Cost tracking, performance metrics"
+    },
+    {
+      "title": "**Deployment Recommendation:**",
+      "content": "**Best Setup for Your Use Case:**\n- **WordPress:** SiteGround (current hosting)\n- **Python Processing:** Digital Ocean $24/month droplet\n- **Heavy AI Processing:** Vast.ai GPU instance ($0.50/hour when needed)\n- **Database:** Supabase (current setup)\n**Estimated Monthly Costs:**\n- SiteGround: $15/month (current)\n- Digital Ocean: $24/month\n- LLM APIs: ~$50-200/month (depending on volume)\n- Vast.ai: $0-50/month (on-demand)\n- **Total: ~$90-290/month**\n---\n**Status:** ✅ Complete WordPress Document Upload System\n**Next Steps:**\n1. Set up Digital Ocean droplet\n2. Deploy Python processing service\n3. Install WordPress plugins\n4. Configure Amelia booking\n5. Test end-to-end workflow"
+    }
+  ],
+  "extraction_success": true,
+  "extraction_error": null
+}

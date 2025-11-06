@@ -1,0 +1,608 @@
+{
+  "created": "2025-11-06T09:18:56.774495",
+  "total_documents": 50,
+  "successful": 50,
+  "failed": 0,
+  "documents": [
+    {
+      "file": "C:\\Users\\DonBucknor_n0ufqwv\\GettingStarted\\ASEAGI\\PROJ344-Multi-dimensional-legal-document-scoring-S10.rtf",
+      "status": "success",
+      "word_count": 125,
+      "char_count": 753,
+      "method": "striprtf",
+      "saved_files": {
+        "text_file": "PROJ344_document_repository\\raw_text\\PROJ344-Multi-dimensional-legal-document-scoring-S10.txt",
+        "meta_file": "PROJ344_document_repository\\metadata\\PROJ344-Multi-dimensional-legal-document-scoring-S10_meta.json",
+        "json_file": "PROJ344_document_repository\\json\\PROJ344-Multi-dimensional-legal-document-scoring-S10.json"
+      }
+    },
+    {
+      "file": "C:\\Users\\DonBucknor_n0ufqwv\\GettingStarted\\ASEAGI\\PROJ344-Multi-dimensional-legal-document-scoring-system-s11.rtf",
+      "status": "success",
+      "word_count": 6017,
+      "char_count": 63131,
+      "method": "striprtf",
+      "saved_files": {
+        "text_file": "PROJ344_document_repository\\raw_text\\PROJ344-Multi-dimensional-legal-document-scoring-system-s11.txt",
+        "meta_file": "PROJ344_document_repository\\metadata\\PROJ344-Multi-dimensional-legal-document-scoring-system-s11_meta.json",
+        "json_file": "PROJ344_document_repository\\json\\PROJ344-Multi-dimensional-legal-document-scoring-system-s11.json"
+      }
+    },
+    {
+      "file": "C:\\Users\\DonBucknor_n0ufqwv\\GettingStarted\\ASEAGI\\PROJ344-Multi-dimensional-legal-document-scoring-system-s3.rtf",
+      "status": "success",
+      "word_count": 2719,
+      "char_count": 24433,
+      "method": "striprtf",
+      "saved_files": {
+        "text_file": "PROJ344_document_repository\\raw_text\\PROJ344-Multi-dimensional-legal-document-scoring-system-s3.txt",
+        "meta_file": "PROJ344_document_repository\\metadata\\PROJ344-Multi-dimensional-legal-document-scoring-system-s3_meta.json",
+        "json_file": "PROJ344_document_repository\\json\\PROJ344-Multi-dimensional-legal-document-scoring-system-s3.json"
+      }
+    },
+    {
+      "file": "C:\\Users\\DonBucknor_n0ufqwv\\GettingStarted\\ASEAGI\\PROJ344-Multi-dimensional-legal-document-scoring-system-s4.rtf",
+      "status": "success",
+      "word_count": 3089,
+      "char_count": 30092,
+      "method": "striprtf",
+      "saved_files": {
+        "text_file": "PROJ344_document_repository\\raw_text\\PROJ344-Multi-dimensional-legal-document-scoring-system-s4.txt",
+        "meta_file": "PROJ344_document_repository\\metadata\\PROJ344-Multi-dimensional-legal-document-scoring-system-s4_meta.json",
+        "json_file": "PROJ344_document_repository\\json\\PROJ344-Multi-dimensional-legal-document-scoring-system-s4.json"
+      }
+    },
+    {
+      "file": "C:\\Users\\DonBucknor_n0ufqwv\\GettingStarted\\ASEAGI\\PROJ344-Multi-dimensional-legal-document-scoring-system-s5.rtf",
+      "status": "success",
+      "word_count": 202,
+      "char_count": 1451,
+      "method": "striprtf",
+      "saved_files": {
+        "text_file": "PROJ344_document_repository\\raw_text\\PROJ344-Multi-dimensional-legal-document-scoring-system-s5.txt",
+        "meta_file": "PROJ344_document_repository\\metadata\\PROJ344-Multi-dimensional-legal-document-scoring-system-s5_meta.json",
+        "json_file": "PROJ344_document_repository\\json\\PROJ344-Multi-dimensional-legal-document-scoring-system-s5.json"
+      }
+    },
+    {
+      "file": "C:\\Users\\DonBucknor_n0ufqwv\\GettingStarted\\ASEAGI\\PROJ344-Multi-dimensional-legal-document-scoring-system-s7.rtf",
+      "status": "success",
+      "word_count": 3969,
+      "char_count": 33335,
+      "method": "striprtf",
+      "saved_files": {
+        "text_file": "PROJ344_document_repository\\raw_text\\PROJ344-Multi-dimensional-legal-document-scoring-system-s7.txt",
+        "meta_file": "PROJ344_document_repository\\metadata\\PROJ344-Multi-dimensional-legal-document-scoring-system-s7_meta.json",
+        "json_file": "PROJ344_document_repository\\json\\PROJ344-Multi-dimensional-legal-document-scoring-system-s7.json"
+      }
+    },
+    {
+      "file": "C:\\Users\\DonBucknor_n0ufqwv\\GettingStarted\\ASEAGI\\PROJ344-Multi-dimensional-legal-document-scoring-system-s8.rtf",
+      "status": "success",
+      "word_count": 2537,
+      "char_count": 21202,
+      "method": "striprtf",
+      "saved_files": {
+        "text_file": "PROJ344_document_repository\\raw_text\\PROJ344-Multi-dimensional-legal-document-scoring-system-s8.txt",
+        "meta_file": "PROJ344_document_repository\\metadata\\PROJ344-Multi-dimensional-legal-document-scoring-system-s8_meta.json",
+        "json_file": "PROJ344_document_repository\\json\\PROJ344-Multi-dimensional-legal-document-scoring-system-s8.json"
+      }
+    },
+    {
+      "file": "C:\\Users\\DonBucknor_n0ufqwv\\GettingStarted\\ASEAGI\\PROJ344-Multi-dimensional-legal-document-scoring-system-s9.rtf",
+      "status": "success",
+      "word_count": 3087,
+      "char_count": 23500,
+      "method": "striprtf",
+      "saved_files": {
+        "text_file": "PROJ344_document_repository\\raw_text\\PROJ344-Multi-dimensional-legal-document-scoring-system-s9.txt",
+        "meta_file": "PROJ344_document_repository\\metadata\\PROJ344-Multi-dimensional-legal-document-scoring-system-s9_meta.json",
+        "json_file": "PROJ344_document_repository\\json\\PROJ344-Multi-dimensional-legal-document-scoring-system-s9.json"
+      }
+    },
+    {
+      "file": "C:\\Users\\DonBucknor_n0ufqwv\\GettingStarted\\ASEAGI\\requirements.txt",
+      "status": "success",
+      "word_count": 13,
+      "char_count": 221,
+      "method": "direct_read",
+      "saved_files": {
+        "text_file": "PROJ344_document_repository\\raw_text\\requirements.txt",
+        "meta_file": "PROJ344_document_repository\\metadata\\requirements_meta.json",
+        "json_file": "PROJ344_document_repository\\json\\requirements.json"
+      }
+    },
+    {
+      "file": "C:\\Users\\DonBucknor_n0ufqwv\\GettingStarted\\ASEAGI\\BOT_COMPARISON.md",
+      "status": "success",
+      "word_count": 1814,
+      "char_count": 10975,
+      "method": "direct_read",
+      "saved_files": {
+        "text_file": "PROJ344_document_repository\\raw_text\\BOT_COMPARISON.txt",
+        "meta_file": "PROJ344_document_repository\\metadata\\BOT_COMPARISON_meta.json",
+        "json_file": "PROJ344_document_repository\\json\\BOT_COMPARISON.json"
+      }
+    },
+    {
+      "file": "C:\\Users\\DonBucknor_n0ufqwv\\GettingStarted\\ASEAGI\\BULK_INGESTION_GUIDE.md",
+      "status": "success",
+      "word_count": 2339,
+      "char_count": 19625,
+      "method": "direct_read",
+      "saved_files": {
+        "text_file": "PROJ344_document_repository\\raw_text\\BULK_INGESTION_GUIDE.txt",
+        "meta_file": "PROJ344_document_repository\\metadata\\BULK_INGESTION_GUIDE_meta.json",
+        "json_file": "PROJ344_document_repository\\json\\BULK_INGESTION_GUIDE.json"
+      }
+    },
+    {
+      "file": "C:\\Users\\DonBucknor_n0ufqwv\\GettingStarted\\ASEAGI\\CLAUDE_CODE_WEB_READY.md",
+      "status": "success",
+      "word_count": 1265,
+      "char_count": 10313,
+      "method": "direct_read",
+      "saved_files": {
+        "text_file": "PROJ344_document_repository\\raw_text\\CLAUDE_CODE_WEB_READY.txt",
+        "meta_file": "PROJ344_document_repository\\metadata\\CLAUDE_CODE_WEB_READY_meta.json",
+        "json_file": "PROJ344_document_repository\\json\\CLAUDE_CODE_WEB_READY.json"
+      }
+    },
+    {
+      "file": "C:\\Users\\DonBucknor_n0ufqwv\\GettingStarted\\ASEAGI\\COMPLETE_SESSION_SUMMARY.md",
+      "status": "success",
+      "word_count": 2039,
+      "char_count": 16479,
+      "method": "direct_read",
+      "saved_files": {
+        "text_file": "PROJ344_document_repository\\raw_text\\COMPLETE_SESSION_SUMMARY.txt",
+        "meta_file": "PROJ344_document_repository\\metadata\\COMPLETE_SESSION_SUMMARY_meta.json",
+        "json_file": "PROJ344_document_repository\\json\\COMPLETE_SESSION_SUMMARY.json"
+      }
+    },
+    {
+      "file": "C:\\Users\\DonBucknor_n0ufqwv\\GettingStarted\\ASEAGI\\CONFIG_MANAGEMENT_GUIDE.md",
+      "status": "success",
+      "word_count": 1269,
+      "char_count": 10414,
+      "method": "direct_read",
+      "saved_files": {
+        "text_file": "PROJ344_document_repository\\raw_text\\CONFIG_MANAGEMENT_GUIDE.txt",
+        "meta_file": "PROJ344_document_repository\\metadata\\CONFIG_MANAGEMENT_GUIDE_meta.json",
+        "json_file": "PROJ344_document_repository\\json\\CONFIG_MANAGEMENT_GUIDE.json"
+      }
+    },
+    {
+      "file": "C:\\Users\\DonBucknor_n0ufqwv\\GettingStarted\\ASEAGI\\CONTEXT_PRESERVATION_SUMMARY.md",
+      "status": "success",
+      "word_count": 1110,
+      "char_count": 9182,
+      "method": "direct_read",
+      "saved_files": {
+        "text_file": "PROJ344_document_repository\\raw_text\\CONTEXT_PRESERVATION_SUMMARY.txt",
+        "meta_file": "PROJ344_document_repository\\metadata\\CONTEXT_PRESERVATION_SUMMARY_meta.json",
+        "json_file": "PROJ344_document_repository\\json\\CONTEXT_PRESERVATION_SUMMARY.json"
+      }
+    },
+    {
+      "file": "C:\\Users\\DonBucknor_n0ufqwv\\GettingStarted\\ASEAGI\\CONVERSATION_TRANSITION_SUMMARY.md",
+      "status": "success",
+      "word_count": 3789,
+      "char_count": 28396,
+      "method": "direct_read",
+      "saved_files": {
+        "text_file": "PROJ344_document_repository\\raw_text\\CONVERSATION_TRANSITION_SUMMARY.txt",
+        "meta_file": "PROJ344_document_repository\\metadata\\CONVERSATION_TRANSITION_SUMMARY_meta.json",
+        "json_file": "PROJ344_document_repository\\json\\CONVERSATION_TRANSITION_SUMMARY.json"
+      }
+    },
+    {
+      "file": "C:\\Users\\DonBucknor_n0ufqwv\\GettingStarted\\ASEAGI\\DATA_SYNC_ANALYSIS.md",
+      "status": "success",
+      "word_count": 1465,
+      "char_count": 9848,
+      "method": "direct_read",
+      "saved_files": {
+        "text_file": "PROJ344_document_repository\\raw_text\\DATA_SYNC_ANALYSIS.txt",
+        "meta_file": "PROJ344_document_repository\\metadata\\DATA_SYNC_ANALYSIS_meta.json",
+        "json_file": "PROJ344_document_repository\\json\\DATA_SYNC_ANALYSIS.json"
+      }
+    },
+    {
+      "file": "C:\\Users\\DonBucknor_n0ufqwv\\GettingStarted\\ASEAGI\\DEPLOYMENT_CHECKLIST.md",
+      "status": "success",
+      "word_count": 1443,
+      "char_count": 9142,
+      "method": "direct_read",
+      "saved_files": {
+        "text_file": "PROJ344_document_repository\\raw_text\\DEPLOYMENT_CHECKLIST.txt",
+        "meta_file": "PROJ344_document_repository\\metadata\\DEPLOYMENT_CHECKLIST_meta.json",
+        "json_file": "PROJ344_document_repository\\json\\DEPLOYMENT_CHECKLIST.json"
+      }
+    },
+    {
+      "file": "C:\\Users\\DonBucknor_n0ufqwv\\GettingStarted\\ASEAGI\\DEPLOYMENT_INSTRUCTIONS.md",
+      "status": "success",
+      "word_count": 2131,
+      "char_count": 19643,
+      "method": "direct_read",
+      "saved_files": {
+        "text_file": "PROJ344_document_repository\\raw_text\\DEPLOYMENT_INSTRUCTIONS.txt",
+        "meta_file": "PROJ344_document_repository\\metadata\\DEPLOYMENT_INSTRUCTIONS_meta.json",
+        "json_file": "PROJ344_document_repository\\json\\DEPLOYMENT_INSTRUCTIONS.json"
+      }
+    },
+    {
+      "file": "C:\\Users\\DonBucknor_n0ufqwv\\GettingStarted\\ASEAGI\\DEPLOYMENT_SUCCESS_SUMMARY.md",
+      "status": "success",
+      "word_count": 1064,
+      "char_count": 8277,
+      "method": "direct_read",
+      "saved_files": {
+        "text_file": "PROJ344_document_repository\\raw_text\\DEPLOYMENT_SUCCESS_SUMMARY.txt",
+        "meta_file": "PROJ344_document_repository\\metadata\\DEPLOYMENT_SUCCESS_SUMMARY_meta.json",
+        "json_file": "PROJ344_document_repository\\json\\DEPLOYMENT_SUCCESS_SUMMARY.json"
+      }
+    },
+    {
+      "file": "C:\\Users\\DonBucknor_n0ufqwv\\GettingStarted\\ASEAGI\\DOCUMENT_REPOSITORY_COMPLETE.md",
+      "status": "success",
+      "word_count": 1613,
+      "char_count": 13396,
+      "method": "direct_read",
+      "saved_files": {
+        "text_file": "PROJ344_document_repository\\raw_text\\DOCUMENT_REPOSITORY_COMPLETE.txt",
+        "meta_file": "PROJ344_document_repository\\metadata\\DOCUMENT_REPOSITORY_COMPLETE_meta.json",
+        "json_file": "PROJ344_document_repository\\json\\DOCUMENT_REPOSITORY_COMPLETE.json"
+      }
+    },
+    {
+      "file": "C:\\Users\\DonBucknor_n0ufqwv\\GettingStarted\\ASEAGI\\DOCUMENT_STORAGE_ARCHITECTURE.md",
+      "status": "success",
+      "word_count": 1100,
+      "char_count": 7597,
+      "method": "direct_read",
+      "saved_files": {
+        "text_file": "PROJ344_document_repository\\raw_text\\DOCUMENT_STORAGE_ARCHITECTURE.txt",
+        "meta_file": "PROJ344_document_repository\\metadata\\DOCUMENT_STORAGE_ARCHITECTURE_meta.json",
+        "json_file": "PROJ344_document_repository\\json\\DOCUMENT_STORAGE_ARCHITECTURE.json"
+      }
+    },
+    {
+      "file": "C:\\Users\\DonBucknor_n0ufqwv\\GettingStarted\\ASEAGI\\DOCUMENT_UPLOAD_SYSTEM.md",
+      "status": "success",
+      "word_count": 4534,
+      "char_count": 48740,
+      "method": "direct_read",
+      "saved_files": {
+        "text_file": "PROJ344_document_repository\\raw_text\\DOCUMENT_UPLOAD_SYSTEM.txt",
+        "meta_file": "PROJ344_document_repository\\metadata\\DOCUMENT_UPLOAD_SYSTEM_meta.json",
+        "json_file": "PROJ344_document_repository\\json\\DOCUMENT_UPLOAD_SYSTEM.json"
+      }
+    },
+    {
+      "file": "C:\\Users\\DonBucknor_n0ufqwv\\GettingStarted\\ASEAGI\\ENHANCED_BOT_SETUP.md",
+      "status": "success",
+      "word_count": 1279,
+      "char_count": 9750,
+      "method": "direct_read",
+      "saved_files": {
+        "text_file": "PROJ344_document_repository\\raw_text\\ENHANCED_BOT_SETUP.txt",
+        "meta_file": "PROJ344_document_repository\\metadata\\ENHANCED_BOT_SETUP_meta.json",
+        "json_file": "PROJ344_document_repository\\json\\ENHANCED_BOT_SETUP.json"
+      }
+    },
+    {
+      "file": "C:\\Users\\DonBucknor_n0ufqwv\\GettingStarted\\ASEAGI\\GLOBAL_INFRASTRUCTURE_ANALYSIS.md",
+      "status": "success",
+      "word_count": 2072,
+      "char_count": 17876,
+      "method": "direct_read",
+      "saved_files": {
+        "text_file": "PROJ344_document_repository\\raw_text\\GLOBAL_INFRASTRUCTURE_ANALYSIS.txt",
+        "meta_file": "PROJ344_document_repository\\metadata\\GLOBAL_INFRASTRUCTURE_ANALYSIS_meta.json",
+        "json_file": "PROJ344_document_repository\\json\\GLOBAL_INFRASTRUCTURE_ANALYSIS.json"
+      }
+    },
+    {
+      "file": "C:\\Users\\DonBucknor_n0ufqwv\\GettingStarted\\ASEAGI\\INFRASTRUCTURE_MAP.md",
+      "status": "success",
+      "word_count": 595,
+      "char_count": 5149,
+      "method": "direct_read",
+      "saved_files": {
+        "text_file": "PROJ344_document_repository\\raw_text\\INFRASTRUCTURE_MAP.txt",
+        "meta_file": "PROJ344_document_repository\\metadata\\INFRASTRUCTURE_MAP_meta.json",
+        "json_file": "PROJ344_document_repository\\json\\INFRASTRUCTURE_MAP.json"
+      }
+    },
+    {
+      "file": "C:\\Users\\DonBucknor_n0ufqwv\\GettingStarted\\ASEAGI\\LOCAL_SETUP_AND_DEPLOYMENT.md",
+      "status": "success",
+      "word_count": 1894,
+      "char_count": 16365,
+      "method": "direct_read",
+      "saved_files": {
+        "text_file": "PROJ344_document_repository\\raw_text\\LOCAL_SETUP_AND_DEPLOYMENT.txt",
+        "meta_file": "PROJ344_document_repository\\metadata\\LOCAL_SETUP_AND_DEPLOYMENT_meta.json",
+        "json_file": "PROJ344_document_repository\\json\\LOCAL_SETUP_AND_DEPLOYMENT.json"
+      }
+    },
+    {
+      "file": "C:\\Users\\DonBucknor_n0ufqwv\\GettingStarted\\ASEAGI\\OPTIMIZATION_RECOMMENDATIONS.md",
+      "status": "success",
+      "word_count": 134,
+      "char_count": 1134,
+      "method": "direct_read",
+      "saved_files": {
+        "text_file": "PROJ344_document_repository\\raw_text\\OPTIMIZATION_RECOMMENDATIONS.txt",
+        "meta_file": "PROJ344_document_repository\\metadata\\OPTIMIZATION_RECOMMENDATIONS_meta.json",
+        "json_file": "PROJ344_document_repository\\json\\OPTIMIZATION_RECOMMENDATIONS.json"
+      }
+    },
+    {
+      "file": "C:\\Users\\DonBucknor_n0ufqwv\\GettingStarted\\ASEAGI\\ORCHESTRATION_GUIDE.md",
+      "status": "success",
+      "word_count": 1924,
+      "char_count": 13303,
+      "method": "direct_read",
+      "saved_files": {
+        "text_file": "PROJ344_document_repository\\raw_text\\ORCHESTRATION_GUIDE.txt",
+        "meta_file": "PROJ344_document_repository\\metadata\\ORCHESTRATION_GUIDE_meta.json",
+        "json_file": "PROJ344_document_repository\\json\\ORCHESTRATION_GUIDE.json"
+      }
+    },
+    {
+      "file": "C:\\Users\\DonBucknor_n0ufqwv\\GettingStarted\\ASEAGI\\PHASE_1_CONSOLIDATION_SUMMARY.md",
+      "status": "success",
+      "word_count": 3307,
+      "char_count": 26191,
+      "method": "direct_read",
+      "saved_files": {
+        "text_file": "PROJ344_document_repository\\raw_text\\PHASE_1_CONSOLIDATION_SUMMARY.txt",
+        "meta_file": "PROJ344_document_repository\\metadata\\PHASE_1_CONSOLIDATION_SUMMARY_meta.json",
+        "json_file": "PROJ344_document_repository\\json\\PHASE_1_CONSOLIDATION_SUMMARY.json"
+      }
+    },
+    {
+      "file": "C:\\Users\\DonBucknor_n0ufqwv\\GettingStarted\\ASEAGI\\PROCESSING_SUCCESS_REPORT.md",
+      "status": "success",
+      "word_count": 778,
+      "char_count": 5852,
+      "method": "direct_read",
+      "saved_files": {
+        "text_file": "PROJ344_document_repository\\raw_text\\PROCESSING_SUCCESS_REPORT.txt",
+        "meta_file": "PROJ344_document_repository\\metadata\\PROCESSING_SUCCESS_REPORT_meta.json",
+        "json_file": "PROJ344_document_repository\\json\\PROCESSING_SUCCESS_REPORT.json"
+      }
+    },
+    {
+      "file": "C:\\Users\\DonBucknor_n0ufqwv\\GettingStarted\\ASEAGI\\PROJ344_DASHBOARD_GUIDE.md",
+      "status": "success",
+      "word_count": 1593,
+      "char_count": 11769,
+      "method": "direct_read",
+      "saved_files": {
+        "text_file": "PROJ344_document_repository\\raw_text\\PROJ344_DASHBOARD_GUIDE.txt",
+        "meta_file": "PROJ344_document_repository\\metadata\\PROJ344_DASHBOARD_GUIDE_meta.json",
+        "json_file": "PROJ344_document_repository\\json\\PROJ344_DASHBOARD_GUIDE.json"
+      }
+    },
+    {
+      "file": "C:\\Users\\DonBucknor_n0ufqwv\\GettingStarted\\ASEAGI\\PROJ344_SYSTEM_SUMMARY.md",
+      "status": "success",
+      "word_count": 1655,
+      "char_count": 12489,
+      "method": "direct_read",
+      "saved_files": {
+        "text_file": "PROJ344_document_repository\\raw_text\\PROJ344_SYSTEM_SUMMARY.txt",
+        "meta_file": "PROJ344_document_repository\\metadata\\PROJ344_SYSTEM_SUMMARY_meta.json",
+        "json_file": "PROJ344_document_repository\\json\\PROJ344_SYSTEM_SUMMARY.json"
+      }
+    },
+    {
+      "file": "C:\\Users\\DonBucknor_n0ufqwv\\GettingStarted\\ASEAGI\\QUICKSTART_LOCAL_TO_GITHUB.md",
+      "status": "success",
+      "word_count": 754,
+      "char_count": 5416,
+      "method": "direct_read",
+      "saved_files": {
+        "text_file": "PROJ344_document_repository\\raw_text\\QUICKSTART_LOCAL_TO_GITHUB.txt",
+        "meta_file": "PROJ344_document_repository\\metadata\\QUICKSTART_LOCAL_TO_GITHUB_meta.json",
+        "json_file": "PROJ344_document_repository\\json\\QUICKSTART_LOCAL_TO_GITHUB.json"
+      }
+    },
+    {
+      "file": "C:\\Users\\DonBucknor_n0ufqwv\\GettingStarted\\ASEAGI\\QUICK_REFERENCE_N8N_CLAUDE.md",
+      "status": "success",
+      "word_count": 1166,
+      "char_count": 6951,
+      "method": "direct_read",
+      "saved_files": {
+        "text_file": "PROJ344_document_repository\\raw_text\\QUICK_REFERENCE_N8N_CLAUDE.txt",
+        "meta_file": "PROJ344_document_repository\\metadata\\QUICK_REFERENCE_N8N_CLAUDE_meta.json",
+        "json_file": "PROJ344_document_repository\\json\\QUICK_REFERENCE_N8N_CLAUDE.json"
+      }
+    },
+    {
+      "file": "C:\\Users\\DonBucknor_n0ufqwv\\GettingStarted\\ASEAGI\\QUICK_START.md",
+      "status": "success",
+      "word_count": 480,
+      "char_count": 4230,
+      "method": "direct_read",
+      "saved_files": {
+        "text_file": "PROJ344_document_repository\\raw_text\\QUICK_START.txt",
+        "meta_file": "PROJ344_document_repository\\metadata\\QUICK_START_meta.json",
+        "json_file": "PROJ344_document_repository\\json\\QUICK_START.json"
+      }
+    },
+    {
+      "file": "C:\\Users\\DonBucknor_n0ufqwv\\GettingStarted\\ASEAGI\\README.md",
+      "status": "success",
+      "word_count": 728,
+      "char_count": 6061,
+      "method": "direct_read",
+      "saved_files": {
+        "text_file": "PROJ344_document_repository\\raw_text\\README.txt",
+        "meta_file": "PROJ344_document_repository\\metadata\\README_meta.json",
+        "json_file": "PROJ344_document_repository\\json\\README.json"
+      }
+    },
+    {
+      "file": "C:\\Users\\DonBucknor_n0ufqwv\\GettingStarted\\ASEAGI\\README_DEPLOYMENT.md",
+      "status": "success",
+      "word_count": 1510,
+      "char_count": 11779,
+      "method": "direct_read",
+      "saved_files": {
+        "text_file": "PROJ344_document_repository\\raw_text\\README_DEPLOYMENT.txt",
+        "meta_file": "PROJ344_document_repository\\metadata\\README_DEPLOYMENT_meta.json",
+        "json_file": "PROJ344_document_repository\\json\\README_DEPLOYMENT.json"
+      }
+    },
+    {
+      "file": "C:\\Users\\DonBucknor_n0ufqwv\\GettingStarted\\ASEAGI\\REPOSITORY_DUPLICATION_ANALYSIS.md",
+      "status": "success",
+      "word_count": 1454,
+      "char_count": 11596,
+      "method": "direct_read",
+      "saved_files": {
+        "text_file": "PROJ344_document_repository\\raw_text\\REPOSITORY_DUPLICATION_ANALYSIS.txt",
+        "meta_file": "PROJ344_document_repository\\metadata\\REPOSITORY_DUPLICATION_ANALYSIS_meta.json",
+        "json_file": "PROJ344_document_repository\\json\\REPOSITORY_DUPLICATION_ANALYSIS.json"
+      }
+    },
+    {
+      "file": "C:\\Users\\DonBucknor_n0ufqwv\\GettingStarted\\ASEAGI\\RTF_CONVERSION_STATUS.md",
+      "status": "success",
+      "word_count": 1224,
+      "char_count": 8807,
+      "method": "direct_read",
+      "saved_files": {
+        "text_file": "PROJ344_document_repository\\raw_text\\RTF_CONVERSION_STATUS.txt",
+        "meta_file": "PROJ344_document_repository\\metadata\\RTF_CONVERSION_STATUS_meta.json",
+        "json_file": "PROJ344_document_repository\\json\\RTF_CONVERSION_STATUS.json"
+      }
+    },
+    {
+      "file": "C:\\Users\\DonBucknor_n0ufqwv\\GettingStarted\\ASEAGI\\SESSION_RECORD_2025-11-04.md",
+      "status": "success",
+      "word_count": 1385,
+      "char_count": 10973,
+      "method": "direct_read",
+      "saved_files": {
+        "text_file": "PROJ344_document_repository\\raw_text\\SESSION_RECORD_2025-11-04.txt",
+        "meta_file": "PROJ344_document_repository\\metadata\\SESSION_RECORD_2025-11-04_meta.json",
+        "json_file": "PROJ344_document_repository\\json\\SESSION_RECORD_2025-11-04.json"
+      }
+    },
+    {
+      "file": "C:\\Users\\DonBucknor_n0ufqwv\\GettingStarted\\ASEAGI\\SHEPHERD_ARCHITECTURE_REVIEW.md",
+      "status": "success",
+      "word_count": 3318,
+      "char_count": 25044,
+      "method": "direct_read",
+      "saved_files": {
+        "text_file": "PROJ344_document_repository\\raw_text\\SHEPHERD_ARCHITECTURE_REVIEW.txt",
+        "meta_file": "PROJ344_document_repository\\metadata\\SHEPHERD_ARCHITECTURE_REVIEW_meta.json",
+        "json_file": "PROJ344_document_repository\\json\\SHEPHERD_ARCHITECTURE_REVIEW.json"
+      }
+    },
+    {
+      "file": "C:\\Users\\DonBucknor_n0ufqwv\\GettingStarted\\ASEAGI\\STREAMLIT_CLOUD_SETUP.md",
+      "status": "success",
+      "word_count": 793,
+      "char_count": 5923,
+      "method": "direct_read",
+      "saved_files": {
+        "text_file": "PROJ344_document_repository\\raw_text\\STREAMLIT_CLOUD_SETUP.txt",
+        "meta_file": "PROJ344_document_repository\\metadata\\STREAMLIT_CLOUD_SETUP_meta.json",
+        "json_file": "PROJ344_document_repository\\json\\STREAMLIT_CLOUD_SETUP.json"
+      }
+    },
+    {
+      "file": "C:\\Users\\DonBucknor_n0ufqwv\\GettingStarted\\ASEAGI\\SYSTEM_OVERVIEW.md",
+      "status": "success",
+      "word_count": 1467,
+      "char_count": 12362,
+      "method": "direct_read",
+      "saved_files": {
+        "text_file": "PROJ344_document_repository\\raw_text\\SYSTEM_OVERVIEW.txt",
+        "meta_file": "PROJ344_document_repository\\metadata\\SYSTEM_OVERVIEW_meta.json",
+        "json_file": "PROJ344_document_repository\\json\\SYSTEM_OVERVIEW.json"
+      }
+    },
+    {
+      "file": "C:\\Users\\DonBucknor_n0ufqwv\\GettingStarted\\ASEAGI\\TELEGRAM_BOT_QUICK_START.md",
+      "status": "success",
+      "word_count": 890,
+      "char_count": 6386,
+      "method": "direct_read",
+      "saved_files": {
+        "text_file": "PROJ344_document_repository\\raw_text\\TELEGRAM_BOT_QUICK_START.txt",
+        "meta_file": "PROJ344_document_repository\\metadata\\TELEGRAM_BOT_QUICK_START_meta.json",
+        "json_file": "PROJ344_document_repository\\json\\TELEGRAM_BOT_QUICK_START.json"
+      }
+    },
+    {
+      "file": "C:\\Users\\DonBucknor_n0ufqwv\\GettingStarted\\ASEAGI\\TELEGRAM_BOT_SETUP.md",
+      "status": "success",
+      "word_count": 1034,
+      "char_count": 7130,
+      "method": "direct_read",
+      "saved_files": {
+        "text_file": "PROJ344_document_repository\\raw_text\\TELEGRAM_BOT_SETUP.txt",
+        "meta_file": "PROJ344_document_repository\\metadata\\TELEGRAM_BOT_SETUP_meta.json",
+        "json_file": "PROJ344_document_repository\\json\\TELEGRAM_BOT_SETUP.json"
+      }
+    },
+    {
+      "file": "C:\\Users\\DonBucknor_n0ufqwv\\GettingStarted\\ASEAGI\\TELEGRAM_BOT_TROUBLESHOOTING.md",
+      "status": "success",
+      "word_count": 695,
+      "char_count": 4948,
+      "method": "direct_read",
+      "saved_files": {
+        "text_file": "PROJ344_document_repository\\raw_text\\TELEGRAM_BOT_TROUBLESHOOTING.txt",
+        "meta_file": "PROJ344_document_repository\\metadata\\TELEGRAM_BOT_TROUBLESHOOTING_meta.json",
+        "json_file": "PROJ344_document_repository\\json\\TELEGRAM_BOT_TROUBLESHOOTING.json"
+      }
+    },
+    {
+      "file": "C:\\Users\\DonBucknor_n0ufqwv\\GettingStarted\\ASEAGI\\TESTING_GUIDE.md",
+      "status": "success",
+      "word_count": 1148,
+      "char_count": 9594,
+      "method": "direct_read",
+      "saved_files": {
+        "text_file": "PROJ344_document_repository\\raw_text\\TESTING_GUIDE.txt",
+        "meta_file": "PROJ344_document_repository\\metadata\\TESTING_GUIDE_meta.json",
+        "json_file": "PROJ344_document_repository\\json\\TESTING_GUIDE.json"
+      }
+    },
+    {
+      "file": "C:\\Users\\DonBucknor_n0ufqwv\\GettingStarted\\ASEAGI\\VECTOR_SEARCH_INTEGRATION.md",
+      "status": "success",
+      "word_count": 1749,
+      "char_count": 14373,
+      "method": "direct_read",
+      "saved_files": {
+        "text_file": "PROJ344_document_repository\\raw_text\\VECTOR_SEARCH_INTEGRATION.txt",
+        "meta_file": "PROJ344_document_repository\\metadata\\VECTOR_SEARCH_INTEGRATION_meta.json",
+        "json_file": "PROJ344_document_repository\\json\\VECTOR_SEARCH_INTEGRATION.json"
+      }
+    },
+    {
+      "file": "C:\\Users\\DonBucknor_n0ufqwv\\GettingStarted\\ASEAGI\\WORDPRESS_DEPLOYMENT_QUICKSTART.md",
+      "status": "success",
+      "word_count": 1457,
+      "char_count": 12322,
+      "method": "direct_read",
+      "saved_files": {
+        "text_file": "PROJ344_document_repository\\raw_text\\WORDPRESS_DEPLOYMENT_QUICKSTART.txt",
+        "meta_file": "PROJ344_document_repository\\metadata\\WORDPRESS_DEPLOYMENT_QUICKSTART_meta.json",
+        "json_file": "PROJ344_document_repository\\json\\WORDPRESS_DEPLOYMENT_QUICKSTART.json"
+      }
+    }
+  ]
+}

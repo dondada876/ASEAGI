@@ -1,0 +1,428 @@
+{
+  "metadata": {
+    "file_path": "C:\\Users\\DonBucknor_n0ufqwv\\GettingStarted\\ASEAGI\\VECTOR_SEARCH_INTEGRATION.md",
+    "file_name": "VECTOR_SEARCH_INTEGRATION.md",
+    "file_type": "md",
+    "file_size": 14470,
+    "file_hash": "44ed60b464e4f0c9d54429affd5fa997",
+    "extraction_date": "2025-11-06T09:18:56.759521",
+    "extraction_method": "direct_read",
+    "title": "# Vector Search Integration Guide",
+    "author": null,
+    "created_date": "2025-11-06T07:34:58.058655",
+    "modified_date": "2025-11-06T07:34:58.058655",
+    "page_count": null,
+    "word_count": 1749,
+    "char_count": 14373
+  },
+  "content": "# Vector Search Integration Guide\n\n## Overview\n\nIntegration tools for uploading your document repository to vector databases for advanced semantic search capabilities.\n\n**Created:** 2025-11-06\n**Documents:** 46 files, ~51,000 words from PROJ344 repository\n**Embedding Model:** OpenAI text-embedding-ada-002 (1536 dimensions)\n\n---\n\n## Options Available\n\n### Option 1: Supabase with pgvector\n- **File:** `document_repository_to_supabase.py`\n- **Features:** Full-text search + vector embeddings\n- **Best For:** SQL queries, full-text search, PostgreSQL integration\n- **Cost:** Supabase free tier + OpenAI embeddings\n\n### Option 2: Qdrant / Pinecone\n- **File:** `document_repository_to_vectors.py`\n- **Features:** Pure vector search, semantic similarity\n- **Best For:** Advanced semantic search, high-performance vector operations\n- **Cost:** Qdrant (self-hosted free) or Pinecone (paid)\n\n---\n\n## Option 1: Supabase with pgvector\n\n### Features\n\n✅ **Full-Text Search** - PostgreSQL tsvector/tsquery\n✅ **Vector Embeddings** - pgvector extension for semantic search\n✅ **SQL Queries** - Complex filtering and joins\n✅ **Metadata Storage** - Structured JSON fields\n✅ **Hybrid Search** - Combine keyword + semantic search\n\n### Setup\n\n#### 1. Install Dependencies\n\n```bash\npip install supabase openai\n```\n\n#### 2. Set Environment Variables\n\n```bash\nexport SUPABASE_URL='https://your-project.supabase.co'\nexport SUPABASE_KEY='your-supabase-anon-key'\nexport OPENAI_API_KEY='sk-your-openai-key'  # Optional, for embeddings\n```\n\n#### 3. Create Tables\n\n```bash\ncd ASEAGI\npython document_repository_to_supabase.py\n\n# Choose option 1 to see SQL schema\n# Copy SQL and run in Supabase SQL Editor\n```\n\n**Tables Created:**\n- `document_repository` - Main document table with full-text search\n- `document_embeddings` - Vector embeddings (pgvector)\n\n#### 4. Upload Documents\n\n```bash\npython document_repository_to_supabase.py\n\n# Choose option 2 to upload documents\n# Or option 5 to do everything\n```\n\n### Usage\n\n#### Full-Text Search (Keyword-Based)\n\n```sql\n-- Search for \"scoring methodology\"\nSELECT * FROM search_documents('scoring methodology', 10);\n\n-- Manual query with ranking\nSELECT\n    file_name,\n    title,\n    word_count,\n    ts_rank(to_tsvector('english', content), to_tsquery('english', 'PROJ344 & scoring')) AS rank\nFROM document_repository\nWHERE to_tsvector('english', content) @@ to_tsquery('english', 'PROJ344 & scoring')\nORDER BY rank DESC\nLIMIT 10;\n```\n\n#### Semantic Search (Vector-Based)\n\n```python\nimport openai\nfrom supabase import create_client\n\n# Generate query embedding\nquery = \"legal document scoring methodology\"\nembedding_response = openai.Embedding.create(\n    model=\"text-embedding-ada-002\",\n    input=query\n)\nquery_embedding = embedding_response['data'][0]['embedding']\n\n# Search by vector similarity\nsupabase = create_client(supabase_url, supabase_key)\nresults = supabase.rpc('match_documents', {\n    'query_embedding': query_embedding,\n    'match_threshold': 0.7,\n    'match_count': 5\n}).execute()\n\nfor doc in results.data:\n    print(f\"{doc['file_name']} (similarity: {doc['similarity']:.2f})\")\n    print(f\"  {doc['chunk_text'][:200]}...\")\n```\n\n#### Hybrid Search (Best of Both)\n\n```python\n# 1. Get keyword matches (fast, precise)\nkeyword_results = supabase.rpc('search_documents', {\n    'search_query': 'PROJ344 scoring',\n    'limit_count': 20\n}).execute()\n\n# 2. Get semantic matches (smart, flexible)\nvector_results = supabase.rpc('match_documents', {\n    'query_embedding': query_embedding,\n    'match_threshold': 0.7,\n    'match_count': 20\n}).execute()\n\n# 3. Merge and rank\n# Use your own ranking algorithm to combine both result sets\n```\n\n### Cost Estimation\n\n**Supabase:**\n- Free tier: 500 MB database, 2 GB bandwidth/month\n- Paid: $25/month for Pro tier (8 GB database, 50 GB bandwidth)\n\n**OpenAI Embeddings:**\n- $0.0001 per 1,000 tokens\n- 46 documents (~51,000 words = ~68,000 tokens)\n- Cost to embed all: ~$0.007 (less than 1 cent)\n- Chunked (1000 words/chunk): ~51 chunks = ~$0.005\n\n**Total:** ~$0-25/month depending on Supabase tier\n\n---\n\n## Option 2: Qdrant / Pinecone\n\n### Features\n\n✅ **Pure Vector Search** - Optimized for semantic similarity\n✅ **High Performance** - HNSW algorithm for fast approximate search\n✅ **Scalable** - Handles millions of vectors\n✅ **Document Chunking** - Automatic text splitting for better search\n✅ **Flexible** - Choose Qdrant (self-hosted) or Pinecone (managed)\n\n### Setup\n\n#### Option 2A: Qdrant (Self-Hosted, Free)\n\n**1. Install Qdrant**\n\n```bash\n# Using Docker\ndocker run -p 6333:6333 qdrant/qdrant\n\n# Or install locally (Rust binary)\n# Download from: https://github.com/qdrant/qdrant/releases\n```\n\n**2. Install Python Libraries**\n\n```bash\npip install qdrant-client openai\n```\n\n**3. Set Environment Variables**\n\n```bash\nexport QDRANT_URL='http://localhost:6333'  # Or your Qdrant cloud URL\nexport QDRANT_API_KEY='your-api-key'  # If using Qdrant Cloud\nexport OPENAI_API_KEY='sk-your-openai-key'\n```\n\n**4. Upload Documents**\n\n```bash\ncd ASEAGI\npython document_repository_to_vectors.py\n\n# Choose option 1 (Upload to Qdrant)\n```\n\n#### Option 2B: Pinecone (Managed, Paid)\n\n**1. Create Pinecone Account**\n\nSign up at https://www.pinecone.io/\n\n**2. Install Python Libraries**\n\n```bash\npip install pinecone-client openai\n```\n\n**3. Set Environment Variables**\n\n```bash\nexport PINECONE_API_KEY='your-pinecone-key'\nexport PINECONE_ENVIRONMENT='us-west1-gcp'  # Or your region\nexport OPENAI_API_KEY='sk-your-openai-key'\n```\n\n**4. Upload Documents**\n\n```bash\ncd ASEAGI\npython document_repository_to_vectors.py\n\n# Choose option 2 (Upload to Pinecone)\n# Or option 3 (Upload to both)\n```\n\n### Usage\n\n#### Search Qdrant\n\n```python\nfrom qdrant_client import QdrantClient\nimport openai\n\n# Initialize\nqdrant = QdrantClient(url=\"http://localhost:6333\")\n\n# Generate query embedding\nquery = \"PROJ344 legal scoring system\"\nembedding_response = openai.Embedding.create(\n    model=\"text-embedding-ada-002\",\n    input=query\n)\nquery_vector = embedding_response['data'][0]['embedding']\n\n# Search\nresults = qdrant.search(\n    collection_name=\"proj344_documents\",\n    query_vector=query_vector,\n    limit=5\n)\n\nfor result in results:\n    print(f\"{result.payload['file_name']} (score: {result.score:.4f})\")\n    print(f\"  {result.payload['chunk_text'][:200]}...\")\n```\n\n#### Search Pinecone\n\n```python\nimport pinecone\nimport openai\n\n# Initialize\npinecone.init(api_key=pinecone_api_key, environment='us-west1-gcp')\nindex = pinecone.Index('proj344-documents')\n\n# Generate query embedding\nquery = \"PROJ344 legal scoring system\"\nembedding_response = openai.Embedding.create(\n    model=\"text-embedding-ada-002\",\n    input=query\n)\nquery_vector = embedding_response['data'][0]['embedding']\n\n# Search\nresults = index.query(\n    vector=query_vector,\n    top_k=5,\n    include_metadata=True\n)\n\nfor match in results['matches']:\n    meta = match['metadata']\n    print(f\"{meta['file_name']} (score: {match['score']:.4f})\")\n    print(f\"  {meta['chunk_text'][:200]}...\")\n```\n\n#### Filter by Metadata\n\n```python\n# Qdrant - filter by file type\nresults = qdrant.search(\n    collection_name=\"proj344_documents\",\n    query_vector=query_vector,\n    query_filter={\n        \"must\": [\n            {\n                \"key\": \"file_type\",\n                \"match\": {\"value\": \"rtf\"}\n            }\n        ]\n    },\n    limit=5\n)\n\n# Pinecone - filter by file type\nresults = index.query(\n    vector=query_vector,\n    top_k=5,\n    include_metadata=True,\n    filter={\"file_type\": {\"$eq\": \"rtf\"}}\n)\n```\n\n### Cost Estimation\n\n**Qdrant (Self-Hosted):**\n- Free forever (run on your own server)\n- Server costs depend on hosting (Docker: $0, VPS: $5-20/month)\n\n**Qdrant Cloud:**\n- Free tier: 1 GB storage\n- Paid: $25/month for 2 GB\n\n**Pinecone:**\n- Free tier: 1 index, 100K vectors, 1 pod\n- Starter: $70/month for 1 pod (100K-2M vectors)\n- Standard: $140/month for 2 pods\n\n**OpenAI Embeddings:**\n- Same as Option 1: ~$0.005-0.01 total\n\n**Total:**\n- Qdrant self-hosted: $0-20/month\n- Qdrant Cloud: $0-25/month\n- Pinecone: $0-70/month\n\n---\n\n## Comparison: Option 1 vs Option 2\n\n| Feature | Supabase (Option 1) | Qdrant (Option 2A) | Pinecone (Option 2B) |\n|---------|---------------------|--------------------|--------------------|\n| **Full-Text Search** | ✅ Built-in | ❌ No | ❌ No |\n| **Vector Search** | ✅ pgvector | ✅ Native | ✅ Native |\n| **SQL Queries** | ✅ PostgreSQL | ❌ No | ❌ No |\n| **Metadata Filtering** | ✅ SQL WHERE | ✅ JSON filters | ✅ JSON filters |\n| **Hybrid Search** | ✅ Easy | ❌ Need separate system | ❌ Need separate system |\n| **Self-Hosted** | ❌ Cloud only | ✅ Yes (Docker) | ❌ Cloud only |\n| **Free Tier** | ✅ 500 MB | ✅ Unlimited (self-host) | ✅ 100K vectors |\n| **Performance** | ⚡ Good | ⚡⚡ Excellent | ⚡⚡ Excellent |\n| **Scalability** | ⚡ Good | ⚡⚡ Excellent | ⚡⚡ Excellent |\n| **Ease of Setup** | ⚡⚡ Easy | ⚡ Medium | ⚡⚡ Easy |\n| **Cost (Small)** | $0-25/mo | $0-5/mo | $0-70/mo |\n| **Best For** | Hybrid search, SQL | Self-hosted, OSS | Managed, enterprise |\n\n---\n\n## Recommended Strategy\n\n### For Your Use Case (PROJ344 Documents):\n\n#### **Immediate: Option 1 (Supabase)**\n\n**Reasons:**\n- You're already using Supabase\n- Supports both keyword + semantic search\n- SQL queries for complex filtering\n- Free tier sufficient for 46 documents\n- Easy integration with existing dashboards\n\n**Usage:**\n```bash\ncd ASEAGI\npython document_repository_to_supabase.py\n# Choose option 5 (do all)\n```\n\n#### **Future: Option 2 (Qdrant Self-Hosted)**\n\n**When to add:**\n- When you have 10,000+ documents (better performance)\n- When you need pure semantic search\n- When you want full control (self-hosted)\n\n**Usage:**\n```bash\n# Run Qdrant in Docker\ndocker run -p 6333:6333 qdrant/qdrant\n\n# Upload documents\npython document_repository_to_vectors.py\n# Choose option 1 (Upload to Qdrant)\n```\n\n---\n\n## Integration with Existing Systems\n\n### With PROJ344 Dashboards\n\n```python\nimport streamlit as st\nfrom supabase import create_client\nimport openai\n\n# Semantic search widget\nst.title(\"PROJ344 Document Search\")\n\nquery = st.text_input(\"Search documents (semantic):\")\n\nif query:\n    # Generate embedding\n    embedding = openai.Embedding.create(\n        model=\"text-embedding-ada-002\",\n        input=query\n    )['data'][0]['embedding']\n\n    # Search Supabase\n    supabase = create_client(supabase_url, supabase_key)\n    results = supabase.rpc('match_documents', {\n        'query_embedding': embedding,\n        'match_threshold': 0.7,\n        'match_count': 10\n    }).execute()\n\n    # Display results\n    for doc in results.data:\n        st.markdown(f\"### {doc['file_name']}\")\n        st.write(f\"Similarity: {doc['similarity']:.2%}\")\n        st.write(doc['chunk_text'][:500])\n        st.markdown(\"---\")\n```\n\n### With Bulk Ingestion\n\n```python\nfrom document_extractor import DocumentExtractor\nfrom document_repository_to_supabase import DocumentRepositoryUploader\n\n# Extract new document\nextractor = DocumentExtractor()\ndoc = extractor.extract_document(\"path/to/new_file.rtf\")\n\n# Generate embedding\nembedding = openai.Embedding.create(\n    model=\"text-embedding-ada-002\",\n    input=doc.content[:30000]  # Truncate if needed\n)['data'][0]['embedding']\n\n# Upload to Supabase\nuploader = DocumentRepositoryUploader()\nuploader.supabase.table('document_repository').insert({\n    'file_name': doc.metadata.file_name,\n    'content': doc.content,\n    # ... other fields\n}).execute()\n\n# Upload embedding\nuploader.supabase.table('document_embeddings').insert({\n    'document_id': inserted_id,\n    'embedding': embedding\n}).execute()\n```\n\n---\n\n## Example Use Cases\n\n### 1. Find Similar Documents\n\n```python\n# User uploads a new document\nnew_doc_embedding = generate_embedding(new_doc_content)\n\n# Find similar existing documents\nsimilar_docs = supabase.rpc('match_documents', {\n    'query_embedding': new_doc_embedding,\n    'match_count': 10\n}).execute()\n\n# Show user: \"This is similar to these existing documents...\"\n```\n\n### 2. Smart Search for Lawyers\n\n```python\n# Natural language query\nquery = \"Find all documents about perjury detection and false statements\"\n\n# Semantic search (understands intent)\nresults = search_semantic(query)\n\n# Returns relevant docs even if they don't contain exact keywords\n# E.g., finds docs about \"misleading testimony\", \"contradictory statements\"\n```\n\n### 3. Knowledge Base RAG (Retrieval-Augmented Generation)\n\n```python\n# User asks question\nquestion = \"How does PROJ344 scoring methodology work?\"\n\n# 1. Find relevant documents\ndocs = search_semantic(question, limit=3)\ncontext = \"\\n\\n\".join([d['content'] for d in docs])\n\n# 2. Send to Claude with context\nresponse = anthropic_client.messages.create(\n    model=\"claude-3-opus-20240229\",\n    messages=[{\n        \"role\": \"user\",\n        \"content\": f\"Based on these documents:\\n\\n{context}\\n\\nAnswer: {question}\"\n    }]\n)\n\n# Claude answers using your actual documentation\n```\n\n---\n\n## Next Steps\n\n1. **Choose Option 1 or 2** (or both!)\n\n2. **Run Setup Scripts:**\n   ```bash\n   # Option 1\n   python document_repository_to_supabase.py\n\n   # Option 2\n   python document_repository_to_vectors.py\n   ```\n\n3. **Test Searches:**\n   - Try keyword search (Option 1)\n   - Try semantic search (both options)\n   - Compare results\n\n4. **Integrate with Dashboards:**\n   - Add search widgets\n   - Show similar documents\n   - Build Q&A system\n\n5. **Monitor Costs:**\n   - Track OpenAI API usage\n   - Monitor database/vector DB size\n   - Optimize chunk sizes if needed\n\n---\n\n## Troubleshooting\n\n### Issue: \"OPENAI_API_KEY not set\"\n\n```bash\nexport OPENAI_API_KEY='sk-your-key'\n# Get key from: https://platform.openai.com/api-keys\n```\n\n### Issue: \"Supabase RPC function not found\"\n\nRun the SQL schema in Supabase SQL Editor first (option 1 in the script)\n\n### Issue: \"Qdrant connection failed\"\n\n```bash\n# Start Qdrant if not running\ndocker run -p 6333:6333 qdrant/qdrant\n\n# Or check URL\nexport QDRANT_URL='http://localhost:6333'\n```\n\n### Issue: \"Embeddings too expensive\"\n\n- Chunk documents more aggressively (larger chunks = fewer embeddings)\n- Use only Option 1 with full-text search (no embeddings needed)\n- Generate embeddings only for important documents\n\n---\n\n## For Ashe. For Justice. For All Children. 🛡️\n\nAdvanced search capabilities ensure that critical evidence can be found instantly, even when the exact keywords aren't known.\n\n**Created:** 2025-11-06\n**Tools:** Option 1 (Supabase), Option 2 (Qdrant/Pinecone)\n**Status:** Ready to use\n",
+  "content_preview": "# Vector Search Integration Guide\n\n## Overview\n\nIntegration tools for uploading your document repository to vector databases for advanced semantic search capabilities.\n\n**Created:** 2025-11-06\n**Documents:** 46 files, ~51,000 words from PROJ344 repository\n**Embedding Model:** OpenAI text-embedding-ada-002 (1536 dimensions)\n\n---\n\n## Options Available\n\n### Option 1: Supabase with pgvector\n- **File:** `document_repository_to_supabase.py`\n- **Features:** Full-text search + vector embeddings\n- **Best...",
+  "sections": [
+    {
+      "title": "Vector Search Integration Guide",
+      "content": ""
+    },
+    {
+      "title": "Overview",
+      "content": "Integration tools for uploading your document repository to vector databases for advanced semantic search capabilities.\n**Created:** 2025-11-06\n**Documents:** 46 files, ~51,000 words from PROJ344 repository\n**Embedding Model:** OpenAI text-embedding-ada-002 (1536 dimensions)\n---"
+    },
+    {
+      "title": "Options Available",
+      "content": ""
+    },
+    {
+      "title": "Option 1: Supabase with pgvector",
+      "content": "- **File:** `document_repository_to_supabase.py`\n- **Features:** Full-text search + vector embeddings\n- **Best For:** SQL queries, full-text search, PostgreSQL integration\n- **Cost:** Supabase free tier + OpenAI embeddings"
+    },
+    {
+      "title": "Option 2: Qdrant / Pinecone",
+      "content": "- **File:** `document_repository_to_vectors.py`\n- **Features:** Pure vector search, semantic similarity\n- **Best For:** Advanced semantic search, high-performance vector operations\n- **Cost:** Qdrant (self-hosted free) or Pinecone (paid)\n---"
+    },
+    {
+      "title": "Option 1: Supabase with pgvector",
+      "content": ""
+    },
+    {
+      "title": "Features",
+      "content": "✅ **Full-Text Search** - PostgreSQL tsvector/tsquery\n✅ **Vector Embeddings** - pgvector extension for semantic search\n✅ **SQL Queries** - Complex filtering and joins\n✅ **Metadata Storage** - Structured JSON fields\n✅ **Hybrid Search** - Combine keyword + semantic search"
+    },
+    {
+      "title": "Setup",
+      "content": ""
+    },
+    {
+      "title": "1. Install Dependencies",
+      "content": "```bash\npip install supabase openai\n```"
+    },
+    {
+      "title": "2. Set Environment Variables",
+      "content": "```bash\nexport SUPABASE_URL='https://your-project.supabase.co'\nexport SUPABASE_KEY='your-supabase-anon-key'\nexport OPENAI_API_KEY='sk-your-openai-key'  # Optional, for embeddings\n```"
+    },
+    {
+      "title": "3. Create Tables",
+      "content": "```bash\ncd ASEAGI\npython document_repository_to_supabase.py"
+    },
+    {
+      "title": "Choose option 1 to see SQL schema",
+      "content": ""
+    },
+    {
+      "title": "Copy SQL and run in Supabase SQL Editor",
+      "content": "```\n**Tables Created:**\n- `document_repository` - Main document table with full-text search\n- `document_embeddings` - Vector embeddings (pgvector)"
+    },
+    {
+      "title": "4. Upload Documents",
+      "content": "```bash\npython document_repository_to_supabase.py"
+    },
+    {
+      "title": "Choose option 2 to upload documents",
+      "content": ""
+    },
+    {
+      "title": "Or option 5 to do everything",
+      "content": "```"
+    },
+    {
+      "title": "Usage",
+      "content": ""
+    },
+    {
+      "title": "Full-Text Search (Keyword-Based)",
+      "content": "```sql\n-- Search for \"scoring methodology\"\nSELECT * FROM search_documents('scoring methodology', 10);\n-- Manual query with ranking"
+    },
+    {
+      "title": "SELECT",
+      "content": "file_name,\n    title,\n    word_count,\n    ts_rank(to_tsvector('english', content), to_tsquery('english', 'PROJ344 & scoring')) AS rank\nFROM document_repository\nWHERE to_tsvector('english', content) @@ to_tsquery('english', 'PROJ344 & scoring')\nORDER BY rank DESC"
+    },
+    {
+      "title": "LIMIT 10;",
+      "content": "```"
+    },
+    {
+      "title": "Semantic Search (Vector-Based)",
+      "content": "```python\nimport openai\nfrom supabase import create_client"
+    },
+    {
+      "title": "Generate query embedding",
+      "content": "query = \"legal document scoring methodology\"\nembedding_response = openai.Embedding.create(\n    model=\"text-embedding-ada-002\",\n    input=query\n)\nquery_embedding = embedding_response['data'][0]['embedding']"
+    },
+    {
+      "title": "Search by vector similarity",
+      "content": "supabase = create_client(supabase_url, supabase_key)\nresults = supabase.rpc('match_documents', {\n    'query_embedding': query_embedding,\n    'match_threshold': 0.7,\n    'match_count': 5\n}).execute()\nfor doc in results.data:\n    print(f\"{doc['file_name']} (similarity: {doc['similarity']:.2f})\")\n    print(f\"  {doc['chunk_text'][:200]}...\")\n```"
+    },
+    {
+      "title": "Hybrid Search (Best of Both)",
+      "content": "```python"
+    },
+    {
+      "title": "1. Get keyword matches (fast, precise)",
+      "content": "keyword_results = supabase.rpc('search_documents', {\n    'search_query': 'PROJ344 scoring',\n    'limit_count': 20\n}).execute()"
+    },
+    {
+      "title": "2. Get semantic matches (smart, flexible)",
+      "content": "vector_results = supabase.rpc('match_documents', {\n    'query_embedding': query_embedding,\n    'match_threshold': 0.7,\n    'match_count': 20\n}).execute()"
+    },
+    {
+      "title": "3. Merge and rank",
+      "content": ""
+    },
+    {
+      "title": "Use your own ranking algorithm to combine both result sets",
+      "content": "```"
+    },
+    {
+      "title": "Cost Estimation",
+      "content": "**Supabase:**\n- Free tier: 500 MB database, 2 GB bandwidth/month\n- Paid: $25/month for Pro tier (8 GB database, 50 GB bandwidth)\n**OpenAI Embeddings:**\n- $0.0001 per 1,000 tokens\n- 46 documents (~51,000 words = ~68,000 tokens)\n- Cost to embed all: ~$0.007 (less than 1 cent)\n- Chunked (1000 words/chunk): ~51 chunks = ~$0.005\n**Total:** ~$0-25/month depending on Supabase tier\n---"
+    },
+    {
+      "title": "Option 2: Qdrant / Pinecone",
+      "content": ""
+    },
+    {
+      "title": "Features",
+      "content": "✅ **Pure Vector Search** - Optimized for semantic similarity\n✅ **High Performance** - HNSW algorithm for fast approximate search\n✅ **Scalable** - Handles millions of vectors\n✅ **Document Chunking** - Automatic text splitting for better search\n✅ **Flexible** - Choose Qdrant (self-hosted) or Pinecone (managed)"
+    },
+    {
+      "title": "Setup",
+      "content": ""
+    },
+    {
+      "title": "Option 2A: Qdrant (Self-Hosted, Free)",
+      "content": "**1. Install Qdrant**\n```bash"
+    },
+    {
+      "title": "Using Docker",
+      "content": "docker run -p 6333:6333 qdrant/qdrant"
+    },
+    {
+      "title": "Or install locally (Rust binary)",
+      "content": ""
+    },
+    {
+      "title": "Download from: https://github.com/qdrant/qdrant/releases",
+      "content": "```\n**2. Install Python Libraries**\n```bash\npip install qdrant-client openai\n```\n**3. Set Environment Variables**\n```bash\nexport QDRANT_URL='http://localhost:6333'  # Or your Qdrant cloud URL\nexport QDRANT_API_KEY='your-api-key'  # If using Qdrant Cloud\nexport OPENAI_API_KEY='sk-your-openai-key'\n```\n**4. Upload Documents**\n```bash\ncd ASEAGI\npython document_repository_to_vectors.py"
+    },
+    {
+      "title": "Choose option 1 (Upload to Qdrant)",
+      "content": "```"
+    },
+    {
+      "title": "Option 2B: Pinecone (Managed, Paid)",
+      "content": "**1. Create Pinecone Account**\nSign up at https://www.pinecone.io/\n**2. Install Python Libraries**\n```bash\npip install pinecone-client openai\n```\n**3. Set Environment Variables**\n```bash\nexport PINECONE_API_KEY='your-pinecone-key'\nexport PINECONE_ENVIRONMENT='us-west1-gcp'  # Or your region\nexport OPENAI_API_KEY='sk-your-openai-key'\n```\n**4. Upload Documents**\n```bash\ncd ASEAGI\npython document_repository_to_vectors.py"
+    },
+    {
+      "title": "Choose option 2 (Upload to Pinecone)",
+      "content": ""
+    },
+    {
+      "title": "Or option 3 (Upload to both)",
+      "content": "```"
+    },
+    {
+      "title": "Usage",
+      "content": ""
+    },
+    {
+      "title": "Search Qdrant",
+      "content": "```python\nfrom qdrant_client import QdrantClient\nimport openai"
+    },
+    {
+      "title": "Initialize",
+      "content": "qdrant = QdrantClient(url=\"http://localhost:6333\")"
+    },
+    {
+      "title": "Generate query embedding",
+      "content": "query = \"PROJ344 legal scoring system\"\nembedding_response = openai.Embedding.create(\n    model=\"text-embedding-ada-002\",\n    input=query\n)\nquery_vector = embedding_response['data'][0]['embedding']"
+    },
+    {
+      "title": "Search",
+      "content": "results = qdrant.search(\n    collection_name=\"proj344_documents\",\n    query_vector=query_vector,\n    limit=5\n)\nfor result in results:\n    print(f\"{result.payload['file_name']} (score: {result.score:.4f})\")\n    print(f\"  {result.payload['chunk_text'][:200]}...\")\n```"
+    },
+    {
+      "title": "Search Pinecone",
+      "content": "```python\nimport pinecone\nimport openai"
+    },
+    {
+      "title": "Initialize",
+      "content": "pinecone.init(api_key=pinecone_api_key, environment='us-west1-gcp')\nindex = pinecone.Index('proj344-documents')"
+    },
+    {
+      "title": "Generate query embedding",
+      "content": "query = \"PROJ344 legal scoring system\"\nembedding_response = openai.Embedding.create(\n    model=\"text-embedding-ada-002\",\n    input=query\n)\nquery_vector = embedding_response['data'][0]['embedding']"
+    },
+    {
+      "title": "Search",
+      "content": "results = index.query(\n    vector=query_vector,\n    top_k=5,\n    include_metadata=True\n)\nfor match in results['matches']:\n    meta = match['metadata']\n    print(f\"{meta['file_name']} (score: {match['score']:.4f})\")\n    print(f\"  {meta['chunk_text'][:200]}...\")\n```"
+    },
+    {
+      "title": "Filter by Metadata",
+      "content": "```python"
+    },
+    {
+      "title": "Qdrant - filter by file type",
+      "content": "results = qdrant.search(\n    collection_name=\"proj344_documents\",\n    query_vector=query_vector,\n    query_filter={\n        \"must\": [\n            {\n                \"key\": \"file_type\",\n                \"match\": {\"value\": \"rtf\"}\n            }\n        ]\n    },\n    limit=5\n)"
+    },
+    {
+      "title": "Pinecone - filter by file type",
+      "content": "results = index.query(\n    vector=query_vector,\n    top_k=5,\n    include_metadata=True,\n    filter={\"file_type\": {\"$eq\": \"rtf\"}}\n)\n```"
+    },
+    {
+      "title": "Cost Estimation",
+      "content": "**Qdrant (Self-Hosted):**\n- Free forever (run on your own server)\n- Server costs depend on hosting (Docker: $0, VPS: $5-20/month)\n**Qdrant Cloud:**\n- Free tier: 1 GB storage\n- Paid: $25/month for 2 GB\n**Pinecone:**\n- Free tier: 1 index, 100K vectors, 1 pod\n- Starter: $70/month for 1 pod (100K-2M vectors)\n- Standard: $140/month for 2 pods\n**OpenAI Embeddings:**\n- Same as Option 1: ~$0.005-0.01 total\n**Total:**\n- Qdrant self-hosted: $0-20/month\n- Qdrant Cloud: $0-25/month\n- Pinecone: $0-70/month\n---"
+    },
+    {
+      "title": "Comparison: Option 1 vs Option 2",
+      "content": "| Feature | Supabase (Option 1) | Qdrant (Option 2A) | Pinecone (Option 2B) |\n|---------|---------------------|--------------------|--------------------|\n| **Full-Text Search** | ✅ Built-in | ❌ No | ❌ No |\n| **Vector Search** | ✅ pgvector | ✅ Native | ✅ Native |\n| **SQL Queries** | ✅ PostgreSQL | ❌ No | ❌ No |\n| **Metadata Filtering** | ✅ SQL WHERE | ✅ JSON filters | ✅ JSON filters |\n| **Hybrid Search** | ✅ Easy | ❌ Need separate system | ❌ Need separate system |\n| **Self-Hosted** | ❌ Cloud only | ✅ Yes (Docker) | ❌ Cloud only |\n| **Free Tier** | ✅ 500 MB | ✅ Unlimited (self-host) | ✅ 100K vectors |\n| **Performance** | ⚡ Good | ⚡⚡ Excellent | ⚡⚡ Excellent |\n| **Scalability** | ⚡ Good | ⚡⚡ Excellent | ⚡⚡ Excellent |\n| **Ease of Setup** | ⚡⚡ Easy | ⚡ Medium | ⚡⚡ Easy |\n| **Cost (Small)** | $0-25/mo | $0-5/mo | $0-70/mo |\n| **Best For** | Hybrid search, SQL | Self-hosted, OSS | Managed, enterprise |\n---"
+    },
+    {
+      "title": "Recommended Strategy",
+      "content": ""
+    },
+    {
+      "title": "For Your Use Case (PROJ344 Documents):",
+      "content": ""
+    },
+    {
+      "title": "**Immediate: Option 1 (Supabase)**",
+      "content": "**Reasons:**\n- You're already using Supabase\n- Supports both keyword + semantic search\n- SQL queries for complex filtering\n- Free tier sufficient for 46 documents\n- Easy integration with existing dashboards\n**Usage:**\n```bash\ncd ASEAGI\npython document_repository_to_supabase.py"
+    },
+    {
+      "title": "Choose option 5 (do all)",
+      "content": "```"
+    },
+    {
+      "title": "**Future: Option 2 (Qdrant Self-Hosted)**",
+      "content": "**When to add:**\n- When you have 10,000+ documents (better performance)\n- When you need pure semantic search\n- When you want full control (self-hosted)\n**Usage:**\n```bash"
+    },
+    {
+      "title": "Run Qdrant in Docker",
+      "content": "docker run -p 6333:6333 qdrant/qdrant"
+    },
+    {
+      "title": "Upload documents",
+      "content": "python document_repository_to_vectors.py"
+    },
+    {
+      "title": "Choose option 1 (Upload to Qdrant)",
+      "content": "```\n---"
+    },
+    {
+      "title": "Integration with Existing Systems",
+      "content": ""
+    },
+    {
+      "title": "With PROJ344 Dashboards",
+      "content": "```python\nimport streamlit as st\nfrom supabase import create_client\nimport openai"
+    },
+    {
+      "title": "Semantic search widget",
+      "content": "st.title(\"PROJ344 Document Search\")\nquery = st.text_input(\"Search documents (semantic):\")\nif query:"
+    },
+    {
+      "title": "Generate embedding",
+      "content": "embedding = openai.Embedding.create(\n        model=\"text-embedding-ada-002\",\n        input=query\n    )['data'][0]['embedding']"
+    },
+    {
+      "title": "Search Supabase",
+      "content": "supabase = create_client(supabase_url, supabase_key)\n    results = supabase.rpc('match_documents', {\n        'query_embedding': embedding,\n        'match_threshold': 0.7,\n        'match_count': 10\n    }).execute()"
+    },
+    {
+      "title": "Display results",
+      "content": "for doc in results.data:\n        st.markdown(f\"### {doc['file_name']}\")\n        st.write(f\"Similarity: {doc['similarity']:.2%}\")\n        st.write(doc['chunk_text'][:500])\n        st.markdown(\"---\")\n```"
+    },
+    {
+      "title": "With Bulk Ingestion",
+      "content": "```python\nfrom document_extractor import DocumentExtractor\nfrom document_repository_to_supabase import DocumentRepositoryUploader"
+    },
+    {
+      "title": "Extract new document",
+      "content": "extractor = DocumentExtractor()\ndoc = extractor.extract_document(\"path/to/new_file.rtf\")"
+    },
+    {
+      "title": "Generate embedding",
+      "content": "embedding = openai.Embedding.create(\n    model=\"text-embedding-ada-002\",\n    input=doc.content[:30000]  # Truncate if needed\n)['data'][0]['embedding']"
+    },
+    {
+      "title": "Upload to Supabase",
+      "content": "uploader = DocumentRepositoryUploader()\nuploader.supabase.table('document_repository').insert({\n    'file_name': doc.metadata.file_name,\n    'content': doc.content,"
+    },
+    {
+      "title": "... other fields",
+      "content": "}).execute()"
+    },
+    {
+      "title": "Upload embedding",
+      "content": "uploader.supabase.table('document_embeddings').insert({\n    'document_id': inserted_id,\n    'embedding': embedding\n}).execute()\n```\n---"
+    },
+    {
+      "title": "Example Use Cases",
+      "content": ""
+    },
+    {
+      "title": "1. Find Similar Documents",
+      "content": "```python"
+    },
+    {
+      "title": "User uploads a new document",
+      "content": "new_doc_embedding = generate_embedding(new_doc_content)"
+    },
+    {
+      "title": "Find similar existing documents",
+      "content": "similar_docs = supabase.rpc('match_documents', {\n    'query_embedding': new_doc_embedding,\n    'match_count': 10\n}).execute()"
+    },
+    {
+      "title": "Show user: \"This is similar to these existing documents...\"",
+      "content": "```"
+    },
+    {
+      "title": "2. Smart Search for Lawyers",
+      "content": "```python"
+    },
+    {
+      "title": "Natural language query",
+      "content": "query = \"Find all documents about perjury detection and false statements\""
+    },
+    {
+      "title": "Semantic search (understands intent)",
+      "content": "results = search_semantic(query)"
+    },
+    {
+      "title": "Returns relevant docs even if they don't contain exact keywords",
+      "content": ""
+    },
+    {
+      "title": "E.g., finds docs about \"misleading testimony\", \"contradictory statements\"",
+      "content": "```"
+    },
+    {
+      "title": "3. Knowledge Base RAG (Retrieval-Augmented Generation)",
+      "content": "```python"
+    },
+    {
+      "title": "User asks question",
+      "content": "question = \"How does PROJ344 scoring methodology work?\""
+    },
+    {
+      "title": "1. Find relevant documents",
+      "content": "docs = search_semantic(question, limit=3)\ncontext = \"\\n\\n\".join([d['content'] for d in docs])"
+    },
+    {
+      "title": "2. Send to Claude with context",
+      "content": "response = anthropic_client.messages.create(\n    model=\"claude-3-opus-20240229\",\n    messages=[{\n        \"role\": \"user\",\n        \"content\": f\"Based on these documents:\\n\\n{context}\\n\\nAnswer: {question}\"\n    }]\n)"
+    },
+    {
+      "title": "Claude answers using your actual documentation",
+      "content": "```\n---"
+    },
+    {
+      "title": "Next Steps",
+      "content": "1. **Choose Option 1 or 2** (or both!)\n2. **Run Setup Scripts:**\n   ```bash"
+    },
+    {
+      "title": "Option 1",
+      "content": "python document_repository_to_supabase.py"
+    },
+    {
+      "title": "Option 2",
+      "content": "python document_repository_to_vectors.py\n   ```\n3. **Test Searches:**\n   - Try keyword search (Option 1)\n   - Try semantic search (both options)\n   - Compare results\n4. **Integrate with Dashboards:**\n   - Add search widgets\n   - Show similar documents\n   - Build Q&A system\n5. **Monitor Costs:**\n   - Track OpenAI API usage\n   - Monitor database/vector DB size\n   - Optimize chunk sizes if needed\n---"
+    },
+    {
+      "title": "Troubleshooting",
+      "content": ""
+    },
+    {
+      "title": "Issue: \"OPENAI_API_KEY not set\"",
+      "content": "```bash\nexport OPENAI_API_KEY='sk-your-key'"
+    },
+    {
+      "title": "Get key from: https://platform.openai.com/api-keys",
+      "content": "```"
+    },
+    {
+      "title": "Issue: \"Supabase RPC function not found\"",
+      "content": "Run the SQL schema in Supabase SQL Editor first (option 1 in the script)"
+    },
+    {
+      "title": "Issue: \"Qdrant connection failed\"",
+      "content": "```bash"
+    },
+    {
+      "title": "Start Qdrant if not running",
+      "content": "docker run -p 6333:6333 qdrant/qdrant"
+    },
+    {
+      "title": "Or check URL",
+      "content": "export QDRANT_URL='http://localhost:6333'\n```"
+    },
+    {
+      "title": "Issue: \"Embeddings too expensive\"",
+      "content": "- Chunk documents more aggressively (larger chunks = fewer embeddings)\n- Use only Option 1 with full-text search (no embeddings needed)\n- Generate embeddings only for important documents\n---"
+    },
+    {
+      "title": "For Ashe. For Justice. For All Children. 🛡️",
+      "content": "Advanced search capabilities ensure that critical evidence can be found instantly, even when the exact keywords aren't known.\n**Created:** 2025-11-06\n**Tools:** Option 1 (Supabase), Option 2 (Qdrant/Pinecone)\n**Status:** Ready to use"
+    }
+  ],
+  "extraction_success": true,
+  "extraction_error": null
+}

@@ -1,0 +1,152 @@
+{
+  "metadata": {
+    "file_path": "C:\\Users\\DonBucknor_n0ufqwv\\GettingStarted\\ASEAGI\\TELEGRAM_BOT_SETUP.md",
+    "file_name": "TELEGRAM_BOT_SETUP.md",
+    "file_type": "md",
+    "file_size": 7598,
+    "file_hash": "63d055a86c3255bd11ce130a5b4672bd",
+    "extraction_date": "2025-11-06T09:18:56.747856",
+    "extraction_method": "direct_read",
+    "title": "# 📱 Telegram Document Bot Setup Guide",
+    "author": null,
+    "created_date": "2025-11-05T18:20:52.620460",
+    "modified_date": "2025-11-05T18:20:52.621470",
+    "page_count": null,
+    "word_count": 1034,
+    "char_count": 7130
+  },
+  "content": "# 📱 Telegram Document Bot Setup Guide\n\nUpload documents from your phone to your Supabase legal documents database with automatic metadata collection.\n\n---\n\n## 🎯 What This Bot Does\n\n- **📸 Scan documents** from your phone camera\n- **📝 Collect metadata** through conversational forms\n- **⚡ Upload instantly** to your Supabase database\n- **🏷️ Auto-categorize** with relevancy scores\n- **💬 Add context** with notes about each document\n\n---\n\n## 📋 Prerequisites\n\n- Python 3.8+\n- Telegram account\n- Supabase account (already configured)\n- Server or computer to run the bot (can be your local machine)\n\n---\n\n## 🚀 Quick Start\n\n### Step 1: Create Your Telegram Bot\n\n1. Open Telegram and search for **@BotFather**\n2. Send `/newbot` to BotFather\n3. Follow the prompts:\n   - **Bot name:** \"Legal Document Uploader\" (or your choice)\n   - **Username:** `your_legal_docs_bot` (must end in 'bot')\n4. **Save the token** BotFather gives you (looks like: `123456789:ABCdefGHIjklMNOpqrsTUVwxyz`)\n\n### Step 2: Configure Credentials\n\n#### Option A: Environment Variables (Recommended)\n\n```bash\nexport TELEGRAM_BOT_TOKEN='your-telegram-bot-token-here'\nexport SUPABASE_URL='https://jvjlhxodmbkodzmggwpu.supabase.co'\nexport SUPABASE_KEY='your-supabase-anon-key'\n```\n\n#### Option B: Add to `.streamlit/secrets.toml`\n\n```toml\n# Telegram Bot Configuration\nTELEGRAM_BOT_TOKEN = \"123456789:ABCdefGHIjklMNOpqrsTUVwxyz\"\n\n# Supabase (already configured)\nSUPABASE_URL = \"https://jvjlhxodmbkodzmggwpu.supabase.co\"\nSUPABASE_KEY = \"your-anon-key-here\"\n```\n\n### Step 3: Install Dependencies\n\n```bash\ncd /home/user/ASEAGI\npip3 install python-telegram-bot supabase toml\n```\n\n### Step 4: Run the Bot\n\n```bash\npython3 telegram_document_bot.py\n```\n\nYou should see:\n```\n🤖 Starting Telegram Document Bot...\n📡 Supabase: ✅ Connected\n✅ Bot is running! Press Ctrl+C to stop.\n```\n\n### Step 5: Start Using the Bot\n\n1. **Open Telegram** on your phone\n2. **Search** for your bot by username (e.g., `@your_legal_docs_bot`)\n3. **Send** `/start` to begin\n4. **Follow the prompts** to upload a document!\n\n---\n\n## 📱 How to Use\n\n### Upload Flow:\n\n1. **Send `/start`** - Bot greets you\n2. **Send a photo or PDF** - Take a photo or upload a file\n3. **Select document type** - Choose from:\n   - 🚔 Police Report\n   - 📄 Declaration\n   - 📸 Evidence/Photo\n   - 👶 CPS Report\n   - 📋 Response\n   - 🔬 Forensic Report\n   - ⚖️ Court Order\n   - 📑 Motion\n   - 🎤 Hearing Transcript\n   - 📎 Other\n\n4. **Enter date** - Format: YYYYMMDD (e.g., `20240804`)\n5. **Add title** - Brief description (e.g., \"Police Report - Child was Safe\")\n6. **Add notes** - Context and why it's important\n7. **Select relevancy** - How critical is this document?\n   - 🔴 Critical (900+)\n   - 🟠 High (800-899)\n   - 🟡 Medium (700-799)\n   - 🟢 Low (600-699)\n\n8. **Confirm** - Type `YES` to upload\n9. **Done!** - Document is in your database\n\n---\n\n## 🔧 Running as a Background Service (Linux)\n\nTo keep the bot running 24/7:\n\n### Create systemd service:\n\n```bash\nsudo nano /etc/systemd/system/telegram-doc-bot.service\n```\n\nAdd this content:\n\n```ini\n[Unit]\nDescription=Telegram Document Ingestion Bot\nAfter=network.target\n\n[Service]\nType=simple\nUser=YOUR_USERNAME\nWorkingDirectory=/home/user/ASEAGI\nEnvironment=\"TELEGRAM_BOT_TOKEN=your-token\"\nEnvironment=\"SUPABASE_URL=your-url\"\nEnvironment=\"SUPABASE_KEY=your-key\"\nExecStart=/usr/bin/python3 /home/user/ASEAGI/telegram_document_bot.py\nRestart=always\nRestartSec=10\n\n[Install]\nWantedBy=multi-user.target\n```\n\n### Start the service:\n\n```bash\nsudo systemctl daemon-reload\nsudo systemctl enable telegram-doc-bot\nsudo systemctl start telegram-doc-bot\n```\n\n### Check status:\n\n```bash\nsudo systemctl status telegram-doc-bot\n```\n\n### View logs:\n\n```bash\nsudo journalctl -u telegram-doc-bot -f\n```\n\n---\n\n## 🎨 Document Types Reference\n\n| Code | Description | Use For |\n|------|-------------|---------|\n| `PLCR` | Police Report | Official police reports |\n| `DECL` | Declaration | Sworn declarations |\n| `EVID` | Evidence/Photo | Photos, screenshots, evidence |\n| `CPSR` | CPS Report | Child Protective Services reports |\n| `RESP` | Response | Responses to motions/orders |\n| `FORN` | Forensic Report | Forensic analysis, expert reports |\n| `ORDR` | Court Order | Judge's orders |\n| `MOTN` | Motion | Legal motions filed |\n| `HEAR` | Hearing Transcript | Court hearing transcripts |\n| `OTHR` | Other | Miscellaneous documents |\n\n---\n\n## ⭐ Relevancy Scoring Guide\n\n**🔴 Critical (900+):**\n- Evidence that proves your case\n- Documents showing false statements\n- Key police reports (like August 10, 2024)\n- Court orders affecting custody\n\n**🟠 High (800-899):**\n- Important evidence\n- CPS reports\n- Declarations with crucial information\n- Timeline-critical documents\n\n**🟡 Medium (700-799):**\n- Supporting evidence\n- Standard filings\n- Background documents\n- Context-providing materials\n\n**🟢 Low (600-699):**\n- General reference\n- Routine correspondence\n- Administrative documents\n\n---\n\n## 🔒 Security & Privacy\n\n- ✅ Bot runs on **your server** (not a third party)\n- ✅ Documents go **directly to your Supabase**\n- ✅ No data stored by Telegram permanently\n- ✅ Bot token is private to you\n- ⚠️ Keep your bot token secure - it's like a password\n- ⚠️ Only share your bot username with trusted people\n\n---\n\n## 🐛 Troubleshooting\n\n### Bot doesn't respond:\n1. Check bot is running: `ps aux | grep telegram_document_bot`\n2. Check logs: `tail -f ~/telegram_bot.log`\n3. Verify token is correct\n\n### Can't upload to Supabase:\n1. Check Supabase credentials\n2. Verify internet connection\n3. Check Supabase dashboard for errors\n\n### Bot stops working:\n1. Restart: `sudo systemctl restart telegram-doc-bot`\n2. Check logs: `sudo journalctl -u telegram-doc-bot -n 50`\n\n---\n\n## 💡 Tips & Best Practices\n\n1. **Take clear photos** - Make sure text is readable\n2. **Add detailed notes** - Future you will thank you\n3. **Use correct date** - Use the document's date, not today\n4. **Be consistent** - Use similar formatting for titles\n5. **Upload immediately** - Don't wait - upload while context is fresh\n6. **Review in dashboard** - Check uploaded docs in Streamlit dashboards\n\n---\n\n## 📊 Viewing Your Documents\n\nAfter uploading, view your documents in:\n\n1. **Count Police Reports:**\n   ```bash\n   python3 count_police_reports.py\n   ```\n\n2. **Timeline Dashboard:**\n   ```bash\n   streamlit run timeline_constitutional_violations.py\n   ```\n\n3. **Master Dashboard:**\n   ```bash\n   streamlit run proj344_master_dashboard.py\n   ```\n\n---\n\n## 🔗 Related Files\n\n- `telegram_document_bot.py` - Main bot script\n- `.streamlit/secrets.toml` - Configuration file\n- `count_police_reports.py` - Query uploaded documents\n- `timeline_constitutional_violations.py` - View timeline\n\n---\n\n## 📞 Getting Help\n\nIf you need help:\n1. Check this guide first\n2. Review error messages carefully\n3. Check Telegram BotFather documentation\n4. Verify Supabase connection\n\n---\n\n## ✅ Next Steps\n\n1. ✅ Set up bot with BotFather\n2. ✅ Configure credentials\n3. ✅ Run the bot\n4. ✅ Upload a test document\n5. ✅ Check it appears in your database\n6. ✅ Set up as background service (optional)\n\n---\n\n**Your documents are now just a photo away from being properly cataloged! 📱→📊**\n",
+  "content_preview": "# 📱 Telegram Document Bot Setup Guide\n\nUpload documents from your phone to your Supabase legal documents database with automatic metadata collection.\n\n---\n\n## 🎯 What This Bot Does\n\n- **📸 Scan documents** from your phone camera\n- **📝 Collect metadata** through conversational forms\n- **⚡ Upload instantly** to your Supabase database\n- **🏷️ Auto-categorize** with relevancy scores\n- **💬 Add context** with notes about each document\n\n---\n\n## 📋 Prerequisites\n\n- Python 3.8+\n- Telegram account\n- Supabase ...",
+  "sections": [
+    {
+      "title": "📱 Telegram Document Bot Setup Guide",
+      "content": "Upload documents from your phone to your Supabase legal documents database with automatic metadata collection.\n---"
+    },
+    {
+      "title": "🎯 What This Bot Does",
+      "content": "- **📸 Scan documents** from your phone camera\n- **📝 Collect metadata** through conversational forms\n- **⚡ Upload instantly** to your Supabase database\n- **🏷️ Auto-categorize** with relevancy scores\n- **💬 Add context** with notes about each document\n---"
+    },
+    {
+      "title": "📋 Prerequisites",
+      "content": "- Python 3.8+\n- Telegram account\n- Supabase account (already configured)\n- Server or computer to run the bot (can be your local machine)\n---"
+    },
+    {
+      "title": "🚀 Quick Start",
+      "content": ""
+    },
+    {
+      "title": "Step 1: Create Your Telegram Bot",
+      "content": "1. Open Telegram and search for **@BotFather**\n2. Send `/newbot` to BotFather\n3. Follow the prompts:\n   - **Bot name:** \"Legal Document Uploader\" (or your choice)\n   - **Username:** `your_legal_docs_bot` (must end in 'bot')\n4. **Save the token** BotFather gives you (looks like: `123456789:ABCdefGHIjklMNOpqrsTUVwxyz`)"
+    },
+    {
+      "title": "Step 2: Configure Credentials",
+      "content": ""
+    },
+    {
+      "title": "Option A: Environment Variables (Recommended)",
+      "content": "```bash\nexport TELEGRAM_BOT_TOKEN='your-telegram-bot-token-here'\nexport SUPABASE_URL='https://jvjlhxodmbkodzmggwpu.supabase.co'\nexport SUPABASE_KEY='your-supabase-anon-key'\n```"
+    },
+    {
+      "title": "Option B: Add to `.streamlit/secrets.toml`",
+      "content": "```toml"
+    },
+    {
+      "title": "Telegram Bot Configuration",
+      "content": "TELEGRAM_BOT_TOKEN = \"123456789:ABCdefGHIjklMNOpqrsTUVwxyz\""
+    },
+    {
+      "title": "Supabase (already configured)",
+      "content": "SUPABASE_URL = \"https://jvjlhxodmbkodzmggwpu.supabase.co\"\nSUPABASE_KEY = \"your-anon-key-here\"\n```"
+    },
+    {
+      "title": "Step 3: Install Dependencies",
+      "content": "```bash\ncd /home/user/ASEAGI\npip3 install python-telegram-bot supabase toml\n```"
+    },
+    {
+      "title": "Step 4: Run the Bot",
+      "content": "```bash\npython3 telegram_document_bot.py\n```\nYou should see:\n```\n🤖 Starting Telegram Document Bot...\n📡 Supabase: ✅ Connected\n✅ Bot is running! Press Ctrl+C to stop.\n```"
+    },
+    {
+      "title": "Step 5: Start Using the Bot",
+      "content": "1. **Open Telegram** on your phone\n2. **Search** for your bot by username (e.g., `@your_legal_docs_bot`)\n3. **Send** `/start` to begin\n4. **Follow the prompts** to upload a document!\n---"
+    },
+    {
+      "title": "📱 How to Use",
+      "content": ""
+    },
+    {
+      "title": "Upload Flow:",
+      "content": "1. **Send `/start`** - Bot greets you\n2. **Send a photo or PDF** - Take a photo or upload a file\n3. **Select document type** - Choose from:\n   - 🚔 Police Report\n   - 📄 Declaration\n   - 📸 Evidence/Photo\n   - 👶 CPS Report\n   - 📋 Response\n   - 🔬 Forensic Report\n   - ⚖️ Court Order\n   - 📑 Motion\n   - 🎤 Hearing Transcript\n   - 📎 Other\n4. **Enter date** - Format: YYYYMMDD (e.g., `20240804`)\n5. **Add title** - Brief description (e.g., \"Police Report - Child was Safe\")\n6. **Add notes** - Context and why it's important\n7. **Select relevancy** - How critical is this document?\n   - 🔴 Critical (900+)\n   - 🟠 High (800-899)\n   - 🟡 Medium (700-799)\n   - 🟢 Low (600-699)\n8. **Confirm** - Type `YES` to upload\n9. **Done!** - Document is in your database\n---"
+    },
+    {
+      "title": "🔧 Running as a Background Service (Linux)",
+      "content": "To keep the bot running 24/7:"
+    },
+    {
+      "title": "Create systemd service:",
+      "content": "```bash\nsudo nano /etc/systemd/system/telegram-doc-bot.service\n```\nAdd this content:\n```ini\n[Unit]\nDescription=Telegram Document Ingestion Bot\nAfter=network.target\n[Service]\nType=simple\nUser=YOUR_USERNAME\nWorkingDirectory=/home/user/ASEAGI\nEnvironment=\"TELEGRAM_BOT_TOKEN=your-token\"\nEnvironment=\"SUPABASE_URL=your-url\"\nEnvironment=\"SUPABASE_KEY=your-key\"\nExecStart=/usr/bin/python3 /home/user/ASEAGI/telegram_document_bot.py\nRestart=always\nRestartSec=10\n[Install]\nWantedBy=multi-user.target\n```"
+    },
+    {
+      "title": "Start the service:",
+      "content": "```bash\nsudo systemctl daemon-reload\nsudo systemctl enable telegram-doc-bot\nsudo systemctl start telegram-doc-bot\n```"
+    },
+    {
+      "title": "Check status:",
+      "content": "```bash\nsudo systemctl status telegram-doc-bot\n```"
+    },
+    {
+      "title": "View logs:",
+      "content": "```bash\nsudo journalctl -u telegram-doc-bot -f\n```\n---"
+    },
+    {
+      "title": "🎨 Document Types Reference",
+      "content": "| Code | Description | Use For |\n|------|-------------|---------|\n| `PLCR` | Police Report | Official police reports |\n| `DECL` | Declaration | Sworn declarations |\n| `EVID` | Evidence/Photo | Photos, screenshots, evidence |\n| `CPSR` | CPS Report | Child Protective Services reports |\n| `RESP` | Response | Responses to motions/orders |\n| `FORN` | Forensic Report | Forensic analysis, expert reports |\n| `ORDR` | Court Order | Judge's orders |\n| `MOTN` | Motion | Legal motions filed |\n| `HEAR` | Hearing Transcript | Court hearing transcripts |\n| `OTHR` | Other | Miscellaneous documents |\n---"
+    },
+    {
+      "title": "⭐ Relevancy Scoring Guide",
+      "content": "**🔴 Critical (900+):**\n- Evidence that proves your case\n- Documents showing false statements\n- Key police reports (like August 10, 2024)\n- Court orders affecting custody\n**🟠 High (800-899):**\n- Important evidence\n- CPS reports\n- Declarations with crucial information\n- Timeline-critical documents\n**🟡 Medium (700-799):**\n- Supporting evidence\n- Standard filings\n- Background documents\n- Context-providing materials\n**🟢 Low (600-699):**\n- General reference\n- Routine correspondence\n- Administrative documents\n---"
+    },
+    {
+      "title": "🔒 Security & Privacy",
+      "content": "- ✅ Bot runs on **your server** (not a third party)\n- ✅ Documents go **directly to your Supabase**\n- ✅ No data stored by Telegram permanently\n- ✅ Bot token is private to you\n- ⚠️ Keep your bot token secure - it's like a password\n- ⚠️ Only share your bot username with trusted people\n---"
+    },
+    {
+      "title": "🐛 Troubleshooting",
+      "content": ""
+    },
+    {
+      "title": "Bot doesn't respond:",
+      "content": "1. Check bot is running: `ps aux | grep telegram_document_bot`\n2. Check logs: `tail -f ~/telegram_bot.log`\n3. Verify token is correct"
+    },
+    {
+      "title": "Can't upload to Supabase:",
+      "content": "1. Check Supabase credentials\n2. Verify internet connection\n3. Check Supabase dashboard for errors"
+    },
+    {
+      "title": "Bot stops working:",
+      "content": "1. Restart: `sudo systemctl restart telegram-doc-bot`\n2. Check logs: `sudo journalctl -u telegram-doc-bot -n 50`\n---"
+    },
+    {
+      "title": "💡 Tips & Best Practices",
+      "content": "1. **Take clear photos** - Make sure text is readable\n2. **Add detailed notes** - Future you will thank you\n3. **Use correct date** - Use the document's date, not today\n4. **Be consistent** - Use similar formatting for titles\n5. **Upload immediately** - Don't wait - upload while context is fresh\n6. **Review in dashboard** - Check uploaded docs in Streamlit dashboards\n---"
+    },
+    {
+      "title": "📊 Viewing Your Documents",
+      "content": "After uploading, view your documents in:\n1. **Count Police Reports:**\n   ```bash\n   python3 count_police_reports.py\n   ```\n2. **Timeline Dashboard:**\n   ```bash\n   streamlit run timeline_constitutional_violations.py\n   ```\n3. **Master Dashboard:**\n   ```bash\n   streamlit run proj344_master_dashboard.py\n   ```\n---"
+    },
+    {
+      "title": "🔗 Related Files",
+      "content": "- `telegram_document_bot.py` - Main bot script\n- `.streamlit/secrets.toml` - Configuration file\n- `count_police_reports.py` - Query uploaded documents\n- `timeline_constitutional_violations.py` - View timeline\n---"
+    },
+    {
+      "title": "📞 Getting Help",
+      "content": "If you need help:\n1. Check this guide first\n2. Review error messages carefully\n3. Check Telegram BotFather documentation\n4. Verify Supabase connection\n---"
+    },
+    {
+      "title": "✅ Next Steps",
+      "content": "1. ✅ Set up bot with BotFather\n2. ✅ Configure credentials\n3. ✅ Run the bot\n4. ✅ Upload a test document\n5. ✅ Check it appears in your database\n6. ✅ Set up as background service (optional)\n---\n**Your documents are now just a photo away from being properly cataloged! 📱→📊**"
+    }
+  ],
+  "extraction_success": true,
+  "extraction_error": null
+}

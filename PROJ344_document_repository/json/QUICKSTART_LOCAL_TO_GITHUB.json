@@ -1,0 +1,180 @@
+{
+  "metadata": {
+    "file_path": "C:\\Users\\DonBucknor_n0ufqwv\\GettingStarted\\ASEAGI\\QUICKSTART_LOCAL_TO_GITHUB.md",
+    "file_name": "QUICKSTART_LOCAL_TO_GITHUB.md",
+    "file_type": "md",
+    "file_size": 5711,
+    "file_hash": "0d0239282473594ee7a5fdf2a5984fdd",
+    "extraction_date": "2025-11-06T09:18:56.700596",
+    "extraction_method": "direct_read",
+    "title": "# Quick Start: Push ASEAGI to GitHub & Deploy Streamlit",
+    "author": null,
+    "created_date": "2025-11-05T21:30:09.319307",
+    "modified_date": "2025-11-05T21:30:09.319307",
+    "page_count": null,
+    "word_count": 754,
+    "char_count": 5416
+  },
+  "content": "# Quick Start: Push ASEAGI to GitHub & Deploy Streamlit\n\n**Time: 15 minutes**\n\n---\n\n## Step 1: Check Current Git Status (2 min)\n\n```bash\ncd c:\\Users\\DonBucknor_n0ufqwv\\GettingStarted\\ASEAGI\ngit status\n```\n\nIf you see \"not a git repository\", run:\n```bash\ngit init\n```\n\n---\n\n## Step 2: Update .gitignore (1 min)\n\nMake sure your `.gitignore` file includes:\n\n```gitignore\n# Secrets - NEVER commit these!\n.streamlit/secrets.toml\n.env\n*.env\n\n# Python\n__pycache__/\n*.pyc\nvenv/\nenv/\n\n# OS\n.DS_Store\nThumbs.db\n\n# Logs\n*.log\n```\n\nCheck it exists:\n```bash\ntype .gitignore\n```\n\nIf missing, create it:\n```bash\ncat > .gitignore << 'EOF'\n.streamlit/secrets.toml\n.env\n*.env\n__pycache__/\n*.pyc\nvenv/\nenv/\n.DS_Store\nThumbs.db\n*.log\nEOF\n```\n\n---\n\n## Step 3: Add All Files (1 min)\n\n```bash\n# Add everything except what's in .gitignore\ngit add .\n\n# Check what will be committed\ngit status\n\n# IMPORTANT: Verify secrets.toml is NOT listed\n# If you see .streamlit/secrets.toml, STOP and add it to .gitignore\n```\n\n---\n\n## Step 4: Create Commit (1 min)\n\n```bash\ngit commit -m \"Complete legal document processing system\n\n- Context preservation system (8 tables, 5 views, 3 functions)\n- ContextManager Python API\n- Truth & Justice Timeline dashboard\n- WordPress document upload system with multi-LLM processing\n- Amelia Booking integration\n- Complete documentation and deployment guides\n- All tests passing (5/5)\"\n```\n\n---\n\n## Step 5: Create GitHub Repository (3 min)\n\n1. **Go to GitHub:**\n   - Visit: https://github.com/new\n\n2. **Configure Repository:**\n   - **Name:** `ASEAGI-legal-intelligence`\n   - **Description:** `Legal intelligence platform with context preservation, multi-LLM processing, and truth/justice scoring`\n   - **Visibility:** Private (recommended)\n   - **DO NOT** check \"Initialize with README\"\n   - Click \"Create repository\"\n\n3. **Copy the commands shown on GitHub**, they look like:\n   ```bash\n   git remote add origin https://github.com/YOUR_USERNAME/ASEAGI-legal-intelligence.git\n   git branch -M main\n   git push -u origin main\n   ```\n\n---\n\n## Step 6: Push to GitHub (2 min)\n\n```bash\n# Add GitHub remote (replace YOUR_USERNAME with your GitHub username)\ngit remote add origin https://github.com/YOUR_USERNAME/ASEAGI-legal-intelligence.git\n\n# Verify remote\ngit remote -v\n\n# Rename branch to main\ngit branch -M main\n\n# Push to GitHub\ngit push -u origin main\n```\n\nEnter your GitHub credentials when prompted (or use Personal Access Token).\n\n---\n\n## Step 7: Verify on GitHub (1 min)\n\n1. Go to: https://github.com/YOUR_USERNAME/ASEAGI-legal-intelligence\n2. You should see all your files\n3. **CRITICAL CHECK:** Make sure `.streamlit/secrets.toml` is NOT visible\n4. Click on a few files to verify content\n\n---\n\n## Step 8: Deploy to Streamlit Cloud (5 min)\n\n1. **Go to Streamlit Cloud:**\n   - Visit: https://share.streamlit.io/\n   - Sign in with GitHub\n\n2. **Create New App:**\n   - Click \"New app\"\n   - **Repository:** `YOUR_USERNAME/ASEAGI-legal-intelligence`\n   - **Branch:** `main`\n   - **Main file path:** `truth_justice_timeline.py`\n   - Click \"Advanced settings\"\n\n3. **Add Secrets:**\n   - In \"Secrets\" section, paste:\n   ```toml\n   SUPABASE_URL = \"https://jvjlhxodmbkodzmggwpu.supabase.co\"\n   SUPABASE_KEY = \"eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Imp2amxoeG9kbWJrb2R6bWdnd3B1Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3NjIyMjMxOTAsImV4cCI6MjA3Nzc5OTE5MH0.ai65vVW816bNAV56XiuRxp5PE5IhBkMGPx3IbxfPh8c\"\n   ```\n\n4. **Deploy:**\n   - Click \"Deploy\"\n   - Wait 2-3 minutes for deployment\n   - Your app will be live at: `https://YOUR_APP.streamlit.app`\n\n---\n\n## Step 9: Deploy Additional Dashboards (Optional)\n\nRepeat Step 8 for each dashboard:\n\n**Dashboard 2: Master Dashboard**\n- Main file: `proj344_master_dashboard.py`\n- Same secrets\n\n**Dashboard 3: Data Diagnostic**\n- Main file: `supabase_data_diagnostic.py`\n- Same secrets\n\n---\n\n## Future Updates: Push Changes to GitHub\n\nAfter making changes locally:\n\n```bash\n# 1. Check what changed\ngit status\n\n# 2. Add changes\ngit add .\n\n# 3. Commit with descriptive message\ngit commit -m \"Describe what you changed\"\n\n# 4. Push to GitHub\ngit push\n\n# 5. Streamlit Cloud auto-deploys within 1-2 minutes\n```\n\n---\n\n## Troubleshooting\n\n### Error: \"secrets.toml contains sensitive data\"\n\n```bash\n# Remove from git if accidentally added\ngit rm --cached .streamlit/secrets.toml\n\n# Ensure .gitignore includes it\necho \".streamlit/secrets.toml\" >> .gitignore\n\n# Commit fix\ngit commit -m \"Remove secrets from git\"\ngit push --force\n```\n\n### Error: \"git push rejected\"\n\n```bash\n# Pull first\ngit pull origin main --allow-unrelated-histories\n\n# Then push\ngit push\n```\n\n### Streamlit App Error: \"Missing secrets\"\n\n1. Go to Streamlit Cloud dashboard\n2. Click your app → Settings → Secrets\n3. Add your Supabase credentials\n4. Save and reboot app\n\n---\n\n## Summary\n\n**What You Just Did:**\n\n1. ✅ Initialized Git repository locally\n2. ✅ Created .gitignore to protect secrets\n3. ✅ Committed all code\n4. ✅ Created GitHub repository\n5. ✅ Pushed code to GitHub\n6. ✅ Deployed to Streamlit Cloud\n7. ✅ App is live and accessible from anywhere\n\n**Your URLs:**\n\n- **GitHub Repo:** https://github.com/YOUR_USERNAME/ASEAGI-legal-intelligence\n- **Streamlit App:** https://YOUR_APP.streamlit.app\n\n**Next Time You Make Changes:**\n\n```bash\ngit add .\ngit commit -m \"Your changes\"\ngit push\n# Streamlit auto-deploys!\n```\n\n---\n\n**Status:** ✅ Complete - Your code is on GitHub and deployed to Streamlit Cloud!\n",
+  "content_preview": "# Quick Start: Push ASEAGI to GitHub & Deploy Streamlit\n\n**Time: 15 minutes**\n\n---\n\n## Step 1: Check Current Git Status (2 min)\n\n```bash\ncd c:\\Users\\DonBucknor_n0ufqwv\\GettingStarted\\ASEAGI\ngit status\n```\n\nIf you see \"not a git repository\", run:\n```bash\ngit init\n```\n\n---\n\n## Step 2: Update .gitignore (1 min)\n\nMake sure your `.gitignore` file includes:\n\n```gitignore\n# Secrets - NEVER commit these!\n.streamlit/secrets.toml\n.env\n*.env\n\n# Python\n__pycache__/\n*.pyc\nvenv/\nenv/\n\n# OS\n.DS_Store\nThumbs.db...",
+  "sections": [
+    {
+      "title": "Quick Start: Push ASEAGI to GitHub & Deploy Streamlit",
+      "content": "**Time: 15 minutes**\n---"
+    },
+    {
+      "title": "Step 1: Check Current Git Status (2 min)",
+      "content": "```bash\ncd c:\\Users\\DonBucknor_n0ufqwv\\GettingStarted\\ASEAGI\ngit status\n```\nIf you see \"not a git repository\", run:\n```bash\ngit init\n```\n---"
+    },
+    {
+      "title": "Step 2: Update .gitignore (1 min)",
+      "content": "Make sure your `.gitignore` file includes:\n```gitignore"
+    },
+    {
+      "title": "Secrets - NEVER commit these!",
+      "content": ".streamlit/secrets.toml\n.env\n*.env"
+    },
+    {
+      "title": "Python",
+      "content": "__pycache__/\n*.pyc\nvenv/\nenv/"
+    },
+    {
+      "title": "OS",
+      "content": ".DS_Store\nThumbs.db"
+    },
+    {
+      "title": "Logs",
+      "content": "*.log\n```\nCheck it exists:\n```bash\ntype .gitignore\n```\nIf missing, create it:\n```bash\ncat > .gitignore << 'EOF'\n.streamlit/secrets.toml\n.env\n*.env\n__pycache__/\n*.pyc\nvenv/\nenv/\n.DS_Store\nThumbs.db\n*.log\nEOF\n```\n---"
+    },
+    {
+      "title": "Step 3: Add All Files (1 min)",
+      "content": "```bash"
+    },
+    {
+      "title": "Add everything except what's in .gitignore",
+      "content": "git add ."
+    },
+    {
+      "title": "Check what will be committed",
+      "content": "git status"
+    },
+    {
+      "title": "IMPORTANT: Verify secrets.toml is NOT listed",
+      "content": ""
+    },
+    {
+      "title": "If you see .streamlit/secrets.toml, STOP and add it to .gitignore",
+      "content": "```\n---"
+    },
+    {
+      "title": "Step 4: Create Commit (1 min)",
+      "content": "```bash\ngit commit -m \"Complete legal document processing system\n- Context preservation system (8 tables, 5 views, 3 functions)\n- ContextManager Python API\n- Truth & Justice Timeline dashboard\n- WordPress document upload system with multi-LLM processing\n- Amelia Booking integration\n- Complete documentation and deployment guides\n- All tests passing (5/5)\"\n```\n---"
+    },
+    {
+      "title": "Step 5: Create GitHub Repository (3 min)",
+      "content": "1. **Go to GitHub:**\n   - Visit: https://github.com/new\n2. **Configure Repository:**\n   - **Name:** `ASEAGI-legal-intelligence`\n   - **Description:** `Legal intelligence platform with context preservation, multi-LLM processing, and truth/justice scoring`\n   - **Visibility:** Private (recommended)\n   - **DO NOT** check \"Initialize with README\"\n   - Click \"Create repository\"\n3. **Copy the commands shown on GitHub**, they look like:\n   ```bash\n   git remote add origin https://github.com/YOUR_USERNAME/ASEAGI-legal-intelligence.git\n   git branch -M main\n   git push -u origin main\n   ```\n---"
+    },
+    {
+      "title": "Step 6: Push to GitHub (2 min)",
+      "content": "```bash"
+    },
+    {
+      "title": "Add GitHub remote (replace YOUR_USERNAME with your GitHub username)",
+      "content": "git remote add origin https://github.com/YOUR_USERNAME/ASEAGI-legal-intelligence.git"
+    },
+    {
+      "title": "Verify remote",
+      "content": "git remote -v"
+    },
+    {
+      "title": "Rename branch to main",
+      "content": "git branch -M main"
+    },
+    {
+      "title": "Push to GitHub",
+      "content": "git push -u origin main\n```\nEnter your GitHub credentials when prompted (or use Personal Access Token).\n---"
+    },
+    {
+      "title": "Step 7: Verify on GitHub (1 min)",
+      "content": "1. Go to: https://github.com/YOUR_USERNAME/ASEAGI-legal-intelligence\n2. You should see all your files\n3. **CRITICAL CHECK:** Make sure `.streamlit/secrets.toml` is NOT visible\n4. Click on a few files to verify content\n---"
+    },
+    {
+      "title": "Step 8: Deploy to Streamlit Cloud (5 min)",
+      "content": "1. **Go to Streamlit Cloud:**\n   - Visit: https://share.streamlit.io/\n   - Sign in with GitHub\n2. **Create New App:**\n   - Click \"New app\"\n   - **Repository:** `YOUR_USERNAME/ASEAGI-legal-intelligence`\n   - **Branch:** `main`\n   - **Main file path:** `truth_justice_timeline.py`\n   - Click \"Advanced settings\"\n3. **Add Secrets:**\n   - In \"Secrets\" section, paste:\n   ```toml\n   SUPABASE_URL = \"https://jvjlhxodmbkodzmggwpu.supabase.co\"\n   SUPABASE_KEY = \"eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Imp2amxoeG9kbWJrb2R6bWdnd3B1Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3NjIyMjMxOTAsImV4cCI6MjA3Nzc5OTE5MH0.ai65vVW816bNAV56XiuRxp5PE5IhBkMGPx3IbxfPh8c\"\n   ```\n4. **Deploy:**\n   - Click \"Deploy\"\n   - Wait 2-3 minutes for deployment\n   - Your app will be live at: `https://YOUR_APP.streamlit.app`\n---"
+    },
+    {
+      "title": "Step 9: Deploy Additional Dashboards (Optional)",
+      "content": "Repeat Step 8 for each dashboard:\n**Dashboard 2: Master Dashboard**\n- Main file: `proj344_master_dashboard.py`\n- Same secrets\n**Dashboard 3: Data Diagnostic**\n- Main file: `supabase_data_diagnostic.py`\n- Same secrets\n---"
+    },
+    {
+      "title": "Future Updates: Push Changes to GitHub",
+      "content": "After making changes locally:\n```bash"
+    },
+    {
+      "title": "1. Check what changed",
+      "content": "git status"
+    },
+    {
+      "title": "2. Add changes",
+      "content": "git add ."
+    },
+    {
+      "title": "3. Commit with descriptive message",
+      "content": "git commit -m \"Describe what you changed\""
+    },
+    {
+      "title": "4. Push to GitHub",
+      "content": "git push"
+    },
+    {
+      "title": "5. Streamlit Cloud auto-deploys within 1-2 minutes",
+      "content": "```\n---"
+    },
+    {
+      "title": "Troubleshooting",
+      "content": ""
+    },
+    {
+      "title": "Error: \"secrets.toml contains sensitive data\"",
+      "content": "```bash"
+    },
+    {
+      "title": "Remove from git if accidentally added",
+      "content": "git rm --cached .streamlit/secrets.toml"
+    },
+    {
+      "title": "Ensure .gitignore includes it",
+      "content": "echo \".streamlit/secrets.toml\" >> .gitignore"
+    },
+    {
+      "title": "Commit fix",
+      "content": "git commit -m \"Remove secrets from git\"\ngit push --force\n```"
+    },
+    {
+      "title": "Error: \"git push rejected\"",
+      "content": "```bash"
+    },
+    {
+      "title": "Pull first",
+      "content": "git pull origin main --allow-unrelated-histories"
+    },
+    {
+      "title": "Then push",
+      "content": "git push\n```"
+    },
+    {
+      "title": "Streamlit App Error: \"Missing secrets\"",
+      "content": "1. Go to Streamlit Cloud dashboard\n2. Click your app → Settings → Secrets\n3. Add your Supabase credentials\n4. Save and reboot app\n---"
+    },
+    {
+      "title": "Summary",
+      "content": "**What You Just Did:**\n1. ✅ Initialized Git repository locally\n2. ✅ Created .gitignore to protect secrets\n3. ✅ Committed all code\n4. ✅ Created GitHub repository\n5. ✅ Pushed code to GitHub\n6. ✅ Deployed to Streamlit Cloud\n7. ✅ App is live and accessible from anywhere\n**Your URLs:**\n- **GitHub Repo:** https://github.com/YOUR_USERNAME/ASEAGI-legal-intelligence\n- **Streamlit App:** https://YOUR_APP.streamlit.app\n**Next Time You Make Changes:**\n```bash\ngit add .\ngit commit -m \"Your changes\"\ngit push"
+    },
+    {
+      "title": "Streamlit auto-deploys!",
+      "content": "```\n---\n**Status:** ✅ Complete - Your code is on GitHub and deployed to Streamlit Cloud!"
+    }
+  ],
+  "extraction_success": true,
+  "extraction_error": null
+}

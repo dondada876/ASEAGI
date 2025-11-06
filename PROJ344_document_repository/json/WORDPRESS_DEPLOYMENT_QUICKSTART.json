@@ -1,0 +1,216 @@
+{
+  "metadata": {
+    "file_path": "C:\\Users\\DonBucknor_n0ufqwv\\GettingStarted\\ASEAGI\\WORDPRESS_DEPLOYMENT_QUICKSTART.md",
+    "file_name": "WORDPRESS_DEPLOYMENT_QUICKSTART.md",
+    "file_type": "md",
+    "file_size": 12854,
+    "file_hash": "319ec99087990654ce9c19226888e416",
+    "extraction_date": "2025-11-06T09:18:56.770281",
+    "extraction_method": "direct_read",
+    "title": "# WordPress Document Upload System - Quick Start Guide",
+    "author": null,
+    "created_date": "2025-11-05T21:30:09.325312",
+    "modified_date": "2025-11-05T21:30:09.325312",
+    "page_count": null,
+    "word_count": 1457,
+    "char_count": 12322
+  },
+  "content": "# WordPress Document Upload System - Quick Start Guide\n\n**Time to Deploy:** 2-3 hours\n**Cost:** ~$90-150/month\n**Difficulty:** Intermediate\n\n---\n\n## Overview\n\nThis system allows you to:\n- Upload screenshots from your phone\n- Process documents from email attachments\n- Automatically analyze documents with Claude, GPT-4, and Gemini\n- Store results in Supabase with context preservation\n- Schedule document review appointments with Amelia\n\n---\n\n## Architecture\n\n```\nPhone/Email → WordPress (SiteGround) → Python Service (Digital Ocean) → Multi-LLM Processing → Supabase\n```\n\n---\n\n## Quick Start: 3-Step Deployment\n\n### Step 1: WordPress Setup (30 minutes)\n\n1. **Install Required Plugins:**\n   - Go to WordPress Admin → Plugins → Add New\n   - Install:\n     - Advanced Custom Fields Pro (ACF Pro)\n     - Amelia Booking\n     - WP Mail SMTP (optional, for email integration)\n\n2. **Create Custom Post Type:**\n   - Add to `functions.php`:\n   ```php\n   function create_legal_document_post_type() {\n       register_post_type('legal_document', array(\n           'labels' => array(\n               'name' => 'Legal Documents',\n               'singular_name' => 'Legal Document'\n           ),\n           'public' => true,\n           'has_archive' => true,\n           'supports' => array('title', 'editor', 'custom-fields')\n       ));\n   }\n   add_action('init', 'create_legal_document_post_type');\n   ```\n\n3. **Import ACF Configuration:**\n   - Copy the ACF field group code from `DOCUMENT_UPLOAD_SYSTEM.md` (lines 71-190)\n   - Paste into `functions.php`\n   - Or import via ACF → Tools → Import\n\n4. **Create Upload Form Page:**\n   - Create new page: \"Upload Document\"\n   - Add shortcode: `[acf_form id=\"legal-document-upload\"]`\n   - Save and publish\n\n---\n\n### Step 2: Digital Ocean Droplet (45 minutes)\n\n1. **Create Droplet:**\n   - Log into Digital Ocean\n   - Create Droplet\n   - **Image:** Ubuntu 22.04 LTS\n   - **Size:** Basic - $24/month (4GB RAM, 2 vCPUs)\n   - **Datacenter:** Choose closest to you\n   - Add SSH key\n\n2. **SSH into Droplet:**\n   ```bash\n   ssh root@YOUR_DROPLET_IP\n   ```\n\n3. **Install Python Environment:**\n   ```bash\n   # Update system\n   apt update && apt upgrade -y\n\n   # Install Python and dependencies\n   apt install -y python3-pip python3-venv tesseract-ocr git nginx certbot python3-certbot-nginx\n\n   # Create project directory\n   mkdir -p /opt/document-processing\n   cd /opt/document-processing\n\n   # Create virtual environment\n   python3 -m venv venv\n   source venv/bin/activate\n   ```\n\n4. **Install Python Packages:**\n   ```bash\n   # Create requirements.txt\n   cat > requirements.txt << EOF\n   flask==3.0.0\n   gunicorn==21.2.0\n   anthropic==0.18.0\n   openai==1.12.0\n   google-generativeai==0.4.0\n   supabase==2.3.4\n   pytesseract==0.3.10\n   Pillow==10.2.0\n   requests==2.31.0\n   python-dotenv==1.0.1\n   EOF\n\n   pip install -r requirements.txt\n   ```\n\n5. **Create Processing Service:**\n   ```bash\n   # Copy the document_processor.py code from DOCUMENT_UPLOAD_SYSTEM.md (lines 432-676)\n   nano app.py\n   # Paste the Python processing service code\n   ```\n\n6. **Configure Environment:**\n   ```bash\n   nano .env\n   ```\n\n   Add:\n   ```\n   ANTHROPIC_API_KEY=sk-ant-YOUR_KEY_HERE\n   OPENAI_API_KEY=sk-YOUR_KEY_HERE\n   GOOGLE_API_KEY=YOUR_GOOGLE_KEY_HERE\n   SUPABASE_URL=https://jvjlhxodmbkodzmggwpu.supabase.co\n   SUPABASE_KEY=YOUR_SUPABASE_KEY_HERE\n   ```\n\n7. **Create Systemd Service:**\n   ```bash\n   nano /etc/systemd/system/document-processing.service\n   ```\n\n   Add:\n   ```ini\n   [Unit]\n   Description=Legal Document Processing Service\n   After=network.target\n\n   [Service]\n   Type=simple\n   User=root\n   WorkingDirectory=/opt/document-processing\n   Environment=\"PATH=/opt/document-processing/venv/bin\"\n   ExecStart=/opt/document-processing/venv/bin/gunicorn --bind 0.0.0.0:5000 --workers 4 --timeout 300 app:app\n   Restart=always\n\n   [Install]\n   WantedBy=multi-user.target\n   ```\n\n   Enable and start:\n   ```bash\n   systemctl enable document-processing\n   systemctl start document-processing\n   systemctl status document-processing\n   ```\n\n8. **Configure Nginx Reverse Proxy:**\n   ```bash\n   nano /etc/nginx/sites-available/document-processing\n   ```\n\n   Add:\n   ```nginx\n   server {\n       listen 80;\n       server_name api.yoursite.com;\n\n       location / {\n           proxy_pass http://127.0.0.1:5000;\n           proxy_set_header Host $host;\n           proxy_set_header X-Real-IP $remote_addr;\n           proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;\n           proxy_read_timeout 300s;\n       }\n   }\n   ```\n\n   Enable:\n   ```bash\n   ln -s /etc/nginx/sites-available/document-processing /etc/nginx/sites-enabled/\n   nginx -t\n   systemctl restart nginx\n   ```\n\n9. **Add SSL Certificate:**\n   ```bash\n   certbot --nginx -d api.yoursite.com\n   ```\n\n10. **Configure Firewall:**\n    ```bash\n    ufw allow 'Nginx Full'\n    ufw allow OpenSSH\n    ufw enable\n    ```\n\n---\n\n### Step 3: Connect WordPress to Processing Service (15 minutes)\n\n1. **Add to WordPress `wp-config.php`:**\n   ```php\n   // Legal Document Processing\n   define('PROCESSING_SERVICE_URL', 'https://api.yoursite.com');\n   define('PROCESSING_SERVICE_KEY', 'your-secure-random-key');\n   ```\n\n2. **Add Processing Hook to `functions.php`:**\n   ```php\n   add_action('acf/save_post', 'process_uploaded_document', 20);\n\n   function process_uploaded_document($post_id) {\n       if (get_post_type($post_id) !== 'legal_document') {\n           return;\n       }\n\n       $file = get_field('document_file', $post_id);\n       if (!$file) return;\n\n       // Get extracted text (add OCR/PDF extraction here)\n       $extracted_text = file_get_contents(get_attached_file($file['ID']));\n\n       // Call processing service\n       $response = wp_remote_post(PROCESSING_SERVICE_URL . '/process', array(\n           'headers' => array(\n               'X-API-Key' => PROCESSING_SERVICE_KEY,\n               'Content-Type' => 'application/json'\n           ),\n           'body' => json_encode(array(\n               'post_id' => $post_id,\n               'extracted_text' => $extracted_text,\n               'document_type' => get_field('document_type', $post_id)\n           )),\n           'timeout' => 300\n       ));\n\n       if (!is_wp_error($response)) {\n           $result = json_decode(wp_remote_retrieve_body($response), true);\n           update_post_meta($post_id, 'tier2_results', $result);\n       }\n   }\n   ```\n\n---\n\n## Step 4: Configure Amelia Booking (15 minutes)\n\n1. **Create Service:**\n   - Go to Amelia → Services → Add New\n   - **Name:** Document Review Consultation\n   - **Duration:** 60 minutes\n   - **Price:** $0 (or your rate)\n   - **Capacity:** 1 person\n\n2. **Add Custom Fields:**\n   - Go to Amelia → Customize → Custom Fields\n   - Add field:\n     - **Label:** Document IDs\n     - **Type:** Text Field\n     - **Required:** No\n\n3. **Configure Notifications:**\n   - Customer email: \"Your document review is scheduled. Please upload documents before appointment.\"\n   - Employee email: \"Process documents before appointment.\"\n\n---\n\n## Step 5: Mobile Upload Page (10 minutes)\n\n1. **Create Page Template:**\n   - Create file: `wp-content/themes/your-theme/page-mobile-upload.php`\n   - Copy mobile upload code from `DOCUMENT_UPLOAD_SYSTEM.md` (lines 855-998)\n\n2. **Create Page:**\n   - WordPress Admin → Pages → Add New\n   - **Title:** \"Mobile Upload\"\n   - **Template:** Mobile Upload\n   - Save and publish\n\n3. **Test:**\n   - Visit page on your phone\n   - Try uploading a photo\n   - Verify processing starts\n\n---\n\n## Step 6: Email Integration (Optional - 30 minutes)\n\n1. **Create Email Processor:**\n   ```bash\n   # On Digital Ocean droplet\n   cd /opt/document-processing\n   nano email_processor.py\n   ```\n\n   Copy email integration code from `DOCUMENT_UPLOAD_SYSTEM.md` (lines 684-767)\n\n2. **Configure Environment:**\n   ```bash\n   nano .env\n   ```\n\n   Add:\n   ```\n   EMAIL_ADDRESS=your-email@gmail.com\n   EMAIL_PASSWORD=your-app-password\n   WORDPRESS_URL=https://yoursite.com\n   WORDPRESS_USER=admin\n   WORDPRESS_PASSWORD=your-app-password\n   ```\n\n3. **Add Cron Job:**\n   ```bash\n   crontab -e\n   ```\n\n   Add:\n   ```\n   */5 * * * * /opt/document-processing/venv/bin/python /opt/document-processing/email_processor.py >> /var/log/email-processing.log 2>&1\n   ```\n\n---\n\n## Testing Checklist\n\n### Basic Upload Test\n- [ ] Upload PDF from WordPress admin\n- [ ] Upload image from mobile page\n- [ ] Verify file appears in Media Library\n- [ ] Check ACF fields saved correctly\n\n### Processing Test\n- [ ] Check Digital Ocean service is running: `systemctl status document-processing`\n- [ ] Upload test document\n- [ ] Check processing service logs: `tail -f /var/log/syslog | grep gunicorn`\n- [ ] Verify results saved to WordPress post meta\n- [ ] Check Supabase for saved data\n\n### Amelia Test\n- [ ] Book a test appointment\n- [ ] Add document ID to custom field\n- [ ] Verify email notifications sent\n\n### Mobile Test\n- [ ] Open mobile upload page on phone\n- [ ] Take photo and upload\n- [ ] Verify upload succeeds\n- [ ] Check document appears in admin\n\n---\n\n## Troubleshooting\n\n### Issue: Processing service not starting\n```bash\n# Check logs\njournalctl -u document-processing -n 50\n\n# Check if port is in use\nnetstat -tulpn | grep 5000\n\n# Restart service\nsystemctl restart document-processing\n```\n\n### Issue: WordPress can't reach processing service\n```bash\n# Test from command line\ncurl -X POST https://api.yoursite.com/process \\\n  -H \"X-API-Key: your-key\" \\\n  -H \"Content-Type: application/json\" \\\n  -d '{\"post_id\": \"123\", \"extracted_text\": \"test\", \"document_type\": \"TEST\"}'\n```\n\n### Issue: Uploads failing\n- Check file size limits in `php.ini`\n- Verify WordPress upload directory is writable\n- Check nginx client_max_body_size\n\n### Issue: OCR not working\n```bash\n# Install Tesseract\napt install tesseract-ocr tesseract-ocr-eng\n\n# Test\ntesseract test.jpg output\n```\n\n---\n\n## Monitoring\n\n### Check Processing Service Status\n```bash\nsystemctl status document-processing\n```\n\n### View Logs\n```bash\n# Service logs\njournalctl -u document-processing -f\n\n# Nginx logs\ntail -f /var/log/nginx/access.log\ntail -f /var/log/nginx/error.log\n```\n\n### Check Database Stats\n```sql\n-- In Supabase SQL editor\nSELECT COUNT(*) FROM legal_documents WHERE created_at > NOW() - INTERVAL '24 hours';\nSELECT SUM(api_cost_usd) FROM ai_analysis_results WHERE created_at > NOW() - INTERVAL '24 hours';\n```\n\n---\n\n## Cost Breakdown\n\n### Monthly Costs\n- **SiteGround Hosting:** $15-30/month (current)\n- **Digital Ocean Droplet:** $24/month\n- **LLM API Costs:**\n  - Claude: ~$3 per 1M tokens\n  - GPT-4: ~$30 per 1M tokens\n  - Gemini: ~$1.50 per 1M tokens\n  - Estimated: $50-200/month depending on volume\n- **Domain/SSL:** $0 (Let's Encrypt free)\n- **Total:** $90-250/month\n\n### Per-Document Cost\n- Tier 1 Processing: $0 (local)\n- Tier 2 Multi-LLM: ~$0.10-0.30 per document\n- Storage (Supabase): $0 (free tier)\n\n---\n\n## Security Checklist\n\n- [ ] Change default WordPress admin password\n- [ ] Install WordPress security plugin (Wordfence)\n- [ ] Enable 2FA on WordPress\n- [ ] Set strong API key in wp-config.php\n- [ ] Configure firewall on Digital Ocean\n- [ ] Enable SSL on both WordPress and API\n- [ ] Set up regular backups\n- [ ] Restrict file upload types in ACF\n\n---\n\n## Next Steps\n\n1. **Week 1:**\n   - Deploy basic system\n   - Test with 10-20 documents\n   - Monitor costs and performance\n\n2. **Week 2:**\n   - Configure Amelia booking\n   - Set up email integration\n   - Train users on mobile upload\n\n3. **Month 1:**\n   - Optimize LLM prompts\n   - Add custom analysis rules\n   - Integrate with Streamlit dashboards\n\n4. **Ongoing:**\n   - Monitor AI costs\n   - Review processed documents\n   - Refine truth scoring algorithms\n   - Expand to additional document types\n\n---\n\n## Support Resources\n\n- **Full Documentation:** [DOCUMENT_UPLOAD_SYSTEM.md](DOCUMENT_UPLOAD_SYSTEM.md)\n- **Context Preservation Guide:** [README_DEPLOYMENT.md](README_DEPLOYMENT.md)\n- **WordPress Codex:** https://codex.wordpress.org/\n- **ACF Documentation:** https://www.advancedcustomfields.com/resources/\n- **Digital Ocean Guides:** https://www.digitalocean.com/community/tutorials\n\n---\n\n**Status:** Ready to Deploy\n\n**Estimated Setup Time:** 2-3 hours\n\n**Difficulty:** Intermediate (requires basic server admin knowledge)\n\n**Support:** Review full documentation in DOCUMENT_UPLOAD_SYSTEM.md for detailed code and examples\n",
+  "content_preview": "# WordPress Document Upload System - Quick Start Guide\n\n**Time to Deploy:** 2-3 hours\n**Cost:** ~$90-150/month\n**Difficulty:** Intermediate\n\n---\n\n## Overview\n\nThis system allows you to:\n- Upload screenshots from your phone\n- Process documents from email attachments\n- Automatically analyze documents with Claude, GPT-4, and Gemini\n- Store results in Supabase with context preservation\n- Schedule document review appointments with Amelia\n\n---\n\n## Architecture\n\n```\nPhone/Email → WordPress (SiteGround)...",
+  "sections": [
+    {
+      "title": "WordPress Document Upload System - Quick Start Guide",
+      "content": "**Time to Deploy:** 2-3 hours\n**Cost:** ~$90-150/month\n**Difficulty:** Intermediate\n---"
+    },
+    {
+      "title": "Overview",
+      "content": "This system allows you to:\n- Upload screenshots from your phone\n- Process documents from email attachments\n- Automatically analyze documents with Claude, GPT-4, and Gemini\n- Store results in Supabase with context preservation\n- Schedule document review appointments with Amelia\n---"
+    },
+    {
+      "title": "Architecture",
+      "content": "```\nPhone/Email → WordPress (SiteGround) → Python Service (Digital Ocean) → Multi-LLM Processing → Supabase\n```\n---"
+    },
+    {
+      "title": "Quick Start: 3-Step Deployment",
+      "content": ""
+    },
+    {
+      "title": "Step 1: WordPress Setup (30 minutes)",
+      "content": "1. **Install Required Plugins:**\n   - Go to WordPress Admin → Plugins → Add New\n   - Install:\n     - Advanced Custom Fields Pro (ACF Pro)\n     - Amelia Booking\n     - WP Mail SMTP (optional, for email integration)\n2. **Create Custom Post Type:**\n   - Add to `functions.php`:\n   ```php\n   function create_legal_document_post_type() {\n       register_post_type('legal_document', array(\n           'labels' => array(\n               'name' => 'Legal Documents',\n               'singular_name' => 'Legal Document'\n           ),\n           'public' => true,\n           'has_archive' => true,\n           'supports' => array('title', 'editor', 'custom-fields')\n       ));\n   }\n   add_action('init', 'create_legal_document_post_type');\n   ```\n3. **Import ACF Configuration:**\n   - Copy the ACF field group code from `DOCUMENT_UPLOAD_SYSTEM.md` (lines 71-190)\n   - Paste into `functions.php`\n   - Or import via ACF → Tools → Import\n4. **Create Upload Form Page:**\n   - Create new page: \"Upload Document\"\n   - Add shortcode: `[acf_form id=\"legal-document-upload\"]`\n   - Save and publish\n---"
+    },
+    {
+      "title": "Step 2: Digital Ocean Droplet (45 minutes)",
+      "content": "1. **Create Droplet:**\n   - Log into Digital Ocean\n   - Create Droplet\n   - **Image:** Ubuntu 22.04 LTS\n   - **Size:** Basic - $24/month (4GB RAM, 2 vCPUs)\n   - **Datacenter:** Choose closest to you\n   - Add SSH key\n2. **SSH into Droplet:**\n   ```bash\n   ssh root@YOUR_DROPLET_IP\n   ```\n3. **Install Python Environment:**\n   ```bash"
+    },
+    {
+      "title": "Update system",
+      "content": "apt update && apt upgrade -y"
+    },
+    {
+      "title": "Install Python and dependencies",
+      "content": "apt install -y python3-pip python3-venv tesseract-ocr git nginx certbot python3-certbot-nginx"
+    },
+    {
+      "title": "Create project directory",
+      "content": "mkdir -p /opt/document-processing\n   cd /opt/document-processing"
+    },
+    {
+      "title": "Create virtual environment",
+      "content": "python3 -m venv venv\n   source venv/bin/activate\n   ```\n4. **Install Python Packages:**\n   ```bash"
+    },
+    {
+      "title": "Create requirements.txt",
+      "content": "cat > requirements.txt << EOF\n   flask==3.0.0\n   gunicorn==21.2.0\n   anthropic==0.18.0\n   openai==1.12.0\n   google-generativeai==0.4.0\n   supabase==2.3.4\n   pytesseract==0.3.10\n   Pillow==10.2.0\n   requests==2.31.0\n   python-dotenv==1.0.1\n   EOF\n   pip install -r requirements.txt\n   ```\n5. **Create Processing Service:**\n   ```bash"
+    },
+    {
+      "title": "Copy the document_processor.py code from DOCUMENT_UPLOAD_SYSTEM.md (lines 432-676)",
+      "content": "nano app.py"
+    },
+    {
+      "title": "Paste the Python processing service code",
+      "content": "```\n6. **Configure Environment:**\n   ```bash\n   nano .env\n   ```\n   Add:\n   ```\n   ANTHROPIC_API_KEY=sk-ant-YOUR_KEY_HERE\n   OPENAI_API_KEY=sk-YOUR_KEY_HERE"
+    },
+    {
+      "title": "GOOGLE_API_KEY=YOUR_GOOGLE_KEY_HERE",
+      "content": "SUPABASE_URL=https://jvjlhxodmbkodzmggwpu.supabase.co"
+    },
+    {
+      "title": "SUPABASE_KEY=YOUR_SUPABASE_KEY_HERE",
+      "content": "```\n7. **Create Systemd Service:**\n   ```bash\n   nano /etc/systemd/system/document-processing.service\n   ```\n   Add:\n   ```ini\n   [Unit]\n   Description=Legal Document Processing Service\n   After=network.target\n   [Service]\n   Type=simple\n   User=root\n   WorkingDirectory=/opt/document-processing\n   Environment=\"PATH=/opt/document-processing/venv/bin\"\n   ExecStart=/opt/document-processing/venv/bin/gunicorn --bind 0.0.0.0:5000 --workers 4 --timeout 300 app:app\n   Restart=always\n   [Install]\n   WantedBy=multi-user.target\n   ```\n   Enable and start:\n   ```bash\n   systemctl enable document-processing\n   systemctl start document-processing\n   systemctl status document-processing\n   ```\n8. **Configure Nginx Reverse Proxy:**\n   ```bash\n   nano /etc/nginx/sites-available/document-processing\n   ```\n   Add:\n   ```nginx\n   server {\n       listen 80;\n       server_name api.yoursite.com;\n       location / {\n           proxy_pass http://127.0.0.1:5000;\n           proxy_set_header Host $host;\n           proxy_set_header X-Real-IP $remote_addr;\n           proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;\n           proxy_read_timeout 300s;\n       }\n   }\n   ```\n   Enable:\n   ```bash\n   ln -s /etc/nginx/sites-available/document-processing /etc/nginx/sites-enabled/\n   nginx -t\n   systemctl restart nginx\n   ```\n9. **Add SSL Certificate:**\n   ```bash\n   certbot --nginx -d api.yoursite.com\n   ```\n10. **Configure Firewall:**\n    ```bash\n    ufw allow 'Nginx Full'\n    ufw allow OpenSSH\n    ufw enable\n    ```\n---"
+    },
+    {
+      "title": "Step 3: Connect WordPress to Processing Service (15 minutes)",
+      "content": "1. **Add to WordPress `wp-config.php`:**\n   ```php\n   // Legal Document Processing\n   define('PROCESSING_SERVICE_URL', 'https://api.yoursite.com');\n   define('PROCESSING_SERVICE_KEY', 'your-secure-random-key');\n   ```\n2. **Add Processing Hook to `functions.php`:**\n   ```php\n   add_action('acf/save_post', 'process_uploaded_document', 20);\n   function process_uploaded_document($post_id) {\n       if (get_post_type($post_id) !== 'legal_document') {\n           return;\n       }\n       $file = get_field('document_file', $post_id);\n       if (!$file) return;\n       // Get extracted text (add OCR/PDF extraction here)\n       $extracted_text = file_get_contents(get_attached_file($file['ID']));\n       // Call processing service\n       $response = wp_remote_post(PROCESSING_SERVICE_URL . '/process', array(\n           'headers' => array(\n               'X-API-Key' => PROCESSING_SERVICE_KEY,\n               'Content-Type' => 'application/json'\n           ),\n           'body' => json_encode(array(\n               'post_id' => $post_id,\n               'extracted_text' => $extracted_text,\n               'document_type' => get_field('document_type', $post_id)\n           )),\n           'timeout' => 300\n       ));\n       if (!is_wp_error($response)) {\n           $result = json_decode(wp_remote_retrieve_body($response), true);\n           update_post_meta($post_id, 'tier2_results', $result);\n       }\n   }\n   ```\n---"
+    },
+    {
+      "title": "Step 4: Configure Amelia Booking (15 minutes)",
+      "content": "1. **Create Service:**\n   - Go to Amelia → Services → Add New\n   - **Name:** Document Review Consultation\n   - **Duration:** 60 minutes\n   - **Price:** $0 (or your rate)\n   - **Capacity:** 1 person\n2. **Add Custom Fields:**\n   - Go to Amelia → Customize → Custom Fields\n   - Add field:\n     - **Label:** Document IDs\n     - **Type:** Text Field\n     - **Required:** No\n3. **Configure Notifications:**\n   - Customer email: \"Your document review is scheduled. Please upload documents before appointment.\"\n   - Employee email: \"Process documents before appointment.\"\n---"
+    },
+    {
+      "title": "Step 5: Mobile Upload Page (10 minutes)",
+      "content": "1. **Create Page Template:**\n   - Create file: `wp-content/themes/your-theme/page-mobile-upload.php`\n   - Copy mobile upload code from `DOCUMENT_UPLOAD_SYSTEM.md` (lines 855-998)\n2. **Create Page:**\n   - WordPress Admin → Pages → Add New\n   - **Title:** \"Mobile Upload\"\n   - **Template:** Mobile Upload\n   - Save and publish\n3. **Test:**\n   - Visit page on your phone\n   - Try uploading a photo\n   - Verify processing starts\n---"
+    },
+    {
+      "title": "Step 6: Email Integration (Optional - 30 minutes)",
+      "content": "1. **Create Email Processor:**\n   ```bash"
+    },
+    {
+      "title": "On Digital Ocean droplet",
+      "content": "cd /opt/document-processing\n   nano email_processor.py\n   ```\n   Copy email integration code from `DOCUMENT_UPLOAD_SYSTEM.md` (lines 684-767)\n2. **Configure Environment:**\n   ```bash\n   nano .env\n   ```\n   Add:\n   ```\n   EMAIL_ADDRESS=your-email@gmail.com\n   EMAIL_PASSWORD=your-app-password\n   WORDPRESS_URL=https://yoursite.com\n   WORDPRESS_USER=admin\n   WORDPRESS_PASSWORD=your-app-password\n   ```\n3. **Add Cron Job:**\n   ```bash\n   crontab -e\n   ```\n   Add:\n   ```\n   */5 * * * * /opt/document-processing/venv/bin/python /opt/document-processing/email_processor.py >> /var/log/email-processing.log 2>&1\n   ```\n---"
+    },
+    {
+      "title": "Testing Checklist",
+      "content": ""
+    },
+    {
+      "title": "Basic Upload Test",
+      "content": "- [ ] Upload PDF from WordPress admin\n- [ ] Upload image from mobile page\n- [ ] Verify file appears in Media Library\n- [ ] Check ACF fields saved correctly"
+    },
+    {
+      "title": "Processing Test",
+      "content": "- [ ] Check Digital Ocean service is running: `systemctl status document-processing`\n- [ ] Upload test document\n- [ ] Check processing service logs: `tail -f /var/log/syslog | grep gunicorn`\n- [ ] Verify results saved to WordPress post meta\n- [ ] Check Supabase for saved data"
+    },
+    {
+      "title": "Amelia Test",
+      "content": "- [ ] Book a test appointment\n- [ ] Add document ID to custom field\n- [ ] Verify email notifications sent"
+    },
+    {
+      "title": "Mobile Test",
+      "content": "- [ ] Open mobile upload page on phone\n- [ ] Take photo and upload\n- [ ] Verify upload succeeds\n- [ ] Check document appears in admin\n---"
+    },
+    {
+      "title": "Troubleshooting",
+      "content": ""
+    },
+    {
+      "title": "Issue: Processing service not starting",
+      "content": "```bash"
+    },
+    {
+      "title": "Check logs",
+      "content": "journalctl -u document-processing -n 50"
+    },
+    {
+      "title": "Check if port is in use",
+      "content": "netstat -tulpn | grep 5000"
+    },
+    {
+      "title": "Restart service",
+      "content": "systemctl restart document-processing\n```"
+    },
+    {
+      "title": "Issue: WordPress can't reach processing service",
+      "content": "```bash"
+    },
+    {
+      "title": "Test from command line",
+      "content": "curl -X POST https://api.yoursite.com/process \\\n  -H \"X-API-Key: your-key\" \\\n  -H \"Content-Type: application/json\" \\\n  -d '{\"post_id\": \"123\", \"extracted_text\": \"test\", \"document_type\": \"TEST\"}'\n```"
+    },
+    {
+      "title": "Issue: Uploads failing",
+      "content": "- Check file size limits in `php.ini`\n- Verify WordPress upload directory is writable\n- Check nginx client_max_body_size"
+    },
+    {
+      "title": "Issue: OCR not working",
+      "content": "```bash"
+    },
+    {
+      "title": "Install Tesseract",
+      "content": "apt install tesseract-ocr tesseract-ocr-eng"
+    },
+    {
+      "title": "Test",
+      "content": "tesseract test.jpg output\n```\n---"
+    },
+    {
+      "title": "Monitoring",
+      "content": ""
+    },
+    {
+      "title": "Check Processing Service Status",
+      "content": "```bash\nsystemctl status document-processing\n```"
+    },
+    {
+      "title": "View Logs",
+      "content": "```bash"
+    },
+    {
+      "title": "Service logs",
+      "content": "journalctl -u document-processing -f"
+    },
+    {
+      "title": "Nginx logs",
+      "content": "tail -f /var/log/nginx/access.log\ntail -f /var/log/nginx/error.log\n```"
+    },
+    {
+      "title": "Check Database Stats",
+      "content": "```sql\n-- In Supabase SQL editor\nSELECT COUNT(*) FROM legal_documents WHERE created_at > NOW() - INTERVAL '24 hours';\nSELECT SUM(api_cost_usd) FROM ai_analysis_results WHERE created_at > NOW() - INTERVAL '24 hours';\n```\n---"
+    },
+    {
+      "title": "Cost Breakdown",
+      "content": ""
+    },
+    {
+      "title": "Monthly Costs",
+      "content": "- **SiteGround Hosting:** $15-30/month (current)\n- **Digital Ocean Droplet:** $24/month\n- **LLM API Costs:**\n  - Claude: ~$3 per 1M tokens\n  - GPT-4: ~$30 per 1M tokens\n  - Gemini: ~$1.50 per 1M tokens\n  - Estimated: $50-200/month depending on volume\n- **Domain/SSL:** $0 (Let's Encrypt free)\n- **Total:** $90-250/month"
+    },
+    {
+      "title": "Per-Document Cost",
+      "content": "- Tier 1 Processing: $0 (local)\n- Tier 2 Multi-LLM: ~$0.10-0.30 per document\n- Storage (Supabase): $0 (free tier)\n---"
+    },
+    {
+      "title": "Security Checklist",
+      "content": "- [ ] Change default WordPress admin password\n- [ ] Install WordPress security plugin (Wordfence)\n- [ ] Enable 2FA on WordPress\n- [ ] Set strong API key in wp-config.php\n- [ ] Configure firewall on Digital Ocean\n- [ ] Enable SSL on both WordPress and API\n- [ ] Set up regular backups\n- [ ] Restrict file upload types in ACF\n---"
+    },
+    {
+      "title": "Next Steps",
+      "content": "1. **Week 1:**\n   - Deploy basic system\n   - Test with 10-20 documents\n   - Monitor costs and performance\n2. **Week 2:**\n   - Configure Amelia booking\n   - Set up email integration\n   - Train users on mobile upload\n3. **Month 1:**\n   - Optimize LLM prompts\n   - Add custom analysis rules\n   - Integrate with Streamlit dashboards\n4. **Ongoing:**\n   - Monitor AI costs\n   - Review processed documents\n   - Refine truth scoring algorithms\n   - Expand to additional document types\n---"
+    },
+    {
+      "title": "Support Resources",
+      "content": "- **Full Documentation:** [DOCUMENT_UPLOAD_SYSTEM.md](DOCUMENT_UPLOAD_SYSTEM.md)\n- **Context Preservation Guide:** [README_DEPLOYMENT.md](README_DEPLOYMENT.md)\n- **WordPress Codex:** https://codex.wordpress.org/\n- **ACF Documentation:** https://www.advancedcustomfields.com/resources/\n- **Digital Ocean Guides:** https://www.digitalocean.com/community/tutorials\n---\n**Status:** Ready to Deploy\n**Estimated Setup Time:** 2-3 hours\n**Difficulty:** Intermediate (requires basic server admin knowledge)\n**Support:** Review full documentation in DOCUMENT_UPLOAD_SYSTEM.md for detailed code and examples"
+    }
+  ],
+  "extraction_success": true,
+  "extraction_error": null
+}

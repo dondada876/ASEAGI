@@ -1,0 +1,140 @@
+{
+  "metadata": {
+    "file_path": "C:\\Users\\DonBucknor_n0ufqwv\\GettingStarted\\ASEAGI\\README.md",
+    "file_name": "README.md",
+    "file_type": "md",
+    "file_size": 6377,
+    "file_hash": "41564b75794ad44b0d76533e7127c358",
+    "extraction_date": "2025-11-06T09:18:56.709758",
+    "extraction_method": "direct_read",
+    "title": "# PROJ344 Dashboard",
+    "author": null,
+    "created_date": "2025-11-05T11:53:59.551873",
+    "modified_date": "2025-11-05T11:53:59.551873",
+    "page_count": null,
+    "word_count": 728,
+    "char_count": 6061
+  },
+  "content": "# PROJ344 Dashboard\n\nLegal Case Intelligence Dashboard for custody case D22-03244 (MARIYAM YONAS RUFAEL vs DON BUCKNOR).\n\n## Overview\n\nPROJ344 is a comprehensive legal case intelligence system designed to track, analyze, and visualize custody case documentation. The system provides:\n\n- **Document Intelligence**: Automatic scoring (Micro, Macro, Legal, Relevancy)\n- **Timeline Analysis**: Complete event timeline across all cases\n- **Constitutional Violations Tracking**: Due process violation monitoring\n- **Evidence Cross-Reference**: Find contradictions and patterns\n- **Multi-Jurisdiction Support**: Track forum shopping across courts\n\n## Features\n\n### Core Dashboards\n\n1. **PROJ344 Master Dashboard** (`proj344_master_dashboard.py`)\n   - Document registry with intelligence scores\n   - Timeline analysis\n   - Constitutional violations tracker\n   - Evidence cross-reference\n\n2. **CEO Global Dashboard** (`ceo_global_dashboard.py`)\n   - Executive overview with unified priorities\n   - Business operations tracking\n   - Legal matters summary (links to PROJ344)\n   - Family & daughter documents\n   - Personal development tracking\n   - Task management\n\n3. **Timeline & Violations Dashboard** (`timeline_constitutional_violations.py`)\n   - Detailed timeline visualization\n   - August 2024 incident analysis\n   - Constitutional violations detailed view\n\n## Quick Start\n\n### Prerequisites\n\n- Python 3.11+\n- Supabase account\n- Environment variables configured\n\n### Installation\n\n```bash\n# Clone repository\ngit clone https://github.com/YOUR_USERNAME/proj344-dashboard.git\ncd proj344-dashboard\n\n# Install dependencies\npip3 install -r requirements.txt\n\n# Set up environment variables\ncp .env.example .env\n# Edit .env with your Supabase credentials\n```\n\n### Configuration\n\nCreate `.streamlit/secrets.toml`:\n\n```toml\nSUPABASE_URL = \"https://your-project.supabase.co\"\nSUPABASE_KEY = \"your-anon-key\"\n```\n\nOr set environment variables:\n\n```bash\nexport SUPABASE_URL=\"https://your-project.supabase.co\"\nexport SUPABASE_KEY=\"your-anon-key\"\n```\n\n### Running\n\n**PROJ344 Dashboard:**\n```bash\nstreamlit run proj344_master_dashboard.py --server.port=8501\n```\nAccess: http://localhost:8501\n\n**CEO Global Dashboard:**\n```bash\nstreamlit run ceo_global_dashboard.py --server.port=8503\n```\nAccess: http://localhost:8503\n\n## Database Schema\n\nThe system uses Supabase (PostgreSQL) with the following key tables:\n\n- `legal_documents` - Document metadata with scoring\n- `court_events` - Timeline of court proceedings\n- `timeline_events` - Chronological event tracking\n- `constitutional_violations` - Due process violations\n- `general_documents` - Universal document intake\n- `cross_system_priorities` - Unified priority management\n- `business_documents`, `personal_documents`, `family_documents` - CEO Dashboard tables\n\n## Document Scoring System\n\nDocuments are automatically scored on four dimensions (0-1000):\n\n- **Micro (Mic)**: Detail-level importance\n- **Macro (Mac)**: Case-wide significance\n- **Legal (LEG)**: Legal weight and admissibility\n- **Relevancy (REL)**: Overall relevance to custody case\n\nHigher scores indicate critical documents.\n\n## Key Case Context\n\n**Case Number:** D22-03244 (Alameda County Superior Court)\n\n**Critical Incident:** August 10-13, 2024\n- August 10: Berkeley Police report documents child was **SAFE** with father\n- August 13: Ex parte filed claiming father violated restraining order\n- **Constitutional Issue**: Police report contradicts ex parte claims\n\n**Forum Shopping Pattern:**\n- Multiple restraining orders filed across jurisdictions\n- Strategic case filing to manipulate custody outcomes\n- Cross-case references required to identify contradictions\n\n## Architecture\n\n```\nPROJ344 System\n├── Document Intake → OCR + Classification\n├── Intelligence Scoring → Micro/Macro/Legal/Relevancy\n├── Routing → PROJ344 or CEO Dashboard\n├── Metadata Extraction → Tiered (Free → AI → Premium)\n└── Dashboard Display → Real-time visualization\n```\n\n## File Structure\n\n```\nproj344-dashboard/\n├── proj344_master_dashboard.py      # Main PROJ344 dashboard\n├── ceo_global_dashboard.py          # CEO life management dashboard\n├── timeline_constitutional_violations.py  # Timeline analysis\n├── proj344_style.py                 # Shared styling components\n├── requirements.txt                 # Python dependencies\n├── .streamlit/\n│   └── config.toml                  # Streamlit configuration\n└── README.md                        # This file\n```\n\n## Development\n\n### Adding New Features\n\n1. **New Dashboard Tab**: Add to appropriate dashboard file\n2. **New Scoring Dimension**: Update `legal_documents` schema\n3. **New Data Source**: Add to classification rules\n\n### Styling\n\nCustom CSS and components in `proj344_style.py`:\n- `inject_custom_css()` - Global styles\n- `render_header()` - Page headers\n- `render_metric_card()` - Metric displays\n\n## Deployment\n\n### Local Development\n\n```bash\nstreamlit run proj344_master_dashboard.py\n```\n\n### Production (Cloud)\n\n**Recommended:** Streamlit Community Cloud\n\n1. Push to GitHub\n2. Connect at https://streamlit.io/cloud\n3. Deploy from repository\n4. Configure secrets in Streamlit dashboard\n\n**Alternative:** Docker + Cloud VM\n\n```dockerfile\nFROM python:3.11-slim\nWORKDIR /app\nCOPY requirements.txt .\nRUN pip install -r requirements.txt\nCOPY . .\nCMD [\"streamlit\", \"run\", \"proj344_master_dashboard.py\", \"--server.port=8501\"]\n```\n\n## Security Notes\n\n- Never commit `.env` or `secrets.toml`\n- Use Supabase Row Level Security (RLS) for data access\n- Consider private repository for sensitive case data\n- Rotate API keys regularly\n\n## Support & Documentation\n\n**Full System Docs:** See parent repository documentation\n- `DUAL_SYSTEM_ARCHITECTURE.md` - System design\n- `IMPLEMENTATION_STATUS.md` - Complete status\n- `COMPLETE_SYSTEM_SUMMARY.md` - Full reference\n\n**Issues:** Report via GitHub Issues\n\n## License\n\nPrivate - Not for public distribution\n\n## Author\n\nDon Bucknor\n\n---\n\n**Note:** This dashboard contains sensitive legal case information. Ensure proper access controls and security measures are in place before deployment.\n",
+  "content_preview": "# PROJ344 Dashboard\n\nLegal Case Intelligence Dashboard for custody case D22-03244 (MARIYAM YONAS RUFAEL vs DON BUCKNOR).\n\n## Overview\n\nPROJ344 is a comprehensive legal case intelligence system designed to track, analyze, and visualize custody case documentation. The system provides:\n\n- **Document Intelligence**: Automatic scoring (Micro, Macro, Legal, Relevancy)\n- **Timeline Analysis**: Complete event timeline across all cases\n- **Constitutional Violations Tracking**: Due process violation monit...",
+  "sections": [
+    {
+      "title": "PROJ344 Dashboard",
+      "content": "Legal Case Intelligence Dashboard for custody case D22-03244 (MARIYAM YONAS RUFAEL vs DON BUCKNOR)."
+    },
+    {
+      "title": "Overview",
+      "content": "PROJ344 is a comprehensive legal case intelligence system designed to track, analyze, and visualize custody case documentation. The system provides:\n- **Document Intelligence**: Automatic scoring (Micro, Macro, Legal, Relevancy)\n- **Timeline Analysis**: Complete event timeline across all cases\n- **Constitutional Violations Tracking**: Due process violation monitoring\n- **Evidence Cross-Reference**: Find contradictions and patterns\n- **Multi-Jurisdiction Support**: Track forum shopping across courts"
+    },
+    {
+      "title": "Features",
+      "content": ""
+    },
+    {
+      "title": "Core Dashboards",
+      "content": "1. **PROJ344 Master Dashboard** (`proj344_master_dashboard.py`)\n   - Document registry with intelligence scores\n   - Timeline analysis\n   - Constitutional violations tracker\n   - Evidence cross-reference\n2. **CEO Global Dashboard** (`ceo_global_dashboard.py`)\n   - Executive overview with unified priorities\n   - Business operations tracking\n   - Legal matters summary (links to PROJ344)\n   - Family & daughter documents\n   - Personal development tracking\n   - Task management\n3. **Timeline & Violations Dashboard** (`timeline_constitutional_violations.py`)\n   - Detailed timeline visualization\n   - August 2024 incident analysis\n   - Constitutional violations detailed view"
+    },
+    {
+      "title": "Quick Start",
+      "content": ""
+    },
+    {
+      "title": "Prerequisites",
+      "content": "- Python 3.11+\n- Supabase account\n- Environment variables configured"
+    },
+    {
+      "title": "Installation",
+      "content": "```bash"
+    },
+    {
+      "title": "Clone repository",
+      "content": "git clone https://github.com/YOUR_USERNAME/proj344-dashboard.git\ncd proj344-dashboard"
+    },
+    {
+      "title": "Install dependencies",
+      "content": "pip3 install -r requirements.txt"
+    },
+    {
+      "title": "Set up environment variables",
+      "content": "cp .env.example .env"
+    },
+    {
+      "title": "Edit .env with your Supabase credentials",
+      "content": "```"
+    },
+    {
+      "title": "Configuration",
+      "content": "Create `.streamlit/secrets.toml`:\n```toml\nSUPABASE_URL = \"https://your-project.supabase.co\"\nSUPABASE_KEY = \"your-anon-key\"\n```\nOr set environment variables:\n```bash\nexport SUPABASE_URL=\"https://your-project.supabase.co\"\nexport SUPABASE_KEY=\"your-anon-key\"\n```"
+    },
+    {
+      "title": "Running",
+      "content": "**PROJ344 Dashboard:**\n```bash\nstreamlit run proj344_master_dashboard.py --server.port=8501\n```\nAccess: http://localhost:8501\n**CEO Global Dashboard:**\n```bash\nstreamlit run ceo_global_dashboard.py --server.port=8503\n```\nAccess: http://localhost:8503"
+    },
+    {
+      "title": "Database Schema",
+      "content": "The system uses Supabase (PostgreSQL) with the following key tables:\n- `legal_documents` - Document metadata with scoring\n- `court_events` - Timeline of court proceedings\n- `timeline_events` - Chronological event tracking\n- `constitutional_violations` - Due process violations\n- `general_documents` - Universal document intake\n- `cross_system_priorities` - Unified priority management\n- `business_documents`, `personal_documents`, `family_documents` - CEO Dashboard tables"
+    },
+    {
+      "title": "Document Scoring System",
+      "content": "Documents are automatically scored on four dimensions (0-1000):\n- **Micro (Mic)**: Detail-level importance\n- **Macro (Mac)**: Case-wide significance\n- **Legal (LEG)**: Legal weight and admissibility\n- **Relevancy (REL)**: Overall relevance to custody case\nHigher scores indicate critical documents."
+    },
+    {
+      "title": "Key Case Context",
+      "content": "**Case Number:** D22-03244 (Alameda County Superior Court)\n**Critical Incident:** August 10-13, 2024\n- August 10: Berkeley Police report documents child was **SAFE** with father\n- August 13: Ex parte filed claiming father violated restraining order\n- **Constitutional Issue**: Police report contradicts ex parte claims\n**Forum Shopping Pattern:**\n- Multiple restraining orders filed across jurisdictions\n- Strategic case filing to manipulate custody outcomes\n- Cross-case references required to identify contradictions"
+    },
+    {
+      "title": "Architecture",
+      "content": "```\nPROJ344 System\n├── Document Intake → OCR + Classification\n├── Intelligence Scoring → Micro/Macro/Legal/Relevancy\n├── Routing → PROJ344 or CEO Dashboard\n├── Metadata Extraction → Tiered (Free → AI → Premium)\n└── Dashboard Display → Real-time visualization\n```"
+    },
+    {
+      "title": "File Structure",
+      "content": "```\nproj344-dashboard/\n├── proj344_master_dashboard.py      # Main PROJ344 dashboard\n├── ceo_global_dashboard.py          # CEO life management dashboard\n├── timeline_constitutional_violations.py  # Timeline analysis\n├── proj344_style.py                 # Shared styling components\n├── requirements.txt                 # Python dependencies\n├── .streamlit/\n│   └── config.toml                  # Streamlit configuration\n└── README.md                        # This file\n```"
+    },
+    {
+      "title": "Development",
+      "content": ""
+    },
+    {
+      "title": "Adding New Features",
+      "content": "1. **New Dashboard Tab**: Add to appropriate dashboard file\n2. **New Scoring Dimension**: Update `legal_documents` schema\n3. **New Data Source**: Add to classification rules"
+    },
+    {
+      "title": "Styling",
+      "content": "Custom CSS and components in `proj344_style.py`:\n- `inject_custom_css()` - Global styles\n- `render_header()` - Page headers\n- `render_metric_card()` - Metric displays"
+    },
+    {
+      "title": "Deployment",
+      "content": ""
+    },
+    {
+      "title": "Local Development",
+      "content": "```bash\nstreamlit run proj344_master_dashboard.py\n```"
+    },
+    {
+      "title": "Production (Cloud)",
+      "content": "**Recommended:** Streamlit Community Cloud\n1. Push to GitHub\n2. Connect at https://streamlit.io/cloud\n3. Deploy from repository\n4. Configure secrets in Streamlit dashboard\n**Alternative:** Docker + Cloud VM\n```dockerfile\nFROM python:3.11-slim\nWORKDIR /app\nCOPY requirements.txt .\nRUN pip install -r requirements.txt"
+    },
+    {
+      "title": "COPY . .",
+      "content": "CMD [\"streamlit\", \"run\", \"proj344_master_dashboard.py\", \"--server.port=8501\"]\n```"
+    },
+    {
+      "title": "Security Notes",
+      "content": "- Never commit `.env` or `secrets.toml`\n- Use Supabase Row Level Security (RLS) for data access\n- Consider private repository for sensitive case data\n- Rotate API keys regularly"
+    },
+    {
+      "title": "Support & Documentation",
+      "content": "**Full System Docs:** See parent repository documentation\n- `DUAL_SYSTEM_ARCHITECTURE.md` - System design\n- `IMPLEMENTATION_STATUS.md` - Complete status\n- `COMPLETE_SYSTEM_SUMMARY.md` - Full reference\n**Issues:** Report via GitHub Issues"
+    },
+    {
+      "title": "License",
+      "content": "Private - Not for public distribution"
+    },
+    {
+      "title": "Author",
+      "content": "Don Bucknor\n---\n**Note:** This dashboard contains sensitive legal case information. Ensure proper access controls and security measures are in place before deployment."
+    }
+  ],
+  "extraction_success": true,
+  "extraction_error": null
+}

@@ -1,0 +1,164 @@
+{
+  "metadata": {
+    "file_path": "C:\\Users\\DonBucknor_n0ufqwv\\GettingStarted\\ASEAGI\\TESTING_GUIDE.md",
+    "file_name": "TESTING_GUIDE.md",
+    "file_type": "md",
+    "file_size": 10076,
+    "file_hash": "ca74454309ad0a17d45958162b9db227",
+    "extraction_date": "2025-11-06T09:18:56.755436",
+    "extraction_method": "direct_read",
+    "title": "# Context Preservation System - Testing Guide",
+    "author": null,
+    "created_date": "2025-11-05T21:30:09.325312",
+    "modified_date": "2025-11-05T21:30:09.325312",
+    "page_count": null,
+    "word_count": 1148,
+    "char_count": 9594
+  },
+  "content": "# Context Preservation System - Testing Guide\n\n**Created:** 2025-11-05\n**Purpose:** Complete testing and verification instructions\n\n---\n\n## 🎯 Testing Overview\n\nThis guide walks you through testing the entire context preservation system in the correct order.\n\n---\n\n## ✅ Pre-Test Checklist\n\nBefore running any tests, ensure:\n\n- [ ] You have Supabase credentials set in environment variables\n- [ ] You're in the ASEAGI directory: `cd c:/Users/DonBucknor_n0ufqwv/GettingStarted/ASEAGI`\n- [ ] Python environment is ready\n\n---\n\n## 📋 Testing Steps\n\n### **STEP 1: Deploy Schema to Supabase** (REQUIRED FIRST!)\n\n**This is the most critical step. Nothing will work without this.**\n\n1. **Open the SQL file:**\n   - File: `c:\\Users\\DonBucknor_n0ufqwv\\GettingStarted\\ASEAGI\\schemas\\context_preservation_schema.sql`\n   - Open with Notepad, VS Code, or any text editor\n   - Press **Ctrl+A** to select all 374 lines\n   - Press **Ctrl+C** to copy\n\n2. **Go to Supabase SQL Editor:**\n   - URL: https://supabase.com/dashboard/project/jvjlhxodmbkodzmggwpu/sql\n   - Click **\"New Query\"**\n   - Press **Ctrl+V** to paste all SQL content\n   - Click **\"Run\"** button (green play button)\n\n3. **Expected result:**\n   ```\n   Success. No rows returned\n   ```\n\n4. **What this creates:**\n   - ✅ 8 tables for context preservation\n   - ✅ 5 views for quick queries\n   - ✅ 3 helper functions\n\n---\n\n### **STEP 2: Verify Schema Deployment**\n\nRun the verification script to check all tables exist:\n\n```bash\ncd c:/Users/DonBucknor_n0ufqwv/GettingStarted/ASEAGI\npython test_schema_deployment.py\n```\n\n**Expected output:**\n```\n======================================================================\nCONTEXT PRESERVATION SCHEMA - VERIFICATION TEST\n======================================================================\n\n🔗 Connecting to Supabase...\n   URL: https://jvjlhxodmbkodzmggwpu.supabase.co\n   ✅ Connected!\n\n📊 Testing Tables...\n\n   ✅ system_processing_cache             (0 rows)\n   ✅ dashboard_snapshots                  (0 rows)\n   ✅ ai_analysis_results                  (0 rows)\n   ✅ query_results_cache                  (0 rows)\n   ✅ truth_score_history                  (0 rows)\n   ✅ justice_score_rollups                (0 rows)\n   ✅ processing_jobs_log                  (0 rows)\n   ✅ context_preservation_metadata        (0 rows)\n\n======================================================================\nRESULTS: 8/8 tables found\n✅ All tables exist! Schema deployment successful!\n```\n\n**If tables are missing:**\n- You skipped Step 1 or ran it incorrectly\n- Go back to Step 1 and deploy the schema\n\n---\n\n### **STEP 3: Test ContextManager Functionality**\n\nRun the comprehensive functionality test:\n\n```bash\npython test_context_manager.py\n```\n\n**This tests 5 core features:**\n\n1. **Cache Set/Get** - Stores and retrieves cached data\n2. **Dashboard Snapshots** - Saves and loads complete dashboard states\n3. **Truth Scores** - Tracks truth scores with 5W+H context\n4. **Justice Scores** - Saves justice score rollups\n5. **AI Analysis Logging** - Logs AI API calls with cost tracking\n\n**Expected output:**\n```\n======================================================================\nCONTEXT MANAGER - FUNCTIONALITY TEST\n======================================================================\n\n🔧 Initializing ContextManager...\n✅ ContextManager initialized\n\n======================================================================\nTEST 1: Cache Functionality\n======================================================================\n📝 Setting cache: test_cache_001\n   ✅ Cache set successfully\n📥 Getting cache: test_cache_001\n   ✅ Cache retrieved successfully\n   Data: Hello from cache test!\n\n======================================================================\nTEST 2: Dashboard Snapshot Save/Load\n======================================================================\n📸 Saving dashboard snapshot...\n   ✅ Snapshot saved: <uuid>\n📥 Loading snapshot...\n   ✅ Snapshot loaded successfully\n   Name: Test Snapshot 1\n   Rows: 2\n\n======================================================================\nTEST 3: Truth Score Tracking\n======================================================================\n📊 Saving 2 truth scores...\n   ✅ Truth scores saved\n🔍 Querying truth scores...\n   ✅ Retrieved 2 truth scores\n\n======================================================================\nTEST 4: Justice Score Rollup\n======================================================================\n📈 Saving justice score rollup...\n   ✅ Justice score rollup saved: <uuid>\n\n======================================================================\nTEST 5: AI Analysis Logging\n======================================================================\n🤖 Logging AI analysis...\n   ✅ AI analysis logged\n\n======================================================================\nTEST RESULTS\n======================================================================\n✅ Tests Passed: 5/5\n❌ Tests Failed: 0/5\n\n🎉 ALL TESTS PASSED! Context preservation system is working!\n```\n\n---\n\n### **STEP 4: Verify Data in Supabase**\n\nAfter running the tests, check Supabase to see the test data:\n\n1. **Go to Supabase Table Editor:**\n   - URL: https://supabase.com/dashboard/project/jvjlhxodmbkodzmggwpu/editor\n\n2. **Check each table:**\n   - `system_processing_cache` - Should have 1 test cache entry\n   - `dashboard_snapshots` - Should have 1 test snapshot\n   - `truth_score_history` - Should have 2 test truth scores\n   - `justice_score_rollups` - Should have 1 test rollup\n   - `ai_analysis_results` - Should have 1 test analysis log\n\n3. **Run SQL queries:**\n\n```sql\n-- View active cache entries\nSELECT * FROM active_cache_entries;\n\n-- View recent snapshots\nSELECT * FROM recent_dashboard_snapshots;\n\n-- View truth scores\nSELECT item_title, truth_score, importance_level\nFROM truth_score_history\nORDER BY calculated_at DESC;\n\n-- View justice scores\nSELECT rollup_name, justice_score, total_items\nFROM justice_score_rollups\nORDER BY rollup_date DESC;\n\n-- View AI analysis logs\nSELECT analysis_type, model_name, api_cost_usd, tokens_used\nFROM ai_analysis_results\nORDER BY created_at DESC;\n```\n\n---\n\n### **STEP 5: Clean Up Test Data (Optional)**\n\nTo remove test data:\n\n```sql\n-- Delete test cache entries\nDELETE FROM system_processing_cache WHERE cache_key LIKE 'test_%';\n\n-- Delete test snapshots\nDELETE FROM dashboard_snapshots WHERE dashboard_name = 'test_dashboard';\n\n-- Delete test truth scores\nDELETE FROM truth_score_history WHERE item_id LIKE 'test_%';\n\n-- Delete test justice scores\nDELETE FROM justice_score_rollups WHERE rollup_name LIKE 'Test%';\n\n-- Delete test AI logs\nDELETE FROM ai_analysis_results WHERE analysis_type = 'test_analysis';\n```\n\n---\n\n## 🎨 Integration Testing (Real Usage)\n\nAfter all tests pass, integrate into your actual dashboards:\n\n### Example: Add Caching to Truth & Justice Timeline\n\nEdit `truth_justice_timeline.py`:\n\n```python\nfrom utilities.context_manager import ContextManager\n\n# Initialize at top of file\ncm = ContextManager()\n\n# Before building timeline (line ~200):\ncache_key = f\"truth_timeline_{st.session_state.get('date_range', 'all')}\"\ncached_timeline = cm.get_cache(cache_key, cache_type=\"truth_timeline\")\n\nif cached_timeline:\n    st.success(\"⚡ Loaded from cache!\")\n    timeline_df = pd.DataFrame(cached_timeline['data'])\nelse:\n    # Build timeline (expensive operation)\n    timeline_df = build_timeline_data()\n\n    # Cache for 1 hour\n    cm.set_cache(\n        cache_key=cache_key,\n        cache_type=\"truth_timeline\",\n        result_data={'data': timeline_df.to_dict('records')},\n        expires_in_hours=1\n    )\n```\n\n---\n\n## 🔍 Troubleshooting\n\n### Error: \"relation does not exist\"\n\n**Cause:** Schema not deployed\n**Fix:** Go back to Step 1 and deploy the SQL schema\n\n### Error: \"SUPABASE_KEY not set\"\n\n**Cause:** Missing environment variable\n**Fix:** Set environment variable:\n```bash\n# Windows (PowerShell)\n$env:SUPABASE_KEY=\"your-key-here\"\n\n# Windows (CMD)\nset SUPABASE_KEY=your-key-here\n\n# Or use .streamlit/secrets.toml\n```\n\n### Error: \"Connection failed\"\n\n**Cause:** Invalid credentials or network issue\n**Fix:** Verify Supabase URL and key are correct\n\n---\n\n## 📊 Performance Testing\n\nTo test performance improvements:\n\n### Before Context Preservation:\n```bash\n# Time how long it takes to build timeline\ntime python -c \"from truth_justice_timeline import build_timeline; build_timeline()\"\n# Result: ~30 seconds\n```\n\n### After Context Preservation:\n```bash\n# First run (no cache): ~30 seconds\n# Second run (with cache): ~0.1 seconds ⚡\n```\n\n---\n\n## ✅ Testing Checklist\n\n- [ ] Step 1: Schema deployed to Supabase\n- [ ] Step 2: Verification test passed (8/8 tables found)\n- [ ] Step 3: Functionality test passed (5/5 tests)\n- [ ] Step 4: Data visible in Supabase\n- [ ] Step 5: Test data cleaned up (optional)\n- [ ] Integration: Added caching to at least 1 dashboard\n- [ ] Performance: Verified cache speedup\n\n---\n\n## 🎉 Success Criteria\n\nYou'll know the system is working when:\n\n✅ All 8 tables exist in Supabase\n✅ All 5 functionality tests pass\n✅ Test data appears in Supabase tables\n✅ Cache retrieval is instant (< 0.1 seconds)\n✅ Dashboard snapshots can be saved and restored\n✅ Truth scores are stored with 5W+H context\n\n---\n\n## 📞 Next Steps After Testing\n\nOnce all tests pass:\n\n1. **Integrate into dashboards** - Add caching to expensive operations\n2. **Save snapshots regularly** - Before filing motions, major changes\n3. **Track truth scores** - Build historical truth score database\n4. **Monitor costs** - Query AI analysis costs in Supabase\n5. **Set up maintenance** - Run `clean_expired_cache()` weekly\n\n---\n\n**Ready to test? Start with Step 1!** 🚀\n",
+  "content_preview": "# Context Preservation System - Testing Guide\n\n**Created:** 2025-11-05\n**Purpose:** Complete testing and verification instructions\n\n---\n\n## 🎯 Testing Overview\n\nThis guide walks you through testing the entire context preservation system in the correct order.\n\n---\n\n## ✅ Pre-Test Checklist\n\nBefore running any tests, ensure:\n\n- [ ] You have Supabase credentials set in environment variables\n- [ ] You're in the ASEAGI directory: `cd c:/Users/DonBucknor_n0ufqwv/GettingStarted/ASEAGI`\n- [ ] Python envir...",
+  "sections": [
+    {
+      "title": "Context Preservation System - Testing Guide",
+      "content": "**Created:** 2025-11-05\n**Purpose:** Complete testing and verification instructions\n---"
+    },
+    {
+      "title": "🎯 Testing Overview",
+      "content": "This guide walks you through testing the entire context preservation system in the correct order.\n---"
+    },
+    {
+      "title": "✅ Pre-Test Checklist",
+      "content": "Before running any tests, ensure:\n- [ ] You have Supabase credentials set in environment variables\n- [ ] You're in the ASEAGI directory: `cd c:/Users/DonBucknor_n0ufqwv/GettingStarted/ASEAGI`\n- [ ] Python environment is ready\n---"
+    },
+    {
+      "title": "📋 Testing Steps",
+      "content": ""
+    },
+    {
+      "title": "**STEP 1: Deploy Schema to Supabase** (REQUIRED FIRST!)",
+      "content": "**This is the most critical step. Nothing will work without this.**\n1. **Open the SQL file:**\n   - File: `c:\\Users\\DonBucknor_n0ufqwv\\GettingStarted\\ASEAGI\\schemas\\context_preservation_schema.sql`\n   - Open with Notepad, VS Code, or any text editor\n   - Press **Ctrl+A** to select all 374 lines\n   - Press **Ctrl+C** to copy\n2. **Go to Supabase SQL Editor:**\n   - URL: https://supabase.com/dashboard/project/jvjlhxodmbkodzmggwpu/sql\n   - Click **\"New Query\"**\n   - Press **Ctrl+V** to paste all SQL content\n   - Click **\"Run\"** button (green play button)\n3. **Expected result:**\n   ```\n   Success. No rows returned\n   ```\n4. **What this creates:**\n   - ✅ 8 tables for context preservation\n   - ✅ 5 views for quick queries\n   - ✅ 3 helper functions\n---"
+    },
+    {
+      "title": "**STEP 2: Verify Schema Deployment**",
+      "content": "Run the verification script to check all tables exist:\n```bash\ncd c:/Users/DonBucknor_n0ufqwv/GettingStarted/ASEAGI\npython test_schema_deployment.py\n```\n**Expected output:**\n```\n======================================================================"
+    },
+    {
+      "title": "CONTEXT PRESERVATION SCHEMA - VERIFICATION TEST",
+      "content": "======================================================================\n🔗 Connecting to Supabase...\n   URL: https://jvjlhxodmbkodzmggwpu.supabase.co\n   ✅ Connected!\n📊 Testing Tables...\n   ✅ system_processing_cache             (0 rows)\n   ✅ dashboard_snapshots                  (0 rows)\n   ✅ ai_analysis_results                  (0 rows)\n   ✅ query_results_cache                  (0 rows)\n   ✅ truth_score_history                  (0 rows)\n   ✅ justice_score_rollups                (0 rows)\n   ✅ processing_jobs_log                  (0 rows)\n   ✅ context_preservation_metadata        (0 rows)\n======================================================================\nRESULTS: 8/8 tables found\n✅ All tables exist! Schema deployment successful!\n```\n**If tables are missing:**\n- You skipped Step 1 or ran it incorrectly\n- Go back to Step 1 and deploy the schema\n---"
+    },
+    {
+      "title": "**STEP 3: Test ContextManager Functionality**",
+      "content": "Run the comprehensive functionality test:\n```bash\npython test_context_manager.py\n```\n**This tests 5 core features:**\n1. **Cache Set/Get** - Stores and retrieves cached data\n2. **Dashboard Snapshots** - Saves and loads complete dashboard states\n3. **Truth Scores** - Tracks truth scores with 5W+H context\n4. **Justice Scores** - Saves justice score rollups\n5. **AI Analysis Logging** - Logs AI API calls with cost tracking\n**Expected output:**\n```\n======================================================================"
+    },
+    {
+      "title": "CONTEXT MANAGER - FUNCTIONALITY TEST",
+      "content": "======================================================================\n🔧 Initializing ContextManager...\n✅ ContextManager initialized\n======================================================================\nTEST 1: Cache Functionality\n======================================================================\n📝 Setting cache: test_cache_001\n   ✅ Cache set successfully\n📥 Getting cache: test_cache_001\n   ✅ Cache retrieved successfully\n   Data: Hello from cache test!\n======================================================================\nTEST 2: Dashboard Snapshot Save/Load\n======================================================================\n📸 Saving dashboard snapshot...\n   ✅ Snapshot saved: <uuid>\n📥 Loading snapshot...\n   ✅ Snapshot loaded successfully\n   Name: Test Snapshot 1\n   Rows: 2\n======================================================================\nTEST 3: Truth Score Tracking\n======================================================================\n📊 Saving 2 truth scores...\n   ✅ Truth scores saved\n🔍 Querying truth scores...\n   ✅ Retrieved 2 truth scores\n======================================================================\nTEST 4: Justice Score Rollup\n======================================================================\n📈 Saving justice score rollup...\n   ✅ Justice score rollup saved: <uuid>\n======================================================================\nTEST 5: AI Analysis Logging\n======================================================================\n🤖 Logging AI analysis...\n   ✅ AI analysis logged\n======================================================================"
+    },
+    {
+      "title": "TEST RESULTS",
+      "content": "======================================================================\n✅ Tests Passed: 5/5\n❌ Tests Failed: 0/5\n🎉 ALL TESTS PASSED! Context preservation system is working!\n```\n---"
+    },
+    {
+      "title": "**STEP 4: Verify Data in Supabase**",
+      "content": "After running the tests, check Supabase to see the test data:\n1. **Go to Supabase Table Editor:**\n   - URL: https://supabase.com/dashboard/project/jvjlhxodmbkodzmggwpu/editor\n2. **Check each table:**\n   - `system_processing_cache` - Should have 1 test cache entry\n   - `dashboard_snapshots` - Should have 1 test snapshot\n   - `truth_score_history` - Should have 2 test truth scores\n   - `justice_score_rollups` - Should have 1 test rollup\n   - `ai_analysis_results` - Should have 1 test analysis log\n3. **Run SQL queries:**\n```sql\n-- View active cache entries\nSELECT * FROM active_cache_entries;\n-- View recent snapshots\nSELECT * FROM recent_dashboard_snapshots;\n-- View truth scores\nSELECT item_title, truth_score, importance_level\nFROM truth_score_history\nORDER BY calculated_at DESC;\n-- View justice scores\nSELECT rollup_name, justice_score, total_items\nFROM justice_score_rollups\nORDER BY rollup_date DESC;\n-- View AI analysis logs\nSELECT analysis_type, model_name, api_cost_usd, tokens_used\nFROM ai_analysis_results\nORDER BY created_at DESC;\n```\n---"
+    },
+    {
+      "title": "**STEP 5: Clean Up Test Data (Optional)**",
+      "content": "To remove test data:\n```sql\n-- Delete test cache entries\nDELETE FROM system_processing_cache WHERE cache_key LIKE 'test_%';\n-- Delete test snapshots\nDELETE FROM dashboard_snapshots WHERE dashboard_name = 'test_dashboard';\n-- Delete test truth scores\nDELETE FROM truth_score_history WHERE item_id LIKE 'test_%';\n-- Delete test justice scores\nDELETE FROM justice_score_rollups WHERE rollup_name LIKE 'Test%';\n-- Delete test AI logs\nDELETE FROM ai_analysis_results WHERE analysis_type = 'test_analysis';\n```\n---"
+    },
+    {
+      "title": "🎨 Integration Testing (Real Usage)",
+      "content": "After all tests pass, integrate into your actual dashboards:"
+    },
+    {
+      "title": "Example: Add Caching to Truth & Justice Timeline",
+      "content": "Edit `truth_justice_timeline.py`:\n```python\nfrom utilities.context_manager import ContextManager"
+    },
+    {
+      "title": "Initialize at top of file",
+      "content": "cm = ContextManager()"
+    },
+    {
+      "title": "Before building timeline (line ~200):",
+      "content": "cache_key = f\"truth_timeline_{st.session_state.get('date_range', 'all')}\"\ncached_timeline = cm.get_cache(cache_key, cache_type=\"truth_timeline\")\nif cached_timeline:\n    st.success(\"⚡ Loaded from cache!\")\n    timeline_df = pd.DataFrame(cached_timeline['data'])\nelse:"
+    },
+    {
+      "title": "Build timeline (expensive operation)",
+      "content": "timeline_df = build_timeline_data()"
+    },
+    {
+      "title": "Cache for 1 hour",
+      "content": "cm.set_cache(\n        cache_key=cache_key,\n        cache_type=\"truth_timeline\",\n        result_data={'data': timeline_df.to_dict('records')},\n        expires_in_hours=1\n    )\n```\n---"
+    },
+    {
+      "title": "🔍 Troubleshooting",
+      "content": ""
+    },
+    {
+      "title": "Error: \"relation does not exist\"",
+      "content": "**Cause:** Schema not deployed\n**Fix:** Go back to Step 1 and deploy the SQL schema"
+    },
+    {
+      "title": "Error: \"SUPABASE_KEY not set\"",
+      "content": "**Cause:** Missing environment variable\n**Fix:** Set environment variable:\n```bash"
+    },
+    {
+      "title": "Windows (PowerShell)",
+      "content": "$env:SUPABASE_KEY=\"your-key-here\""
+    },
+    {
+      "title": "Windows (CMD)",
+      "content": "set SUPABASE_KEY=your-key-here"
+    },
+    {
+      "title": "Or use .streamlit/secrets.toml",
+      "content": "```"
+    },
+    {
+      "title": "Error: \"Connection failed\"",
+      "content": "**Cause:** Invalid credentials or network issue\n**Fix:** Verify Supabase URL and key are correct\n---"
+    },
+    {
+      "title": "📊 Performance Testing",
+      "content": "To test performance improvements:"
+    },
+    {
+      "title": "Before Context Preservation:",
+      "content": "```bash"
+    },
+    {
+      "title": "Time how long it takes to build timeline",
+      "content": "time python -c \"from truth_justice_timeline import build_timeline; build_timeline()\""
+    },
+    {
+      "title": "Result: ~30 seconds",
+      "content": "```"
+    },
+    {
+      "title": "After Context Preservation:",
+      "content": "```bash"
+    },
+    {
+      "title": "First run (no cache): ~30 seconds",
+      "content": ""
+    },
+    {
+      "title": "Second run (with cache): ~0.1 seconds ⚡",
+      "content": "```\n---"
+    },
+    {
+      "title": "✅ Testing Checklist",
+      "content": "- [ ] Step 1: Schema deployed to Supabase\n- [ ] Step 2: Verification test passed (8/8 tables found)\n- [ ] Step 3: Functionality test passed (5/5 tests)\n- [ ] Step 4: Data visible in Supabase\n- [ ] Step 5: Test data cleaned up (optional)\n- [ ] Integration: Added caching to at least 1 dashboard\n- [ ] Performance: Verified cache speedup\n---"
+    },
+    {
+      "title": "🎉 Success Criteria",
+      "content": "You'll know the system is working when:\n✅ All 8 tables exist in Supabase\n✅ All 5 functionality tests pass\n✅ Test data appears in Supabase tables\n✅ Cache retrieval is instant (< 0.1 seconds)\n✅ Dashboard snapshots can be saved and restored\n✅ Truth scores are stored with 5W+H context\n---"
+    },
+    {
+      "title": "📞 Next Steps After Testing",
+      "content": "Once all tests pass:\n1. **Integrate into dashboards** - Add caching to expensive operations\n2. **Save snapshots regularly** - Before filing motions, major changes\n3. **Track truth scores** - Build historical truth score database\n4. **Monitor costs** - Query AI analysis costs in Supabase\n5. **Set up maintenance** - Run `clean_expired_cache()` weekly\n---\n**Ready to test? Start with Step 1!** 🚀"
+    }
+  ],
+  "extraction_success": true,
+  "extraction_error": null
+}

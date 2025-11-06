@@ -1,0 +1,512 @@
+{
+  "metadata": {
+    "file_path": "C:\\Users\\DonBucknor_n0ufqwv\\GettingStarted\\ASEAGI\\LOCAL_SETUP_AND_DEPLOYMENT.md",
+    "file_name": "LOCAL_SETUP_AND_DEPLOYMENT.md",
+    "file_type": "md",
+    "file_size": 17204,
+    "file_hash": "816c80a34aae3a11c8d143483e16b64a",
+    "extraction_date": "2025-11-06T09:18:56.672493",
+    "extraction_method": "direct_read",
+    "title": "# Local Setup and Deployment Guide",
+    "author": null,
+    "created_date": "2025-11-05T21:30:09.317311",
+    "modified_date": "2025-11-05T21:30:09.317311",
+    "page_count": null,
+    "word_count": 1894,
+    "char_count": 16365
+  },
+  "content": "# Local Setup and Deployment Guide\n\n**Complete guide to run locally, push to GitHub, and deploy**\n\n---\n\n## 🎯 Overview\n\nThis guide covers:\n1. **Local Development** - Run WordPress + Python processing locally\n2. **GitHub Integration** - Push code to repository\n3. **Streamlit Deployment** - Deploy dashboards to Streamlit Cloud\n4. **Production Deployment** - Deploy to Digital Ocean\n\n---\n\n## 🏠 Part 1: Local Development Setup\n\n### Option A: WordPress Local (Recommended for WordPress)\n\n**Install Local by Flywheel:**\n\n1. **Download Local:**\n   - Visit: https://localwp.com/\n   - Download and install for Windows\n\n2. **Create New Site:**\n   ```\n   Click \"+\" → Create New Site\n   Site Name: legal-document-upload\n   Environment: Preferred (PHP 8.0+)\n   WordPress Username: admin\n   WordPress Password: [your-password]\n   ```\n\n3. **Start Site:**\n   - Click \"Start Site\"\n   - Click \"Admin\" to open WordPress admin\n   - Site will be at: http://legal-document-upload.local\n\n4. **Install Required Plugins:**\n   ```\n   WordPress Admin → Plugins → Add New\n\n   Install:\n   - Advanced Custom Fields Pro (requires license)\n   - Amelia Booking (requires license)\n   - WP Mail SMTP\n   ```\n\n5. **Add Custom Code:**\n\n   Open site folder: `Right-click site → \"Show Folder\"`\n\n   Navigate to: `app/public/wp-content/themes/twentytwentyfour/functions.php`\n\n   Add this code:\n   ```php\n   <?php\n\n   // Create legal_document post type\n   function create_legal_document_post_type() {\n       register_post_type('legal_document', array(\n           'labels' => array(\n               'name' => 'Legal Documents',\n               'singular_name' => 'Legal Document'\n           ),\n           'public' => true,\n           'has_archive' => true,\n           'supports' => array('title', 'editor', 'custom-fields'),\n           'menu_icon' => 'dashicons-media-document'\n       ));\n   }\n   add_action('init', 'create_legal_document_post_type');\n\n   // ACF Form configuration\n   // Copy ACF field group code from DOCUMENT_UPLOAD_SYSTEM.md lines 71-190\n\n   // Processing hook\n   add_action('acf/save_post', 'process_uploaded_document', 20);\n\n   function process_uploaded_document($post_id) {\n       if (get_post_type($post_id) !== 'legal_document') {\n           return;\n       }\n\n       $file = get_field('document_file', $post_id);\n       if (!$file) return;\n\n       // For local testing, just save metadata\n       $file_path = get_attached_file($file['ID']);\n       $file_extension = pathinfo($file_path, PATHINFO_EXTENSION);\n\n       update_post_meta($post_id, 'file_extension', $file_extension);\n       update_post_meta($post_id, 'file_size', filesize($file_path));\n       update_post_meta($post_id, 'upload_date', current_time('mysql'));\n\n       // TODO: Call Python processing service when running\n   }\n   ```\n\n6. **Test WordPress Upload:**\n   - Go to: Legal Documents → Add New\n   - Upload a test file\n   - Verify it appears in Media Library\n\n---\n\n### Option B: Python Processing Service (Local)\n\n**Set up Python processing service on your Windows machine:**\n\n1. **Create Project Directory:**\n   ```bash\n   cd c:\\Users\\DonBucknor_n0ufqwv\\GettingStarted\\ASEAGI\n   mkdir processing-service\n   cd processing-service\n   ```\n\n2. **Create Virtual Environment:**\n   ```bash\n   python -m venv venv\n   venv\\Scripts\\activate\n   ```\n\n3. **Create requirements.txt:**\n   ```bash\n   # In ASEAGI\\processing-service\\requirements.txt\n   cat > requirements.txt << EOF\n   flask==3.0.0\n   anthropic==0.18.0\n   openai==1.12.0\n   google-generativeai==0.4.0\n   supabase==2.3.4\n   pytesseract==0.3.10\n   Pillow==10.2.0\n   requests==2.31.0\n   python-dotenv==1.0.1\n   EOF\n   ```\n\n4. **Install Dependencies:**\n   ```bash\n   pip install -r requirements.txt\n   ```\n\n5. **Install Tesseract OCR (for image processing):**\n   - Download: https://github.com/UB-Mannheim/tesseract/wiki\n   - Install to: `C:\\Program Files\\Tesseract-OCR`\n   - Add to PATH: `C:\\Program Files\\Tesseract-OCR`\n\n6. **Create Processing Service:**\n\n   Create file: `ASEAGI\\processing-service\\app.py`\n\n   ```python\n   from flask import Flask, request, jsonify\n   import anthropic\n   import openai\n   import google.generativeai as genai\n   from supabase import create_client\n   import os\n   from dotenv import load_dotenv\n\n   load_dotenv()\n\n   app = Flask(__name__)\n\n   # Initialize LLM clients\n   claude = anthropic.Anthropic(api_key=os.environ['ANTHROPIC_API_KEY'])\n   openai.api_key = os.environ['OPENAI_API_KEY']\n   genai.configure(api_key=os.environ['GOOGLE_API_KEY'])\n\n   # Initialize Supabase\n   supabase = create_client(\n       os.environ['SUPABASE_URL'],\n       os.environ['SUPABASE_KEY']\n   )\n\n   @app.route('/health', methods=['GET'])\n   def health():\n       return jsonify({'status': 'healthy', 'service': 'document-processing'})\n\n   @app.route('/process', methods=['POST'])\n   def process_document():\n       \"\"\"Process document through multiple LLMs\"\"\"\n\n       data = request.json\n       post_id = data.get('post_id')\n       extracted_text = data.get('extracted_text', '')\n       document_type = data.get('document_type', 'OTHR')\n\n       if not extracted_text:\n           return jsonify({'error': 'No text provided'}), 400\n\n       print(f\"Processing document {post_id} (type: {document_type})\")\n\n       results = {\n           'post_id': post_id,\n           'document_type': document_type,\n           'processing_status': 'completed'\n       }\n\n       # For local testing, return mock results\n       # In production, uncomment LLM processing below\n\n       results['mock_data'] = {\n           'fraud_score': 45.0,\n           'truth_score': 72.0,\n           'importance_level': 'MEDIUM'\n       }\n\n       # Save to Supabase\n       try:\n           supabase.table('legal_documents').insert({\n               'wordpress_post_id': post_id,\n               'document_type': document_type,\n               'fraud_score': 45.0,\n               'truth_score': 72.0\n           }).execute()\n           print(f\"Saved to Supabase: {post_id}\")\n       except Exception as e:\n           print(f\"Supabase error: {e}\")\n\n       return jsonify(results)\n\n   if __name__ == '__main__':\n       app.run(host='0.0.0.0', port=5000, debug=True)\n   ```\n\n7. **Create .env File:**\n\n   Create: `ASEAGI\\processing-service\\.env`\n\n   ```env\n   # LLM API Keys\n   ANTHROPIC_API_KEY=sk-ant-your-key-here\n   OPENAI_API_KEY=sk-your-key-here\n   GOOGLE_API_KEY=your-google-key-here\n\n   # Supabase\n   SUPABASE_URL=https://jvjlhxodmbkodzmggwpu.supabase.co\n   SUPABASE_KEY=your-supabase-key-here\n   ```\n\n8. **Run Processing Service:**\n   ```bash\n   cd c:\\Users\\DonBucknor_n0ufqwv\\GettingStarted\\ASEAGI\\processing-service\n   venv\\Scripts\\activate\n   python app.py\n   ```\n\n   You should see:\n   ```\n   * Running on http://0.0.0.0:5000\n   * Debug mode: on\n   ```\n\n9. **Test the Service:**\n   ```bash\n   # In a new terminal\n   curl -X POST http://localhost:5000/process ^\n     -H \"Content-Type: application/json\" ^\n     -d \"{\\\"post_id\\\": \\\"123\\\", \\\"extracted_text\\\": \\\"test document\\\", \\\"document_type\\\": \\\"TEST\\\"}\"\n   ```\n\n---\n\n## 📦 Part 2: Push to GitHub\n\n### Step 1: Initialize Git Repository\n\n```bash\ncd c:\\Users\\DonBucknor_n0ufqwv\\GettingStarted\\ASEAGI\n\n# Check if already initialized\ngit status\n\n# If not initialized:\ngit init\n```\n\n### Step 2: Create .gitignore\n\nCreate file: `ASEAGI\\.gitignore`\n\n```gitignore\n# Python\n__pycache__/\n*.py[cod]\n*$py.class\n*.so\n.Python\nvenv/\nenv/\nENV/\n\n# Environment variables\n.env\n.env.local\n*.env\n\n# Secrets\n.streamlit/secrets.toml\nsecrets.toml\n\n# IDE\n.vscode/\n.idea/\n*.swp\n*.swo\n\n# OS\n.DS_Store\nThumbs.db\n\n# Logs\n*.log\nlogs/\n\n# Processing service\nprocessing-service/venv/\nprocessing-service/__pycache__/\nprocessing-service/*.pyc\n\n# WordPress (if including)\nwordpress/\nwp-content/uploads/\n\n# Test data\ntest_data/\ntemp/\n```\n\n### Step 3: Add Files to Git\n\n```bash\ncd c:\\Users\\DonBucknor_n0ufqwv\\GettingStarted\\ASEAGI\n\n# Add all files\ngit add .\n\n# Check what will be committed\ngit status\n\n# Create first commit\ngit commit -m \"Add WordPress document upload system\n\n- WordPress ACF forms for document upload\n- Python processing service (Flask)\n- Multi-LLM integration (Claude, GPT-4, Gemini)\n- Amelia Booking integration\n- Supabase context preservation\n- Documentation and deployment guides\"\n```\n\n### Step 4: Create GitHub Repository\n\n1. **Go to GitHub:**\n   - Visit: https://github.com/new\n   - Repository name: `legal-document-processing`\n   - Description: `WordPress document upload with multi-LLM processing`\n   - Visibility: Private (recommended for legal documents)\n   - **Don't** initialize with README (you already have files)\n   - Click \"Create repository\"\n\n2. **Link Local to GitHub:**\n   ```bash\n   # Add remote (replace YOUR_USERNAME)\n   git remote add origin https://github.com/YOUR_USERNAME/legal-document-processing.git\n\n   # Verify remote\n   git remote -v\n\n   # Push to GitHub\n   git branch -M main\n   git push -u origin main\n   ```\n\n### Step 5: Verify on GitHub\n\n- Go to: https://github.com/YOUR_USERNAME/legal-document-processing\n- You should see all your files\n- Check that `.env` and `secrets.toml` are **NOT** visible (they're ignored)\n\n---\n\n## ☁️ Part 3: Deploy Streamlit Dashboards\n\n### Step 1: Prepare Streamlit App\n\nYour existing dashboards are already Streamlit apps. Let's deploy them.\n\n1. **Create requirements.txt for Streamlit:**\n\n   File: `ASEAGI\\requirements.txt` (update existing)\n\n   ```txt\n   streamlit>=1.28.0\n   pandas>=2.0.0\n   plotly>=5.17.0\n   anthropic>=0.18.0\n   supabase>=2.3.4\n   python-dotenv>=1.0.0\n   toml>=0.10.2\n   ```\n\n2. **Create Streamlit config:**\n\n   File: `ASEAGI\\.streamlit\\config.toml`\n\n   ```toml\n   [theme]\n   primaryColor = \"#FF4B4B\"\n   backgroundColor = \"#FFFFFF\"\n   secondaryBackgroundColor = \"#F0F2F6\"\n   textColor = \"#262730\"\n   font = \"sans serif\"\n\n   [server]\n   headless = true\n   port = 8501\n   enableCORS = false\n   ```\n\n3. **Update secrets.toml template:**\n\n   File: `ASEAGI\\.streamlit\\secrets.toml.example`\n\n   ```toml\n   # Supabase Configuration\n   SUPABASE_URL = \"https://jvjlhxodmbkodzmggwpu.supabase.co\"\n   SUPABASE_KEY = \"your-key-here\"\n\n   # LLM API Keys\n   ANTHROPIC_API_KEY = \"sk-ant-your-key-here\"\n   OPENAI_API_KEY = \"sk-your-key-here\"\n   GOOGLE_API_KEY = \"your-google-key-here\"\n   ```\n\n### Step 2: Push Streamlit Updates\n\n```bash\ncd c:\\Users\\DonBucknor_n0ufqwv\\GettingStarted\\ASEAGI\n\ngit add .\ngit commit -m \"Add Streamlit deployment configuration\"\ngit push\n```\n\n### Step 3: Deploy to Streamlit Cloud\n\n1. **Go to Streamlit Cloud:**\n   - Visit: https://share.streamlit.io/\n   - Sign in with GitHub\n\n2. **Create New App:**\n   - Click \"New app\"\n   - Repository: `YOUR_USERNAME/legal-document-processing`\n   - Branch: `main`\n   - Main file path: `truth_justice_timeline.py` (or your main dashboard)\n   - Click \"Deploy\"\n\n3. **Add Secrets:**\n   - Click \"Advanced settings\" → \"Secrets\"\n   - Paste contents of your `.streamlit/secrets.toml`\n   - Click \"Save\"\n\n4. **Wait for Deployment:**\n   - Streamlit will install dependencies\n   - Your app will be live at: `https://your-app.streamlit.app`\n\n### Step 4: Deploy Multiple Dashboards\n\nFor each dashboard (proj344_master_dashboard.py, truth_justice_timeline.py, etc.):\n\n1. Create separate Streamlit app\n2. Point to different main file\n3. Share the same secrets\n4. Each gets its own URL\n\n---\n\n## 🚀 Part 4: Production Deployment (Digital Ocean)\n\n### Quick Deploy Script\n\nCreate file: `ASEAGI\\deploy.sh`\n\n```bash\n#!/bin/bash\n\n# Digital Ocean Deployment Script\n\necho \"🚀 Deploying Legal Document Processing System\"\n\n# Variables\nDROPLET_IP=\"YOUR_DROPLET_IP\"\nDEPLOY_USER=\"root\"\nDEPLOY_DIR=\"/opt/legal-document-processing\"\n\necho \"📦 Step 1: Pushing to GitHub...\"\ngit add .\ngit commit -m \"Deploy update $(date '+%Y-%m-%d %H:%M:%S')\"\ngit push origin main\n\necho \"📡 Step 2: Connecting to droplet...\"\nssh $DEPLOY_USER@$DROPLET_IP << 'EOF'\n\ncd /opt/legal-document-processing\n\n# Pull latest code\ngit pull origin main\n\n# Activate virtual environment\nsource venv/bin/activate\n\n# Install/update dependencies\npip install -r processing-service/requirements.txt\n\n# Restart service\nsystemctl restart document-processing\n\n# Check status\nsystemctl status document-processing\n\necho \"✅ Deployment complete!\"\nEOF\n```\n\n### Use Deploy Script\n\n```bash\n# Make executable (in Git Bash or WSL)\nchmod +x deploy.sh\n\n# Deploy\n./deploy.sh\n```\n\n---\n\n## 🔄 Part 5: Development Workflow\n\n### Daily Development Cycle\n\n```bash\n# 1. Start your day - pull latest changes\ncd c:\\Users\\DonBucknor_n0ufqwv\\GettingStarted\\ASEAGI\ngit pull\n\n# 2. Start local services\n# Terminal 1: Processing service\ncd processing-service\nvenv\\Scripts\\activate\npython app.py\n\n# Terminal 2: Streamlit dashboard\ncd ..\npython -m streamlit run truth_justice_timeline.py\n\n# 3. Make changes to code...\n\n# 4. Test locally\n\n# 5. Commit changes\ngit add .\ngit commit -m \"Describe your changes\"\ngit push\n\n# 6. Deploy to Streamlit Cloud (automatic)\n# Streamlit Cloud auto-deploys on git push\n\n# 7. Deploy to Digital Ocean (manual)\n./deploy.sh\n```\n\n---\n\n## 📋 Part 6: Testing Checklist\n\n### Local Testing\n\n```bash\n# Test 1: Python processing service\ncd processing-service\nvenv\\Scripts\\activate\npython app.py\n\n# In browser: http://localhost:5000/health\n# Should see: {\"status\": \"healthy\"}\n\n# Test 2: Streamlit dashboard\ncd ..\npython -m streamlit run truth_justice_timeline.py\n\n# In browser: http://localhost:8501\n# Dashboard should load\n\n# Test 3: Context Manager\npython test_context_manager.py\n# Should see: 5/5 tests passed\n```\n\n### GitHub Testing\n\n```bash\n# Verify .gitignore works\ngit status\n\n# Should NOT see:\n# - .env\n# - secrets.toml\n# - venv/\n# - __pycache__/\n\n# If you see them, add to .gitignore and:\ngit rm --cached .env\ngit commit -m \"Remove secrets from git\"\ngit push\n```\n\n---\n\n## 🔧 Troubleshooting\n\n### Issue: Git push rejected\n\n```bash\n# Pull first\ngit pull origin main\n\n# If conflicts, resolve them, then:\ngit add .\ngit commit -m \"Resolve merge conflicts\"\ngit push\n```\n\n### Issue: Streamlit app won't start\n\n1. Check secrets are configured in Streamlit Cloud\n2. Check requirements.txt has all dependencies\n3. Check main file path is correct\n4. View logs in Streamlit Cloud dashboard\n\n### Issue: Processing service won't start locally\n\n```bash\n# Check Python version\npython --version  # Should be 3.8+\n\n# Reinstall dependencies\ncd processing-service\nvenv\\Scripts\\activate\npip install -r requirements.txt --upgrade\n\n# Check .env exists\ndir .env\n\n# Test import\npython -c \"import flask; print('Flask OK')\"\n```\n\n---\n\n## 📝 Quick Reference Commands\n\n### Git Commands\n\n```bash\n# Check status\ngit status\n\n# Add all changes\ngit add .\n\n# Commit\ngit commit -m \"Your message\"\n\n# Push to GitHub\ngit push\n\n# Pull from GitHub\ngit pull\n\n# View history\ngit log --oneline\n\n# Create new branch\ngit checkout -b feature-name\n\n# Switch branch\ngit checkout main\n\n# Merge branch\ngit merge feature-name\n```\n\n### Local Development\n\n```bash\n# Start processing service\ncd processing-service\nvenv\\Scripts\\activate\npython app.py\n\n# Start Streamlit dashboard\npython -m streamlit run truth_justice_timeline.py\n\n# Run tests\npython test_context_manager.py\n\n# Install new package\npip install package-name\npip freeze > requirements.txt\n```\n\n### Deployment\n\n```bash\n# Deploy to GitHub\ngit add .\ngit commit -m \"Update\"\ngit push\n\n# Streamlit auto-deploys from GitHub\n\n# Deploy to Digital Ocean\nssh root@YOUR_DROPLET_IP\ncd /opt/legal-document-processing\ngit pull\nsystemctl restart document-processing\n```\n\n---\n\n## 🎯 Summary\n\n### What You've Set Up:\n\n1. ✅ **Local WordPress** - Running at http://legal-document-upload.local\n2. ✅ **Local Python Service** - Running at http://localhost:5000\n3. ✅ **GitHub Repository** - Version control and backup\n4. ✅ **Streamlit Cloud** - Live dashboards at https://your-app.streamlit.app\n5. ✅ **Digital Ocean** - Production processing service\n\n### Development Flow:\n\n```\nLocal Development → Git Commit → GitHub Push → Auto-Deploy to Streamlit Cloud\n                                              → Manual Deploy to Digital Ocean\n```\n\n### URLs:\n\n- **Local WordPress:** http://legal-document-upload.local\n- **Local Processing:** http://localhost:5000\n- **Local Dashboard:** http://localhost:8501\n- **GitHub Repo:** https://github.com/YOUR_USERNAME/legal-document-processing\n- **Streamlit Cloud:** https://your-app.streamlit.app\n- **Production API:** https://api.yoursite.com\n\n---\n\n**Status:** Ready for Local Development and Deployment\n\n**Next Step:** Start with local testing, then push to GitHub, then deploy to Streamlit Cloud\n",
+  "content_preview": "# Local Setup and Deployment Guide\n\n**Complete guide to run locally, push to GitHub, and deploy**\n\n---\n\n## 🎯 Overview\n\nThis guide covers:\n1. **Local Development** - Run WordPress + Python processing locally\n2. **GitHub Integration** - Push code to repository\n3. **Streamlit Deployment** - Deploy dashboards to Streamlit Cloud\n4. **Production Deployment** - Deploy to Digital Ocean\n\n---\n\n## 🏠 Part 1: Local Development Setup\n\n### Option A: WordPress Local (Recommended for WordPress)\n\n**Install Local ...",
+  "sections": [
+    {
+      "title": "Local Setup and Deployment Guide",
+      "content": "**Complete guide to run locally, push to GitHub, and deploy**\n---"
+    },
+    {
+      "title": "🎯 Overview",
+      "content": "This guide covers:\n1. **Local Development** - Run WordPress + Python processing locally\n2. **GitHub Integration** - Push code to repository\n3. **Streamlit Deployment** - Deploy dashboards to Streamlit Cloud\n4. **Production Deployment** - Deploy to Digital Ocean\n---"
+    },
+    {
+      "title": "🏠 Part 1: Local Development Setup",
+      "content": ""
+    },
+    {
+      "title": "Option A: WordPress Local (Recommended for WordPress)",
+      "content": "**Install Local by Flywheel:**\n1. **Download Local:**\n   - Visit: https://localwp.com/\n   - Download and install for Windows\n2. **Create New Site:**\n   ```\n   Click \"+\" → Create New Site\n   Site Name: legal-document-upload\n   Environment: Preferred (PHP 8.0+)\n   WordPress Username: admin\n   WordPress Password: [your-password]\n   ```\n3. **Start Site:**\n   - Click \"Start Site\"\n   - Click \"Admin\" to open WordPress admin\n   - Site will be at: http://legal-document-upload.local\n4. **Install Required Plugins:**\n   ```\n   WordPress Admin → Plugins → Add New\n   Install:\n   - Advanced Custom Fields Pro (requires license)\n   - Amelia Booking (requires license)\n   - WP Mail SMTP\n   ```\n5. **Add Custom Code:**\n   Open site folder: `Right-click site → \"Show Folder\"`\n   Navigate to: `app/public/wp-content/themes/twentytwentyfour/functions.php`\n   Add this code:\n   ```php\n   <?php\n   // Create legal_document post type\n   function create_legal_document_post_type() {\n       register_post_type('legal_document', array(\n           'labels' => array(\n               'name' => 'Legal Documents',\n               'singular_name' => 'Legal Document'\n           ),\n           'public' => true,\n           'has_archive' => true,\n           'supports' => array('title', 'editor', 'custom-fields'),\n           'menu_icon' => 'dashicons-media-document'\n       ));\n   }\n   add_action('init', 'create_legal_document_post_type');\n   // ACF Form configuration\n   // Copy ACF field group code from DOCUMENT_UPLOAD_SYSTEM.md lines 71-190\n   // Processing hook\n   add_action('acf/save_post', 'process_uploaded_document', 20);\n   function process_uploaded_document($post_id) {\n       if (get_post_type($post_id) !== 'legal_document') {\n           return;\n       }\n       $file = get_field('document_file', $post_id);\n       if (!$file) return;\n       // For local testing, just save metadata\n       $file_path = get_attached_file($file['ID']);\n       $file_extension = pathinfo($file_path, PATHINFO_EXTENSION);\n       update_post_meta($post_id, 'file_extension', $file_extension);\n       update_post_meta($post_id, 'file_size', filesize($file_path));\n       update_post_meta($post_id, 'upload_date', current_time('mysql'));\n       // TODO: Call Python processing service when running\n   }\n   ```\n6. **Test WordPress Upload:**\n   - Go to: Legal Documents → Add New\n   - Upload a test file\n   - Verify it appears in Media Library\n---"
+    },
+    {
+      "title": "Option B: Python Processing Service (Local)",
+      "content": "**Set up Python processing service on your Windows machine:**\n1. **Create Project Directory:**\n   ```bash\n   cd c:\\Users\\DonBucknor_n0ufqwv\\GettingStarted\\ASEAGI\n   mkdir processing-service\n   cd processing-service\n   ```\n2. **Create Virtual Environment:**\n   ```bash\n   python -m venv venv\n   venv\\Scripts\\activate\n   ```\n3. **Create requirements.txt:**\n   ```bash"
+    },
+    {
+      "title": "In ASEAGI\\processing-service\\requirements.txt",
+      "content": "cat > requirements.txt << EOF\n   flask==3.0.0\n   anthropic==0.18.0\n   openai==1.12.0\n   google-generativeai==0.4.0\n   supabase==2.3.4\n   pytesseract==0.3.10\n   Pillow==10.2.0\n   requests==2.31.0\n   python-dotenv==1.0.1\n   EOF\n   ```\n4. **Install Dependencies:**\n   ```bash\n   pip install -r requirements.txt\n   ```\n5. **Install Tesseract OCR (for image processing):**\n   - Download: https://github.com/UB-Mannheim/tesseract/wiki\n   - Install to: `C:\\Program Files\\Tesseract-OCR`\n   - Add to PATH: `C:\\Program Files\\Tesseract-OCR`\n6. **Create Processing Service:**\n   Create file: `ASEAGI\\processing-service\\app.py`\n   ```python\n   from flask import Flask, request, jsonify\n   import anthropic\n   import openai\n   import google.generativeai as genai\n   from supabase import create_client\n   import os\n   from dotenv import load_dotenv\n   load_dotenv()\n   app = Flask(__name__)"
+    },
+    {
+      "title": "Initialize LLM clients",
+      "content": "claude = anthropic.Anthropic(api_key=os.environ['ANTHROPIC_API_KEY'])\n   openai.api_key = os.environ['OPENAI_API_KEY']\n   genai.configure(api_key=os.environ['GOOGLE_API_KEY'])"
+    },
+    {
+      "title": "Initialize Supabase",
+      "content": "supabase = create_client(\n       os.environ['SUPABASE_URL'],\n       os.environ['SUPABASE_KEY']\n   )\n   @app.route('/health', methods=['GET'])\n   def health():\n       return jsonify({'status': 'healthy', 'service': 'document-processing'})\n   @app.route('/process', methods=['POST'])\n   def process_document():\n       \"\"\"Process document through multiple LLMs\"\"\"\n       data = request.json\n       post_id = data.get('post_id')\n       extracted_text = data.get('extracted_text', '')\n       document_type = data.get('document_type', 'OTHR')\n       if not extracted_text:\n           return jsonify({'error': 'No text provided'}), 400\n       print(f\"Processing document {post_id} (type: {document_type})\")\n       results = {\n           'post_id': post_id,\n           'document_type': document_type,\n           'processing_status': 'completed'\n       }"
+    },
+    {
+      "title": "For local testing, return mock results",
+      "content": ""
+    },
+    {
+      "title": "In production, uncomment LLM processing below",
+      "content": "results['mock_data'] = {\n           'fraud_score': 45.0,\n           'truth_score': 72.0,\n           'importance_level': 'MEDIUM'\n       }"
+    },
+    {
+      "title": "Save to Supabase",
+      "content": "try:\n           supabase.table('legal_documents').insert({\n               'wordpress_post_id': post_id,\n               'document_type': document_type,\n               'fraud_score': 45.0,\n               'truth_score': 72.0\n           }).execute()\n           print(f\"Saved to Supabase: {post_id}\")\n       except Exception as e:\n           print(f\"Supabase error: {e}\")\n       return jsonify(results)\n   if __name__ == '__main__':\n       app.run(host='0.0.0.0', port=5000, debug=True)\n   ```\n7. **Create .env File:**\n   Create: `ASEAGI\\processing-service\\.env`\n   ```env"
+    },
+    {
+      "title": "LLM API Keys",
+      "content": "ANTHROPIC_API_KEY=sk-ant-your-key-here\n   OPENAI_API_KEY=sk-your-key-here\n   GOOGLE_API_KEY=your-google-key-here"
+    },
+    {
+      "title": "Supabase",
+      "content": "SUPABASE_URL=https://jvjlhxodmbkodzmggwpu.supabase.co\n   SUPABASE_KEY=your-supabase-key-here\n   ```\n8. **Run Processing Service:**\n   ```bash\n   cd c:\\Users\\DonBucknor_n0ufqwv\\GettingStarted\\ASEAGI\\processing-service\n   venv\\Scripts\\activate\n   python app.py\n   ```\n   You should see:\n   ```\n   * Running on http://0.0.0.0:5000\n   * Debug mode: on\n   ```\n9. **Test the Service:**\n   ```bash"
+    },
+    {
+      "title": "In a new terminal",
+      "content": "curl -X POST http://localhost:5000/process ^\n     -H \"Content-Type: application/json\" ^\n     -d \"{\\\"post_id\\\": \\\"123\\\", \\\"extracted_text\\\": \\\"test document\\\", \\\"document_type\\\": \\\"TEST\\\"}\"\n   ```\n---"
+    },
+    {
+      "title": "📦 Part 2: Push to GitHub",
+      "content": ""
+    },
+    {
+      "title": "Step 1: Initialize Git Repository",
+      "content": "```bash\ncd c:\\Users\\DonBucknor_n0ufqwv\\GettingStarted\\ASEAGI"
+    },
+    {
+      "title": "Check if already initialized",
+      "content": "git status"
+    },
+    {
+      "title": "If not initialized:",
+      "content": "git init\n```"
+    },
+    {
+      "title": "Step 2: Create .gitignore",
+      "content": "Create file: `ASEAGI\\.gitignore`\n```gitignore"
+    },
+    {
+      "title": "Python",
+      "content": "__pycache__/\n*.py[cod]\n*$py.class\n*.so\n.Python\nvenv/\nenv/\nENV/"
+    },
+    {
+      "title": "Environment variables",
+      "content": ".env\n.env.local\n*.env"
+    },
+    {
+      "title": "Secrets",
+      "content": ".streamlit/secrets.toml\nsecrets.toml"
+    },
+    {
+      "title": "IDE",
+      "content": ".vscode/\n.idea/\n*.swp\n*.swo"
+    },
+    {
+      "title": "OS",
+      "content": ".DS_Store\nThumbs.db"
+    },
+    {
+      "title": "Logs",
+      "content": "*.log\nlogs/"
+    },
+    {
+      "title": "Processing service",
+      "content": "processing-service/venv/\nprocessing-service/__pycache__/\nprocessing-service/*.pyc"
+    },
+    {
+      "title": "WordPress (if including)",
+      "content": "wordpress/\nwp-content/uploads/"
+    },
+    {
+      "title": "Test data",
+      "content": "test_data/\ntemp/\n```"
+    },
+    {
+      "title": "Step 3: Add Files to Git",
+      "content": "```bash\ncd c:\\Users\\DonBucknor_n0ufqwv\\GettingStarted\\ASEAGI"
+    },
+    {
+      "title": "Add all files",
+      "content": "git add ."
+    },
+    {
+      "title": "Check what will be committed",
+      "content": "git status"
+    },
+    {
+      "title": "Create first commit",
+      "content": "git commit -m \"Add WordPress document upload system\n- WordPress ACF forms for document upload\n- Python processing service (Flask)\n- Multi-LLM integration (Claude, GPT-4, Gemini)\n- Amelia Booking integration\n- Supabase context preservation\n- Documentation and deployment guides\"\n```"
+    },
+    {
+      "title": "Step 4: Create GitHub Repository",
+      "content": "1. **Go to GitHub:**\n   - Visit: https://github.com/new\n   - Repository name: `legal-document-processing`\n   - Description: `WordPress document upload with multi-LLM processing`\n   - Visibility: Private (recommended for legal documents)\n   - **Don't** initialize with README (you already have files)\n   - Click \"Create repository\"\n2. **Link Local to GitHub:**\n   ```bash"
+    },
+    {
+      "title": "Add remote (replace YOUR_USERNAME)",
+      "content": "git remote add origin https://github.com/YOUR_USERNAME/legal-document-processing.git"
+    },
+    {
+      "title": "Verify remote",
+      "content": "git remote -v"
+    },
+    {
+      "title": "Push to GitHub",
+      "content": "git branch -M main\n   git push -u origin main\n   ```"
+    },
+    {
+      "title": "Step 5: Verify on GitHub",
+      "content": "- Go to: https://github.com/YOUR_USERNAME/legal-document-processing\n- You should see all your files\n- Check that `.env` and `secrets.toml` are **NOT** visible (they're ignored)\n---"
+    },
+    {
+      "title": "☁️ Part 3: Deploy Streamlit Dashboards",
+      "content": ""
+    },
+    {
+      "title": "Step 1: Prepare Streamlit App",
+      "content": "Your existing dashboards are already Streamlit apps. Let's deploy them.\n1. **Create requirements.txt for Streamlit:**\n   File: `ASEAGI\\requirements.txt` (update existing)\n   ```txt\n   streamlit>=1.28.0\n   pandas>=2.0.0\n   plotly>=5.17.0\n   anthropic>=0.18.0\n   supabase>=2.3.4\n   python-dotenv>=1.0.0\n   toml>=0.10.2\n   ```\n2. **Create Streamlit config:**\n   File: `ASEAGI\\.streamlit\\config.toml`\n   ```toml\n   [theme]\n   primaryColor = \"#FF4B4B\"\n   backgroundColor = \"#FFFFFF\"\n   secondaryBackgroundColor = \"#F0F2F6\"\n   textColor = \"#262730\"\n   font = \"sans serif\"\n   [server]\n   headless = true\n   port = 8501\n   enableCORS = false\n   ```\n3. **Update secrets.toml template:**\n   File: `ASEAGI\\.streamlit\\secrets.toml.example`\n   ```toml"
+    },
+    {
+      "title": "Supabase Configuration",
+      "content": "SUPABASE_URL = \"https://jvjlhxodmbkodzmggwpu.supabase.co\"\n   SUPABASE_KEY = \"your-key-here\""
+    },
+    {
+      "title": "LLM API Keys",
+      "content": "ANTHROPIC_API_KEY = \"sk-ant-your-key-here\"\n   OPENAI_API_KEY = \"sk-your-key-here\"\n   GOOGLE_API_KEY = \"your-google-key-here\"\n   ```"
+    },
+    {
+      "title": "Step 2: Push Streamlit Updates",
+      "content": "```bash\ncd c:\\Users\\DonBucknor_n0ufqwv\\GettingStarted\\ASEAGI\ngit add .\ngit commit -m \"Add Streamlit deployment configuration\"\ngit push\n```"
+    },
+    {
+      "title": "Step 3: Deploy to Streamlit Cloud",
+      "content": "1. **Go to Streamlit Cloud:**\n   - Visit: https://share.streamlit.io/\n   - Sign in with GitHub\n2. **Create New App:**\n   - Click \"New app\"\n   - Repository: `YOUR_USERNAME/legal-document-processing`\n   - Branch: `main`\n   - Main file path: `truth_justice_timeline.py` (or your main dashboard)\n   - Click \"Deploy\"\n3. **Add Secrets:**\n   - Click \"Advanced settings\" → \"Secrets\"\n   - Paste contents of your `.streamlit/secrets.toml`\n   - Click \"Save\"\n4. **Wait for Deployment:**\n   - Streamlit will install dependencies\n   - Your app will be live at: `https://your-app.streamlit.app`"
+    },
+    {
+      "title": "Step 4: Deploy Multiple Dashboards",
+      "content": "For each dashboard (proj344_master_dashboard.py, truth_justice_timeline.py, etc.):\n1. Create separate Streamlit app\n2. Point to different main file\n3. Share the same secrets\n4. Each gets its own URL\n---"
+    },
+    {
+      "title": "🚀 Part 4: Production Deployment (Digital Ocean)",
+      "content": ""
+    },
+    {
+      "title": "Quick Deploy Script",
+      "content": "Create file: `ASEAGI\\deploy.sh`\n```bash"
+    },
+    {
+      "title": "!/bin/bash",
+      "content": ""
+    },
+    {
+      "title": "Digital Ocean Deployment Script",
+      "content": "echo \"🚀 Deploying Legal Document Processing System\""
+    },
+    {
+      "title": "Variables",
+      "content": ""
+    },
+    {
+      "title": "DROPLET_IP=\"YOUR_DROPLET_IP\"",
+      "content": "DEPLOY_USER=\"root\"\nDEPLOY_DIR=\"/opt/legal-document-processing\"\necho \"📦 Step 1: Pushing to GitHub...\"\ngit add .\ngit commit -m \"Deploy update $(date '+%Y-%m-%d %H:%M:%S')\"\ngit push origin main\necho \"📡 Step 2: Connecting to droplet...\"\nssh $DEPLOY_USER@$DROPLET_IP << 'EOF'\ncd /opt/legal-document-processing"
+    },
+    {
+      "title": "Pull latest code",
+      "content": "git pull origin main"
+    },
+    {
+      "title": "Activate virtual environment",
+      "content": "source venv/bin/activate"
+    },
+    {
+      "title": "Install/update dependencies",
+      "content": "pip install -r processing-service/requirements.txt"
+    },
+    {
+      "title": "Restart service",
+      "content": "systemctl restart document-processing"
+    },
+    {
+      "title": "Check status",
+      "content": "systemctl status document-processing\necho \"✅ Deployment complete!\"\nEOF\n```"
+    },
+    {
+      "title": "Use Deploy Script",
+      "content": "```bash"
+    },
+    {
+      "title": "Make executable (in Git Bash or WSL)",
+      "content": "chmod +x deploy.sh"
+    },
+    {
+      "title": "Deploy",
+      "content": "./deploy.sh\n```\n---"
+    },
+    {
+      "title": "🔄 Part 5: Development Workflow",
+      "content": ""
+    },
+    {
+      "title": "Daily Development Cycle",
+      "content": "```bash"
+    },
+    {
+      "title": "1. Start your day - pull latest changes",
+      "content": "cd c:\\Users\\DonBucknor_n0ufqwv\\GettingStarted\\ASEAGI\ngit pull"
+    },
+    {
+      "title": "2. Start local services",
+      "content": ""
+    },
+    {
+      "title": "Terminal 1: Processing service",
+      "content": "cd processing-service\nvenv\\Scripts\\activate\npython app.py"
+    },
+    {
+      "title": "Terminal 2: Streamlit dashboard",
+      "content": "cd ..\npython -m streamlit run truth_justice_timeline.py"
+    },
+    {
+      "title": "3. Make changes to code...",
+      "content": ""
+    },
+    {
+      "title": "4. Test locally",
+      "content": ""
+    },
+    {
+      "title": "5. Commit changes",
+      "content": "git add .\ngit commit -m \"Describe your changes\"\ngit push"
+    },
+    {
+      "title": "6. Deploy to Streamlit Cloud (automatic)",
+      "content": ""
+    },
+    {
+      "title": "Streamlit Cloud auto-deploys on git push",
+      "content": ""
+    },
+    {
+      "title": "7. Deploy to Digital Ocean (manual)",
+      "content": "./deploy.sh\n```\n---"
+    },
+    {
+      "title": "📋 Part 6: Testing Checklist",
+      "content": ""
+    },
+    {
+      "title": "Local Testing",
+      "content": "```bash"
+    },
+    {
+      "title": "Test 1: Python processing service",
+      "content": "cd processing-service\nvenv\\Scripts\\activate\npython app.py"
+    },
+    {
+      "title": "In browser: http://localhost:5000/health",
+      "content": ""
+    },
+    {
+      "title": "Should see: {\"status\": \"healthy\"}",
+      "content": ""
+    },
+    {
+      "title": "Test 2: Streamlit dashboard",
+      "content": "cd ..\npython -m streamlit run truth_justice_timeline.py"
+    },
+    {
+      "title": "In browser: http://localhost:8501",
+      "content": ""
+    },
+    {
+      "title": "Dashboard should load",
+      "content": ""
+    },
+    {
+      "title": "Test 3: Context Manager",
+      "content": "python test_context_manager.py"
+    },
+    {
+      "title": "Should see: 5/5 tests passed",
+      "content": "```"
+    },
+    {
+      "title": "GitHub Testing",
+      "content": "```bash"
+    },
+    {
+      "title": "Verify .gitignore works",
+      "content": "git status"
+    },
+    {
+      "title": "Should NOT see:",
+      "content": ""
+    },
+    {
+      "title": "- .env",
+      "content": ""
+    },
+    {
+      "title": "- secrets.toml",
+      "content": ""
+    },
+    {
+      "title": "- venv/",
+      "content": ""
+    },
+    {
+      "title": "- __pycache__/",
+      "content": ""
+    },
+    {
+      "title": "If you see them, add to .gitignore and:",
+      "content": "git rm --cached .env\ngit commit -m \"Remove secrets from git\"\ngit push\n```\n---"
+    },
+    {
+      "title": "🔧 Troubleshooting",
+      "content": ""
+    },
+    {
+      "title": "Issue: Git push rejected",
+      "content": "```bash"
+    },
+    {
+      "title": "Pull first",
+      "content": "git pull origin main"
+    },
+    {
+      "title": "If conflicts, resolve them, then:",
+      "content": "git add .\ngit commit -m \"Resolve merge conflicts\"\ngit push\n```"
+    },
+    {
+      "title": "Issue: Streamlit app won't start",
+      "content": "1. Check secrets are configured in Streamlit Cloud\n2. Check requirements.txt has all dependencies\n3. Check main file path is correct\n4. View logs in Streamlit Cloud dashboard"
+    },
+    {
+      "title": "Issue: Processing service won't start locally",
+      "content": "```bash"
+    },
+    {
+      "title": "Check Python version",
+      "content": "python --version  # Should be 3.8+"
+    },
+    {
+      "title": "Reinstall dependencies",
+      "content": "cd processing-service\nvenv\\Scripts\\activate\npip install -r requirements.txt --upgrade"
+    },
+    {
+      "title": "Check .env exists",
+      "content": "dir .env"
+    },
+    {
+      "title": "Test import",
+      "content": "python -c \"import flask; print('Flask OK')\"\n```\n---"
+    },
+    {
+      "title": "📝 Quick Reference Commands",
+      "content": ""
+    },
+    {
+      "title": "Git Commands",
+      "content": "```bash"
+    },
+    {
+      "title": "Check status",
+      "content": "git status"
+    },
+    {
+      "title": "Add all changes",
+      "content": "git add ."
+    },
+    {
+      "title": "Commit",
+      "content": "git commit -m \"Your message\""
+    },
+    {
+      "title": "Push to GitHub",
+      "content": "git push"
+    },
+    {
+      "title": "Pull from GitHub",
+      "content": "git pull"
+    },
+    {
+      "title": "View history",
+      "content": "git log --oneline"
+    },
+    {
+      "title": "Create new branch",
+      "content": "git checkout -b feature-name"
+    },
+    {
+      "title": "Switch branch",
+      "content": "git checkout main"
+    },
+    {
+      "title": "Merge branch",
+      "content": "git merge feature-name\n```"
+    },
+    {
+      "title": "Local Development",
+      "content": "```bash"
+    },
+    {
+      "title": "Start processing service",
+      "content": "cd processing-service\nvenv\\Scripts\\activate\npython app.py"
+    },
+    {
+      "title": "Start Streamlit dashboard",
+      "content": "python -m streamlit run truth_justice_timeline.py"
+    },
+    {
+      "title": "Run tests",
+      "content": "python test_context_manager.py"
+    },
+    {
+      "title": "Install new package",
+      "content": "pip install package-name\npip freeze > requirements.txt\n```"
+    },
+    {
+      "title": "Deployment",
+      "content": "```bash"
+    },
+    {
+      "title": "Deploy to GitHub",
+      "content": "git add .\ngit commit -m \"Update\"\ngit push"
+    },
+    {
+      "title": "Streamlit auto-deploys from GitHub",
+      "content": ""
+    },
+    {
+      "title": "Deploy to Digital Ocean",
+      "content": "ssh root@YOUR_DROPLET_IP\ncd /opt/legal-document-processing\ngit pull\nsystemctl restart document-processing\n```\n---"
+    },
+    {
+      "title": "🎯 Summary",
+      "content": ""
+    },
+    {
+      "title": "What You've Set Up:",
+      "content": "1. ✅ **Local WordPress** - Running at http://legal-document-upload.local\n2. ✅ **Local Python Service** - Running at http://localhost:5000\n3. ✅ **GitHub Repository** - Version control and backup\n4. ✅ **Streamlit Cloud** - Live dashboards at https://your-app.streamlit.app\n5. ✅ **Digital Ocean** - Production processing service"
+    },
+    {
+      "title": "Development Flow:",
+      "content": "```\nLocal Development → Git Commit → GitHub Push → Auto-Deploy to Streamlit Cloud\n                                              → Manual Deploy to Digital Ocean\n```"
+    },
+    {
+      "title": "URLs:",
+      "content": "- **Local WordPress:** http://legal-document-upload.local\n- **Local Processing:** http://localhost:5000\n- **Local Dashboard:** http://localhost:8501\n- **GitHub Repo:** https://github.com/YOUR_USERNAME/legal-document-processing\n- **Streamlit Cloud:** https://your-app.streamlit.app\n- **Production API:** https://api.yoursite.com\n---\n**Status:** Ready for Local Development and Deployment\n**Next Step:** Start with local testing, then push to GitHub, then deploy to Streamlit Cloud"
+    }
+  ],
+  "extraction_success": true,
+  "extraction_error": null
+}

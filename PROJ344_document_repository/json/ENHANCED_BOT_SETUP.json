@@ -1,0 +1,164 @@
+{
+  "metadata": {
+    "file_path": "C:\\Users\\DonBucknor_n0ufqwv\\GettingStarted\\ASEAGI\\ENHANCED_BOT_SETUP.md",
+    "file_name": "ENHANCED_BOT_SETUP.md",
+    "file_type": "md",
+    "file_size": 10253,
+    "file_hash": "40a7ffec12acc85561e2b4befceee0a4",
+    "extraction_date": "2025-11-06T09:18:56.659949",
+    "extraction_method": "direct_read",
+    "title": "# Enhanced Telegram Bot Setup - ASEAGI",
+    "author": null,
+    "created_date": "2025-11-05T21:30:09.316313",
+    "modified_date": "2025-11-05T21:30:09.317311",
+    "page_count": null,
+    "word_count": 1279,
+    "char_count": 9750
+  },
+  "content": "# Enhanced Telegram Bot Setup - ASEAGI\n\n## What's New?\n\nThe enhanced bot now includes:\n\n✅ **Tier 1: Tesseract OCR** - Fast, free, basic text extraction\n✅ **Tier 2: Claude Vision AI** - Intelligent analysis, metadata extraction\n✅ **Smart Quick Upload** - Send image + caption, AI analyzes automatically\n✅ **Date Optional** - Can mark documents as \"Unknown\" date\n✅ **Supabase Storage** - Images stored in the cloud, not just metadata\n✅ **Thumbnail Generation** - Fast loading thumbnails (200x200)\n✅ **Duplicate Detection** - MD5 hash checks prevent duplicates\n\n---\n\n## Setup Instructions\n\n### Step 1: Install Dependencies\n\n```bash\ncd ASEAGI\npip install -r requirements.txt\n```\n\nThis installs:\n- `pytesseract` - OCR library\n- `anthropic` - Claude Vision AI\n- `pillow` - Image processing\n- All existing dependencies\n\n### Step 2: Add Claude API Key\n\nEdit [.streamlit/secrets.toml](.streamlit/secrets.toml):\n\n```toml\n# Existing keys\nSUPABASE_URL = \"https://jvjlhxodmbkodzmggwpu.supabase.co\"\nSUPABASE_KEY = \"your_key_here\"\nTELEGRAM_BOT_TOKEN = \"your_token_here\"\n\n# ADD THIS:\nANTHROPIC_API_KEY = \"sk-ant-api03-...\"\n```\n\n**Get Claude API Key:**\n1. Go to https://console.anthropic.com/\n2. Create account or login\n3. Go to \"API Keys\"\n4. Create new key\n5. Copy and paste into secrets.toml\n\n**Cost:** ~$0.01 per document analysis (very cheap!)\n\n### Step 3: Create Supabase Storage Bucket\n\n**IMPORTANT:** Must be done manually from dashboard (anon key can't create buckets)\n\n1. Go to https://supabase.com/dashboard/project/jvjlhxodmbkodzmggwpu\n\n2. Click **Storage** in left sidebar\n\n3. Click **New bucket**\n\n4. Configure:\n   - **Name:** `documents`\n   - **Public:** ✅ **YES** (so URLs work)\n   - **File size limit:** 50 MB\n   - **Allowed MIME types:**\n     - `image/jpeg`\n     - `image/jpg`\n     - `image/png`\n     - `image/gif`\n     - `application/pdf`\n\n5. Click **Create bucket**\n\n6. Verify bucket created:\n   ```bash\n   cd ASEAGI\n   python setup_storage_bucket.py\n   ```\n\n   Should show: `✅ Bucket 'documents' is accessible!`\n\n### Step 4: Optional - Install Tesseract (for Tier 1 OCR)\n\n**Without Tesseract:** Bot will work fine using only Claude Vision (Tier 2)\n\n**With Tesseract:** Bot uses fast local OCR first, then Claude for analysis\n\n**Windows Installation:**\n\n1. Download: https://github.com/UB-Mannheim/tesseract/wiki\n2. Run installer: `tesseract-ocr-w64-setup-5.3.x.exe`\n3. Install to: `C:\\Program Files\\Tesseract-OCR`\n4. Add to PATH or set in code\n\nThe bot will auto-detect if Tesseract is available and use it.\n\n---\n\n## How to Use\n\n### Option 1: Smart Quick Upload (Recommended)\n\n1. Start bot:\n   ```bash\n   cd ASEAGI\n   python telegram_document_bot_enhanced.py\n   ```\n\n2. On your phone, open Telegram and message **@ASIAGI_bot**\n\n3. Send `/start`\n\n4. Choose **1️⃣ Smart Quick Upload**\n\n5. Send image with caption:\n   ```\n   Richmond PD 24-7889 - Initial sexual assault report\n   ```\n\n6. Bot analyzes with Claude Vision AI (~10 seconds)\n\n7. Review AI analysis:\n   ```\n   ✅ AI Analysis Complete!\n\n   🤖 Confidence: 95%\n\n   📝 Document Type: 🚔 Police Report\n   📅 Date: 20240804\n   📌 Title: Sexual Assault Report - Richmond PD\n   ⭐ Relevancy Score: 920\n\n   📄 Summary:\n   Police report documenting sexual assault allegation...\n\n   📋 Case Numbers: 24-7889\n   👤 Names: John Doe, Jane Smith\n\n   ✅ Type YES to upload with this analysis\n   ✏️ Type EDIT to manually adjust fields\n   ❌ Type NO to cancel\n   ```\n\n8. Type `YES`\n\n9. Done! Image and metadata saved to Supabase.\n\n### Option 2: Detailed Manual Entry\n\nSame 7-step process as before, but now:\n- Date field accepts \"Unknown\"\n- Images are stored in Supabase\n- Tesseract OCR extracts text automatically\n\n---\n\n## What Gets Stored\n\n### Database (`legal_documents` table)\n\n```json\n{\n  \"id\": 1234,\n  \"original_filename\": \"20240804_PLCR_Sexual_Assault_Report_REL-920_20250105_143022.jpg\",\n  \"document_type\": \"PLCR\",\n  \"document_title\": \"Sexual Assault Report - Richmond PD\",\n  \"document_date\": \"20240804\",\n  \"relevancy_number\": 920,\n  \"executive_summary\": \"Police report documenting...\",\n  \"full_text_content\": \"RICHMOND POLICE DEPARTMENT\\nREPORT #24-7889...\",\n  \"file_hash\": \"a3f7b2c1d4e5f6...\",\n  \"file_path\": \"https://jvjlhxodmbkodzmggwpu.supabase.co/storage/v1/object/public/documents/originals/...\",\n  \"thumbnail_path\": \"https://jvjlhxodmbkodzmggwpu.supabase.co/storage/v1/object/public/documents/thumbnails/...\",\n  \"source\": \"telegram_bot\",\n  \"uploaded_via\": \"phone\",\n  \"created_at\": \"2025-01-05T14:30:22\"\n}\n```\n\n### Storage (`documents` bucket)\n\n```\ndocuments/\n├── originals/\n│   └── 20240804_PLCR_Sexual_Assault_Report_REL-920_20250105_143022.jpg\n│       (Full resolution image - ~500KB-2MB)\n│\n└── thumbnails/\n    └── 20240804_PLCR_Sexual_Assault_Report_REL-920_20250105_143022_thumb.jpg\n        (200x200 thumbnail - ~20KB)\n```\n\n---\n\n## AI Analysis Features\n\n### Claude Vision Extracts:\n\n1. **Document Type** - Automatically detects:\n   - Police Report (PLCR)\n   - Court Order (ORDR)\n   - Declaration (DECL)\n   - Evidence/Photo (EVID)\n   - And 6 more types\n\n2. **Document Date** - Scans image for dates:\n   - Looks for MM/DD/YYYY\n   - Looks for YYYYMMDD\n   - Looks for written dates (\"August 4, 2024\")\n   - Returns \"Unknown\" if none found\n\n3. **Title** - Creates descriptive title:\n   - Includes agency/department\n   - Max 80 characters\n   - Example: \"Sexual Assault Report - Richmond PD\"\n\n4. **Executive Summary** - 2-3 sentence summary\n\n5. **Full OCR Text** - Extracts ALL visible text\n\n6. **Relevancy Score** - Auto-scores 600-920 based on:\n   - Sexual assault/abuse: 900-920\n   - Court orders: 850-900\n   - Police reports: 800-850\n   - Administrative: 700-800\n\n7. **Metadata** - Extracts:\n   - Names mentioned\n   - Case/Report numbers\n   - Locations\n   - Incident dates\n\n---\n\n## Workflow Comparison\n\n### OLD Workflow (telegram_document_bot.py):\n1. Send image\n2. Choose document type (7 options)\n3. Enter date (required, no \"Unknown\")\n4. Enter title\n5. Enter notes\n6. Choose relevancy level\n7. Confirm upload\n8. ❌ **Image NOT stored** (only metadata)\n\n**Total: 7 steps, ~2-3 minutes**\n\n### NEW Smart Workflow (telegram_document_bot_enhanced.py):\n1. Send image with caption\n2. AI analyzes (~10 seconds)\n3. Confirm or edit\n4. ✅ **Image stored in Supabase**\n\n**Total: 3 steps, ~20 seconds**\n\n---\n\n## Cost Breakdown\n\n### Small Scale (<100 uploads/month)\n\n| Service | Cost | Notes |\n|---------|------|-------|\n| Supabase Storage | **Free** | First 100GB free |\n| Supabase Database | **Free** | First 500MB free |\n| Claude Vision API | **$1-2** | ~$0.01 per document |\n| Tesseract OCR | **Free** | Local, open source |\n| **Total** | **$1-2/month** | 🎉 Very cheap! |\n\n### Medium Scale (500 uploads/month)\n\n| Service | Cost | Notes |\n|---------|------|-------|\n| Supabase Storage | **Free** | Still within 100GB |\n| Supabase Database | **Free** | Still within 500MB |\n| Claude Vision API | **$5-10** | ~$0.01 per document |\n| **Total** | **$5-10/month** | Still very affordable |\n\n---\n\n## Troubleshooting\n\n### \"Claude Vision not available\"\n\n**Solution:** Add `ANTHROPIC_API_KEY` to [.streamlit/secrets.toml](.streamlit/secrets.toml)\n\nBot will still work without Claude, but won't auto-analyze documents.\n\n### \"Storage upload failed\"\n\n**Solution:** Create `documents` bucket in Supabase dashboard (see Step 3 above)\n\n### \"Tesseract not found\"\n\n**Solution:** This is OK! Bot will work fine with just Claude Vision (Tier 2).\n\nTo enable Tesseract (optional):\n1. Install Tesseract executable\n2. Add to PATH\n3. Restart bot\n\n### \"row-level security policy\" error\n\n**Solution:** Make sure bucket is set to **Public: YES** in dashboard.\n\n---\n\n## Testing\n\n### Test Enhanced Bot:\n\n```bash\ncd ASEAGI\npython telegram_document_bot_enhanced.py\n```\n\n### Check if Storage is Working:\n\n```bash\ncd ASEAGI\npython -c \"\nfrom supabase import create_client\nimport toml\nfrom pathlib import Path\n\nsecrets = toml.load(Path('.streamlit/secrets.toml'))\nsupabase = create_client(secrets['SUPABASE_URL'], secrets['SUPABASE_KEY'])\n\nbuckets = supabase.storage.list_buckets()\nprint('Available buckets:', [b.name for b in buckets])\n\nif any(b.name == 'documents' for b in buckets):\n    print('✅ documents bucket found!')\n\n    # Try to list files\n    files = supabase.storage.from_('documents').list('originals')\n    print(f'Files in originals: {len(files)}')\nelse:\n    print('❌ documents bucket not found - create it in dashboard!')\n\"\n```\n\n---\n\n## Next Steps\n\n1. **Test Smart Quick Upload** - Try uploading a police report with caption\n\n2. **Verify Storage** - Check Supabase dashboard → Storage → documents → originals\n\n3. **Check Dashboard** - View uploaded document in [proj344_master_dashboard.py](proj344_master_dashboard.py)\n\n4. **Compare Costs** - Monitor Claude API usage at https://console.anthropic.com/\n\n5. **Optimize Prompts** - Edit Claude Vision prompt in [telegram_document_bot_enhanced.py](telegram_document_bot_enhanced.py) lines 240-270 if needed\n\n---\n\n## Migration from Old Bot\n\n**Both bots work side-by-side!**\n\n- `telegram_document_bot.py` - Old bot (detailed workflow, no storage)\n- `telegram_document_bot_enhanced.py` - New bot (smart workflow, with storage)\n\n**To switch:**\n\n1. Kill old bot:\n   ```bash\n   cd ASEAGI\n   python -c \"import psutil; [p.kill() for p in psutil.process_iter() if 'telegram_document_bot.py' in ' '.join(p.cmdline() or [])]\"\n   ```\n\n2. Start new bot:\n   ```bash\n   cd ASEAGI\n   python telegram_document_bot_enhanced.py\n   ```\n\n**Same bot username (@ASIAGI_bot) will work with new bot automatically!**\n\n---\n\n## Questions?\n\n- Check [DOCUMENT_STORAGE_ARCHITECTURE.md](DOCUMENT_STORAGE_ARCHITECTURE.md) for architecture details\n- Check [TELEGRAM_BOT_TROUBLESHOOTING.md](TELEGRAM_BOT_TROUBLESHOOTING.md) for common issues\n- Bot logs show Tier 1/Tier 2 status on startup\n\n**Enjoy your enhanced bot!** 🚀\n",
+  "content_preview": "# Enhanced Telegram Bot Setup - ASEAGI\n\n## What's New?\n\nThe enhanced bot now includes:\n\n✅ **Tier 1: Tesseract OCR** - Fast, free, basic text extraction\n✅ **Tier 2: Claude Vision AI** - Intelligent analysis, metadata extraction\n✅ **Smart Quick Upload** - Send image + caption, AI analyzes automatically\n✅ **Date Optional** - Can mark documents as \"Unknown\" date\n✅ **Supabase Storage** - Images stored in the cloud, not just metadata\n✅ **Thumbnail Generation** - Fast loading thumbnails (200x200)\n✅ **D...",
+  "sections": [
+    {
+      "title": "Enhanced Telegram Bot Setup - ASEAGI",
+      "content": ""
+    },
+    {
+      "title": "What's New?",
+      "content": "The enhanced bot now includes:\n✅ **Tier 1: Tesseract OCR** - Fast, free, basic text extraction\n✅ **Tier 2: Claude Vision AI** - Intelligent analysis, metadata extraction\n✅ **Smart Quick Upload** - Send image + caption, AI analyzes automatically\n✅ **Date Optional** - Can mark documents as \"Unknown\" date\n✅ **Supabase Storage** - Images stored in the cloud, not just metadata\n✅ **Thumbnail Generation** - Fast loading thumbnails (200x200)\n✅ **Duplicate Detection** - MD5 hash checks prevent duplicates\n---"
+    },
+    {
+      "title": "Setup Instructions",
+      "content": ""
+    },
+    {
+      "title": "Step 1: Install Dependencies",
+      "content": "```bash\ncd ASEAGI\npip install -r requirements.txt\n```\nThis installs:\n- `pytesseract` - OCR library\n- `anthropic` - Claude Vision AI\n- `pillow` - Image processing\n- All existing dependencies"
+    },
+    {
+      "title": "Step 2: Add Claude API Key",
+      "content": "Edit [.streamlit/secrets.toml](.streamlit/secrets.toml):\n```toml"
+    },
+    {
+      "title": "Existing keys",
+      "content": "SUPABASE_URL = \"https://jvjlhxodmbkodzmggwpu.supabase.co\"\nSUPABASE_KEY = \"your_key_here\"\nTELEGRAM_BOT_TOKEN = \"your_token_here\""
+    },
+    {
+      "title": "ADD THIS:",
+      "content": "ANTHROPIC_API_KEY = \"sk-ant-api03-...\"\n```\n**Get Claude API Key:**\n1. Go to https://console.anthropic.com/\n2. Create account or login\n3. Go to \"API Keys\"\n4. Create new key\n5. Copy and paste into secrets.toml\n**Cost:** ~$0.01 per document analysis (very cheap!)"
+    },
+    {
+      "title": "Step 3: Create Supabase Storage Bucket",
+      "content": "**IMPORTANT:** Must be done manually from dashboard (anon key can't create buckets)\n1. Go to https://supabase.com/dashboard/project/jvjlhxodmbkodzmggwpu\n2. Click **Storage** in left sidebar\n3. Click **New bucket**\n4. Configure:\n   - **Name:** `documents`\n   - **Public:** ✅ **YES** (so URLs work)\n   - **File size limit:** 50 MB\n   - **Allowed MIME types:**\n     - `image/jpeg`\n     - `image/jpg`\n     - `image/png`\n     - `image/gif`\n     - `application/pdf`\n5. Click **Create bucket**\n6. Verify bucket created:\n   ```bash\n   cd ASEAGI\n   python setup_storage_bucket.py\n   ```\n   Should show: `✅ Bucket 'documents' is accessible!`"
+    },
+    {
+      "title": "Step 4: Optional - Install Tesseract (for Tier 1 OCR)",
+      "content": "**Without Tesseract:** Bot will work fine using only Claude Vision (Tier 2)\n**With Tesseract:** Bot uses fast local OCR first, then Claude for analysis\n**Windows Installation:**\n1. Download: https://github.com/UB-Mannheim/tesseract/wiki\n2. Run installer: `tesseract-ocr-w64-setup-5.3.x.exe`\n3. Install to: `C:\\Program Files\\Tesseract-OCR`\n4. Add to PATH or set in code\nThe bot will auto-detect if Tesseract is available and use it.\n---"
+    },
+    {
+      "title": "How to Use",
+      "content": ""
+    },
+    {
+      "title": "Option 1: Smart Quick Upload (Recommended)",
+      "content": "1. Start bot:\n   ```bash\n   cd ASEAGI\n   python telegram_document_bot_enhanced.py\n   ```\n2. On your phone, open Telegram and message **@ASIAGI_bot**\n3. Send `/start`\n4. Choose **1️⃣ Smart Quick Upload**\n5. Send image with caption:\n   ```\n   Richmond PD 24-7889 - Initial sexual assault report\n   ```\n6. Bot analyzes with Claude Vision AI (~10 seconds)\n7. Review AI analysis:\n   ```\n   ✅ AI Analysis Complete!\n   🤖 Confidence: 95%\n   📝 Document Type: 🚔 Police Report\n   📅 Date: 20240804\n   📌 Title: Sexual Assault Report - Richmond PD\n   ⭐ Relevancy Score: 920\n   📄 Summary:\n   Police report documenting sexual assault allegation...\n   📋 Case Numbers: 24-7889\n   👤 Names: John Doe, Jane Smith\n   ✅ Type YES to upload with this analysis\n   ✏️ Type EDIT to manually adjust fields\n   ❌ Type NO to cancel\n   ```\n8. Type `YES`\n9. Done! Image and metadata saved to Supabase."
+    },
+    {
+      "title": "Option 2: Detailed Manual Entry",
+      "content": "Same 7-step process as before, but now:\n- Date field accepts \"Unknown\"\n- Images are stored in Supabase\n- Tesseract OCR extracts text automatically\n---"
+    },
+    {
+      "title": "What Gets Stored",
+      "content": ""
+    },
+    {
+      "title": "Database (`legal_documents` table)",
+      "content": "```json\n{\n  \"id\": 1234,\n  \"original_filename\": \"20240804_PLCR_Sexual_Assault_Report_REL-920_20250105_143022.jpg\",\n  \"document_type\": \"PLCR\",\n  \"document_title\": \"Sexual Assault Report - Richmond PD\",\n  \"document_date\": \"20240804\",\n  \"relevancy_number\": 920,\n  \"executive_summary\": \"Police report documenting...\",\n  \"full_text_content\": \"RICHMOND POLICE DEPARTMENT\\nREPORT #24-7889...\",\n  \"file_hash\": \"a3f7b2c1d4e5f6...\",\n  \"file_path\": \"https://jvjlhxodmbkodzmggwpu.supabase.co/storage/v1/object/public/documents/originals/...\",\n  \"thumbnail_path\": \"https://jvjlhxodmbkodzmggwpu.supabase.co/storage/v1/object/public/documents/thumbnails/...\",\n  \"source\": \"telegram_bot\",\n  \"uploaded_via\": \"phone\",\n  \"created_at\": \"2025-01-05T14:30:22\"\n}\n```"
+    },
+    {
+      "title": "Storage (`documents` bucket)",
+      "content": "```\ndocuments/\n├── originals/\n│   └── 20240804_PLCR_Sexual_Assault_Report_REL-920_20250105_143022.jpg\n│       (Full resolution image - ~500KB-2MB)\n│\n└── thumbnails/\n    └── 20240804_PLCR_Sexual_Assault_Report_REL-920_20250105_143022_thumb.jpg\n        (200x200 thumbnail - ~20KB)\n```\n---"
+    },
+    {
+      "title": "AI Analysis Features",
+      "content": ""
+    },
+    {
+      "title": "Claude Vision Extracts:",
+      "content": "1. **Document Type** - Automatically detects:\n   - Police Report (PLCR)\n   - Court Order (ORDR)\n   - Declaration (DECL)\n   - Evidence/Photo (EVID)\n   - And 6 more types\n2. **Document Date** - Scans image for dates:\n   - Looks for MM/DD/YYYY\n   - Looks for YYYYMMDD\n   - Looks for written dates (\"August 4, 2024\")\n   - Returns \"Unknown\" if none found\n3. **Title** - Creates descriptive title:\n   - Includes agency/department\n   - Max 80 characters\n   - Example: \"Sexual Assault Report - Richmond PD\"\n4. **Executive Summary** - 2-3 sentence summary\n5. **Full OCR Text** - Extracts ALL visible text\n6. **Relevancy Score** - Auto-scores 600-920 based on:\n   - Sexual assault/abuse: 900-920\n   - Court orders: 850-900\n   - Police reports: 800-850\n   - Administrative: 700-800\n7. **Metadata** - Extracts:\n   - Names mentioned\n   - Case/Report numbers\n   - Locations\n   - Incident dates\n---"
+    },
+    {
+      "title": "Workflow Comparison",
+      "content": ""
+    },
+    {
+      "title": "OLD Workflow (telegram_document_bot.py):",
+      "content": "1. Send image\n2. Choose document type (7 options)\n3. Enter date (required, no \"Unknown\")\n4. Enter title\n5. Enter notes\n6. Choose relevancy level\n7. Confirm upload\n8. ❌ **Image NOT stored** (only metadata)\n**Total: 7 steps, ~2-3 minutes**"
+    },
+    {
+      "title": "NEW Smart Workflow (telegram_document_bot_enhanced.py):",
+      "content": "1. Send image with caption\n2. AI analyzes (~10 seconds)\n3. Confirm or edit\n4. ✅ **Image stored in Supabase**\n**Total: 3 steps, ~20 seconds**\n---"
+    },
+    {
+      "title": "Cost Breakdown",
+      "content": ""
+    },
+    {
+      "title": "Small Scale (<100 uploads/month)",
+      "content": "| Service | Cost | Notes |\n|---------|------|-------|\n| Supabase Storage | **Free** | First 100GB free |\n| Supabase Database | **Free** | First 500MB free |\n| Claude Vision API | **$1-2** | ~$0.01 per document |\n| Tesseract OCR | **Free** | Local, open source |\n| **Total** | **$1-2/month** | 🎉 Very cheap! |"
+    },
+    {
+      "title": "Medium Scale (500 uploads/month)",
+      "content": "| Service | Cost | Notes |\n|---------|------|-------|\n| Supabase Storage | **Free** | Still within 100GB |\n| Supabase Database | **Free** | Still within 500MB |\n| Claude Vision API | **$5-10** | ~$0.01 per document |\n| **Total** | **$5-10/month** | Still very affordable |\n---"
+    },
+    {
+      "title": "Troubleshooting",
+      "content": ""
+    },
+    {
+      "title": "\"Claude Vision not available\"",
+      "content": "**Solution:** Add `ANTHROPIC_API_KEY` to [.streamlit/secrets.toml](.streamlit/secrets.toml)\nBot will still work without Claude, but won't auto-analyze documents."
+    },
+    {
+      "title": "\"Storage upload failed\"",
+      "content": "**Solution:** Create `documents` bucket in Supabase dashboard (see Step 3 above)"
+    },
+    {
+      "title": "\"Tesseract not found\"",
+      "content": "**Solution:** This is OK! Bot will work fine with just Claude Vision (Tier 2).\nTo enable Tesseract (optional):\n1. Install Tesseract executable\n2. Add to PATH\n3. Restart bot"
+    },
+    {
+      "title": "\"row-level security policy\" error",
+      "content": "**Solution:** Make sure bucket is set to **Public: YES** in dashboard.\n---"
+    },
+    {
+      "title": "Testing",
+      "content": ""
+    },
+    {
+      "title": "Test Enhanced Bot:",
+      "content": "```bash\ncd ASEAGI\npython telegram_document_bot_enhanced.py\n```"
+    },
+    {
+      "title": "Check if Storage is Working:",
+      "content": "```bash\ncd ASEAGI\npython -c \"\nfrom supabase import create_client\nimport toml\nfrom pathlib import Path\nsecrets = toml.load(Path('.streamlit/secrets.toml'))\nsupabase = create_client(secrets['SUPABASE_URL'], secrets['SUPABASE_KEY'])\nbuckets = supabase.storage.list_buckets()\nprint('Available buckets:', [b.name for b in buckets])\nif any(b.name == 'documents' for b in buckets):\n    print('✅ documents bucket found!')"
+    },
+    {
+      "title": "Try to list files",
+      "content": "files = supabase.storage.from_('documents').list('originals')\n    print(f'Files in originals: {len(files)}')\nelse:\n    print('❌ documents bucket not found - create it in dashboard!')\n\"\n```\n---"
+    },
+    {
+      "title": "Next Steps",
+      "content": "1. **Test Smart Quick Upload** - Try uploading a police report with caption\n2. **Verify Storage** - Check Supabase dashboard → Storage → documents → originals\n3. **Check Dashboard** - View uploaded document in [proj344_master_dashboard.py](proj344_master_dashboard.py)\n4. **Compare Costs** - Monitor Claude API usage at https://console.anthropic.com/\n5. **Optimize Prompts** - Edit Claude Vision prompt in [telegram_document_bot_enhanced.py](telegram_document_bot_enhanced.py) lines 240-270 if needed\n---"
+    },
+    {
+      "title": "Migration from Old Bot",
+      "content": "**Both bots work side-by-side!**\n- `telegram_document_bot.py` - Old bot (detailed workflow, no storage)\n- `telegram_document_bot_enhanced.py` - New bot (smart workflow, with storage)\n**To switch:**\n1. Kill old bot:\n   ```bash\n   cd ASEAGI\n   python -c \"import psutil; [p.kill() for p in psutil.process_iter() if 'telegram_document_bot.py' in ' '.join(p.cmdline() or [])]\"\n   ```\n2. Start new bot:\n   ```bash\n   cd ASEAGI\n   python telegram_document_bot_enhanced.py\n   ```\n**Same bot username (@ASIAGI_bot) will work with new bot automatically!**\n---"
+    },
+    {
+      "title": "Questions?",
+      "content": "- Check [DOCUMENT_STORAGE_ARCHITECTURE.md](DOCUMENT_STORAGE_ARCHITECTURE.md) for architecture details\n- Check [TELEGRAM_BOT_TROUBLESHOOTING.md](TELEGRAM_BOT_TROUBLESHOOTING.md) for common issues\n- Bot logs show Tier 1/Tier 2 status on startup\n**Enjoy your enhanced bot!** 🚀"
+    }
+  ],
+  "extraction_success": true,
+  "extraction_error": null
+}

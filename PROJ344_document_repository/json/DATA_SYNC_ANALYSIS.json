@@ -1,0 +1,216 @@
+{
+  "metadata": {
+    "file_path": "C:\\Users\\DonBucknor_n0ufqwv\\GettingStarted\\ASEAGI\\DATA_SYNC_ANALYSIS.md",
+    "file_name": "DATA_SYNC_ANALYSIS.md",
+    "file_type": "md",
+    "file_size": 10344,
+    "file_hash": "73762fc71b47dcf03a7c365d3285d844",
+    "extraction_date": "2025-11-06T09:18:56.618023",
+    "extraction_method": "direct_read",
+    "title": "# PROJ344 Data Sync Analysis",
+    "author": null,
+    "created_date": "2025-11-05T21:30:09.312793",
+    "modified_date": "2025-11-05T21:30:09.312793",
+    "page_count": null,
+    "word_count": 1465,
+    "char_count": 9848
+  },
+  "content": "# PROJ344 Data Sync Analysis\n\n## Current Status Summary\n\nBased on your dashboard showing:\n- ✅ **653 Legal Documents** - Good\n- ✅ **253 Court Events** - Good\n- ⚠️ **3 Pages Analyzed** - CRITICALLY LOW\n- ⚠️ **1 Violation Tracked** - CRITICALLY LOW\n- ⚠️ **0 Communications** - MISSING\n- ✅ **1 DVRO Violation** - Present\n- ⚠️ **0 Court Cases** - MISSING\n- ✅ **3 Legal Citations** - Present\n\n---\n\n## 🔍 Problem Identified\n\n**Your Mac Mini is uploading METADATA but NOT uploading ANALYSIS DATA**\n\n### What's Working:\n✅ Basic document records (`legal_documents` table)\n✅ Court events (`court_events` table)\n✅ Supabase connection from both machines\n\n### What's NOT Working:\n❌ **Page-level analysis** (`document_pages` table) - Only 3 pages vs. expected thousands\n❌ **Detailed violation tracking** (`legal_violations` table) - Only 1 violation vs. expected dozens\n❌ **Communications matrix** (`communications_matrix` table) - 0 records\n❌ **Multi-jurisdiction tracking** (`court_case_tracker` table) - 0 records\n❌ **False statements analysis** (micro analysis tables) - Missing\n❌ **Checkbox perjury tracking** - Missing\n❌ **Actions vs intentions analysis** - Missing\n\n---\n\n## 📊 Expected vs. Actual Data\n\nAccording to your PROJ344 documentation, the system should have:\n\n| Data Type | Expected | Actual | Status |\n|-----------|----------|--------|--------|\n| Legal Documents | 500-1000 | 653 | ✅ Good |\n| Document Pages | 5,000-10,000+ | 3 | 🚨 **CRITICAL** |\n| Court Events | 200-300 | 253 | ✅ Good |\n| Legal Violations | 50-100+ | 1 | 🚨 **CRITICAL** |\n| Communications | 100-500 | 0 | 🚨 **CRITICAL** |\n| DVRO Violations | 5-20 | 1 | ⚠️ Low |\n| Court Cases | 3-10 | 0 | 🚨 **CRITICAL** |\n| Legal Citations | 50-200 | 3 | 🚨 **CRITICAL** |\n\n---\n\n## 🔧 Root Causes\n\n### Most Likely Issues on Mac Mini:\n\n#### 1. **Processing Scripts Not Running All Modules**\nYour Mac Mini may be running the document upload script but NOT running:\n- `micro_analysis_processor.py` (or similar)\n- `violation_tracker.py`\n- `communications_analyzer.py`\n- `page_level_processor.py`\n\n#### 2. **Incomplete Data Pipeline**\nThe processing flow should be:\n```\nDocument Upload → Page Extraction → Content Analysis → Violation Detection → Supabase Upload\n```\n\nYour pipeline is stopping after \"Document Upload\"\n\n#### 3. **Script Errors Being Silently Ignored**\n- Check Mac Mini logs for errors\n- Analysis scripts may be crashing but basic upload succeeds\n- Error handling might be swallowing exceptions\n\n#### 4. **Database Table Permissions**\n- Some tables might have write restrictions\n- Check Supabase RLS (Row Level Security) policies\n- Anon key may not have INSERT permissions on analysis tables\n\n---\n\n## 🔎 Diagnostic Steps\n\n### Step 1: Check Running Processes on Mac Mini\n```bash\n# SSH into Mac Mini or check locally\nps aux | grep python\nps aux | grep PROJ344\n```\n\nLook for processes like:\n- ✅ `document_uploader.py` (running - this is why you have 653 docs)\n- ❓ `page_analyzer.py` (probably NOT running)\n- ❓ `violation_processor.py` (probably NOT running)\n- ❓ `micro_analysis.py` (probably NOT running)\n\n### Step 2: Check Mac Mini Logs\nLook in these locations:\n- `~/PROJ344/logs/`\n- `~/logs/`\n- `/var/log/PROJ344/`\n- Check for files like:\n  - `document_processor.log`\n  - `page_analysis.log`\n  - `violation_tracker.log`\n  - `supabase_upload.log`\n\nLook for errors like:\n- \"Permission denied\"\n- \"Table not found\"\n- \"Connection refused\"\n- \"Module not found\"\n- \"Timeout\"\n\n### Step 3: Verify Supabase Table Permissions\nRun this diagnostic:\n```python\n# Test INSERT permissions on each table\nfrom supabase import create_client\n\nsupabase = create_client(URL, KEY)\n\ntables = ['document_pages', 'legal_violations', 'communications_matrix']\n\nfor table in tables:\n    try:\n        # Try to insert a test record\n        result = supabase.table(table).insert({'test': 'value'}).execute()\n        print(f\"✅ {table}: INSERT allowed\")\n    except Exception as e:\n        print(f\"❌ {table}: INSERT FAILED - {e}\")\n```\n\n### Step 4: Check Mac Mini Script Configuration\nLook for configuration files:\n- `.env` - Check SUPABASE_URL and SUPABASE_KEY match Windows\n- `config.toml`\n- `settings.json`\n- `proj344_config.py`\n\nVerify:\n- Database credentials are correct\n- All processing modules are enabled\n- No \"skip_analysis\" or \"metadata_only\" flags set\n\n---\n\n## 🛠️ Solutions\n\n### Solution 1: Verify Mac Mini Processing Scripts\n\nOn your Mac Mini, check which scripts are scheduled to run:\n\n```bash\n# Check cron jobs\ncrontab -l\n\n# Check launchd (macOS scheduler)\nls ~/Library/LaunchAgents/\nlaunchctl list | grep proj344\n\n# Check running processes\nps aux | grep -i proj344\n```\n\n### Solution 2: Manually Run Analysis Scripts\n\nTry running these manually on Mac Mini:\n\n```bash\n# Navigate to PROJ344 directory\ncd ~/PROJ344  # or wherever your project is\n\n# Run page-level analysis\npython3 page_analyzer.py --process-all\n\n# Run violation detection\npython3 violation_processor.py --scan-documents\n\n# Run communications analysis\npython3 communications_parser.py --sync\n\n# Run micro-level analysis\npython3 micro_analysis_processor.py --full-scan\n```\n\nWatch for errors during execution.\n\n### Solution 3: Check Supabase Dashboard\n\n1. Go to: https://supabase.com/dashboard\n2. Sign in to your project\n3. Navigate to: **Table Editor**\n4. Check these tables exist:\n   - ✅ `legal_documents`\n   - ❓ `document_pages`\n   - ❓ `legal_violations`\n   - ❓ `communications_matrix`\n   - ❓ `dvro_violations_tracker`\n   - ❓ `court_case_tracker`\n\n5. Check **Database → Policies** (RLS):\n   - Verify INSERT policies exist for all tables\n   - Check if anon key has write permissions\n\n### Solution 4: Re-run Full Processing Pipeline\n\nOn Mac Mini, run complete reprocessing:\n\n```bash\n# Full system reprocess (this may take hours)\npython3 proj344_master_processor.py --full-reprocess --upload-all\n\n# Or process incrementally\npython3 proj344_master_processor.py --process-new --analyze --upload\n```\n\n---\n\n## 📋 Quick Checklist for Mac Mini\n\nRun through this checklist on your Mac Mini:\n\n- [ ] Verify all processing scripts are installed\n- [ ] Check cron jobs or scheduled tasks are running\n- [ ] Review logs for errors in last 24 hours\n- [ ] Confirm Supabase credentials match Windows\n- [ ] Test INSERT permissions on all tables\n- [ ] Manually run page analyzer script\n- [ ] Manually run violation processor script\n- [ ] Check disk space (low space can cause silent failures)\n- [ ] Verify Python dependencies are installed\n- [ ] Check network connectivity to Supabase\n- [ ] Review any \"skip\" or \"disabled\" configuration flags\n- [ ] Ensure file paths to documents are correct\n\n---\n\n## 🎯 Expected Behavior After Fix\n\nOnce Mac Mini processing is fully working, you should see:\n\n### Immediate Changes:\n- `document_pages`: 5,000-10,000+ records (one per page of each document)\n- `legal_violations`: 50-100+ records (constitutional violations identified)\n- `communications_matrix`: 100-500+ records (emails, texts, etc.)\n- `false_statements`: 20-50+ records (perjury instances)\n- `checkbox_perjury`: 10-30+ records (false checkboxes on forms)\n\n### Dashboard Impact:\n- **Overview page**: All 8 metrics show substantial numbers\n- **Documents Intelligence**: Full scoring (micro/macro/legal numbers populate)\n- **Legal Violations**: Dozens of tracked violations with perpetrator analysis\n- **Micro Analysis**: False statements, checkbox perjury, actions vs intentions\n- **Communications**: Full matrix of party interactions\n- **Timeline**: Rich, multi-dimensional timeline with all events\n\n---\n\n## 🔍 Diagnostic Tool\n\n**I've created a diagnostic dashboard for you:**\n\n**Local Access**: http://localhost:8502\n**Network Access**: http://192.168.4.24:8502\n\nThis tool will:\n- ✅ Check all 15+ core tables\n- ✅ Show exact row counts for each table\n- ✅ Display sample data from each table\n- ✅ Identify which tables are empty\n- ✅ Provide specific recommendations\n- ✅ Show last update timestamps\n\n**Run it now to see detailed analysis!**\n\n---\n\n## 💡 Recommendations\n\n### Immediate Actions (Do These First):\n\n1. **Open diagnostic dashboard** at http://localhost:8502\n2. **Review which specific tables are empty**\n3. **Check Mac Mini logs** for processing errors\n4. **Verify Mac Mini scripts are running** (check processes)\n5. **Test Supabase INSERT permissions** on empty tables\n\n### Short-term Actions:\n\n6. **Manually run analysis scripts** on Mac Mini\n7. **Review Mac Mini cron jobs** to ensure scheduled execution\n8. **Check configuration files** for \"skip_analysis\" flags\n9. **Verify file paths** to document directories are correct\n10. **Monitor logs** during next processing cycle\n\n### Long-term Actions:\n\n11. **Set up monitoring** for Mac Mini processing health\n12. **Create alerts** for failed uploads\n13. **Implement retry logic** for failed analysis\n14. **Schedule regular full reprocessing**\n15. **Document Mac Mini setup** for reproducibility\n\n---\n\n## 📞 Next Steps\n\n### For You:\n1. **Access diagnostic dashboard**: http://localhost:8502\n2. **Screenshot the results** (especially empty tables)\n3. **Check Mac Mini**:\n   - What scripts are running?\n   - Any errors in logs?\n   - When was last processing run?\n4. **Report back findings** so we can provide specific fixes\n\n### For Mac Mini:\n- Identify which processing scripts exist\n- Determine which are running vs. not running\n- Fix or restart missing analysis processes\n- Monitor next processing cycle\n\n---\n\n## 🔐 Security Note\n\nYour Supabase **anon key** (currently in use) typically has:\n- ✅ SELECT permissions (reading data) - Working\n- ❓ INSERT permissions (writing data) - May be restricted on some tables\n\nIf INSERT permissions are blocked by RLS policies:\n- Document uploads work (basic metadata)\n- Detailed analysis uploads fail silently\n\n**Solution**: Check Supabase RLS policies or use service_role key for processing.\n\n---\n\n*Dashboard Last Updated: 2025-11-05 20:54*\n*Analysis Generated: 2025-11-05 21:00*\n",
+  "content_preview": "# PROJ344 Data Sync Analysis\n\n## Current Status Summary\n\nBased on your dashboard showing:\n- ✅ **653 Legal Documents** - Good\n- ✅ **253 Court Events** - Good\n- ⚠️ **3 Pages Analyzed** - CRITICALLY LOW\n- ⚠️ **1 Violation Tracked** - CRITICALLY LOW\n- ⚠️ **0 Communications** - MISSING\n- ✅ **1 DVRO Violation** - Present\n- ⚠️ **0 Court Cases** - MISSING\n- ✅ **3 Legal Citations** - Present\n\n---\n\n## 🔍 Problem Identified\n\n**Your Mac Mini is uploading METADATA but NOT uploading ANALYSIS DATA**\n\n### What's...",
+  "sections": [
+    {
+      "title": "PROJ344 Data Sync Analysis",
+      "content": ""
+    },
+    {
+      "title": "Current Status Summary",
+      "content": "Based on your dashboard showing:\n- ✅ **653 Legal Documents** - Good\n- ✅ **253 Court Events** - Good\n- ⚠️ **3 Pages Analyzed** - CRITICALLY LOW\n- ⚠️ **1 Violation Tracked** - CRITICALLY LOW\n- ⚠️ **0 Communications** - MISSING\n- ✅ **1 DVRO Violation** - Present\n- ⚠️ **0 Court Cases** - MISSING\n- ✅ **3 Legal Citations** - Present\n---"
+    },
+    {
+      "title": "🔍 Problem Identified",
+      "content": "**Your Mac Mini is uploading METADATA but NOT uploading ANALYSIS DATA**"
+    },
+    {
+      "title": "What's Working:",
+      "content": "✅ Basic document records (`legal_documents` table)\n✅ Court events (`court_events` table)\n✅ Supabase connection from both machines"
+    },
+    {
+      "title": "What's NOT Working:",
+      "content": "❌ **Page-level analysis** (`document_pages` table) - Only 3 pages vs. expected thousands\n❌ **Detailed violation tracking** (`legal_violations` table) - Only 1 violation vs. expected dozens\n❌ **Communications matrix** (`communications_matrix` table) - 0 records\n❌ **Multi-jurisdiction tracking** (`court_case_tracker` table) - 0 records\n❌ **False statements analysis** (micro analysis tables) - Missing\n❌ **Checkbox perjury tracking** - Missing\n❌ **Actions vs intentions analysis** - Missing\n---"
+    },
+    {
+      "title": "📊 Expected vs. Actual Data",
+      "content": "According to your PROJ344 documentation, the system should have:\n| Data Type | Expected | Actual | Status |\n|-----------|----------|--------|--------|\n| Legal Documents | 500-1000 | 653 | ✅ Good |\n| Document Pages | 5,000-10,000+ | 3 | 🚨 **CRITICAL** |\n| Court Events | 200-300 | 253 | ✅ Good |\n| Legal Violations | 50-100+ | 1 | 🚨 **CRITICAL** |\n| Communications | 100-500 | 0 | 🚨 **CRITICAL** |\n| DVRO Violations | 5-20 | 1 | ⚠️ Low |\n| Court Cases | 3-10 | 0 | 🚨 **CRITICAL** |\n| Legal Citations | 50-200 | 3 | 🚨 **CRITICAL** |\n---"
+    },
+    {
+      "title": "🔧 Root Causes",
+      "content": ""
+    },
+    {
+      "title": "Most Likely Issues on Mac Mini:",
+      "content": ""
+    },
+    {
+      "title": "1. **Processing Scripts Not Running All Modules**",
+      "content": "Your Mac Mini may be running the document upload script but NOT running:\n- `micro_analysis_processor.py` (or similar)\n- `violation_tracker.py`\n- `communications_analyzer.py`\n- `page_level_processor.py`"
+    },
+    {
+      "title": "2. **Incomplete Data Pipeline**",
+      "content": "The processing flow should be:\n```\nDocument Upload → Page Extraction → Content Analysis → Violation Detection → Supabase Upload\n```\nYour pipeline is stopping after \"Document Upload\""
+    },
+    {
+      "title": "3. **Script Errors Being Silently Ignored**",
+      "content": "- Check Mac Mini logs for errors\n- Analysis scripts may be crashing but basic upload succeeds\n- Error handling might be swallowing exceptions"
+    },
+    {
+      "title": "4. **Database Table Permissions**",
+      "content": "- Some tables might have write restrictions\n- Check Supabase RLS (Row Level Security) policies\n- Anon key may not have INSERT permissions on analysis tables\n---"
+    },
+    {
+      "title": "🔎 Diagnostic Steps",
+      "content": ""
+    },
+    {
+      "title": "Step 1: Check Running Processes on Mac Mini",
+      "content": "```bash"
+    },
+    {
+      "title": "SSH into Mac Mini or check locally",
+      "content": "ps aux | grep python\nps aux | grep PROJ344\n```\nLook for processes like:\n- ✅ `document_uploader.py` (running - this is why you have 653 docs)\n- ❓ `page_analyzer.py` (probably NOT running)\n- ❓ `violation_processor.py` (probably NOT running)\n- ❓ `micro_analysis.py` (probably NOT running)"
+    },
+    {
+      "title": "Step 2: Check Mac Mini Logs",
+      "content": "Look in these locations:\n- `~/PROJ344/logs/`\n- `~/logs/`\n- `/var/log/PROJ344/`\n- Check for files like:\n  - `document_processor.log`\n  - `page_analysis.log`\n  - `violation_tracker.log`\n  - `supabase_upload.log`\nLook for errors like:\n- \"Permission denied\"\n- \"Table not found\"\n- \"Connection refused\"\n- \"Module not found\"\n- \"Timeout\""
+    },
+    {
+      "title": "Step 3: Verify Supabase Table Permissions",
+      "content": "Run this diagnostic:\n```python"
+    },
+    {
+      "title": "Test INSERT permissions on each table",
+      "content": "from supabase import create_client\nsupabase = create_client(URL, KEY)\ntables = ['document_pages', 'legal_violations', 'communications_matrix']\nfor table in tables:\n    try:"
+    },
+    {
+      "title": "Try to insert a test record",
+      "content": "result = supabase.table(table).insert({'test': 'value'}).execute()\n        print(f\"✅ {table}: INSERT allowed\")\n    except Exception as e:\n        print(f\"❌ {table}: INSERT FAILED - {e}\")\n```"
+    },
+    {
+      "title": "Step 4: Check Mac Mini Script Configuration",
+      "content": "Look for configuration files:\n- `.env` - Check SUPABASE_URL and SUPABASE_KEY match Windows\n- `config.toml`\n- `settings.json`\n- `proj344_config.py`\nVerify:\n- Database credentials are correct\n- All processing modules are enabled\n- No \"skip_analysis\" or \"metadata_only\" flags set\n---"
+    },
+    {
+      "title": "🛠️ Solutions",
+      "content": ""
+    },
+    {
+      "title": "Solution 1: Verify Mac Mini Processing Scripts",
+      "content": "On your Mac Mini, check which scripts are scheduled to run:\n```bash"
+    },
+    {
+      "title": "Check cron jobs",
+      "content": "crontab -l"
+    },
+    {
+      "title": "Check launchd (macOS scheduler)",
+      "content": "ls ~/Library/LaunchAgents/\nlaunchctl list | grep proj344"
+    },
+    {
+      "title": "Check running processes",
+      "content": "ps aux | grep -i proj344\n```"
+    },
+    {
+      "title": "Solution 2: Manually Run Analysis Scripts",
+      "content": "Try running these manually on Mac Mini:\n```bash"
+    },
+    {
+      "title": "Navigate to PROJ344 directory",
+      "content": "cd ~/PROJ344  # or wherever your project is"
+    },
+    {
+      "title": "Run page-level analysis",
+      "content": "python3 page_analyzer.py --process-all"
+    },
+    {
+      "title": "Run violation detection",
+      "content": "python3 violation_processor.py --scan-documents"
+    },
+    {
+      "title": "Run communications analysis",
+      "content": "python3 communications_parser.py --sync"
+    },
+    {
+      "title": "Run micro-level analysis",
+      "content": "python3 micro_analysis_processor.py --full-scan\n```\nWatch for errors during execution."
+    },
+    {
+      "title": "Solution 3: Check Supabase Dashboard",
+      "content": "1. Go to: https://supabase.com/dashboard\n2. Sign in to your project\n3. Navigate to: **Table Editor**\n4. Check these tables exist:\n   - ✅ `legal_documents`\n   - ❓ `document_pages`\n   - ❓ `legal_violations`\n   - ❓ `communications_matrix`\n   - ❓ `dvro_violations_tracker`\n   - ❓ `court_case_tracker`\n5. Check **Database → Policies** (RLS):\n   - Verify INSERT policies exist for all tables\n   - Check if anon key has write permissions"
+    },
+    {
+      "title": "Solution 4: Re-run Full Processing Pipeline",
+      "content": "On Mac Mini, run complete reprocessing:\n```bash"
+    },
+    {
+      "title": "Full system reprocess (this may take hours)",
+      "content": "python3 proj344_master_processor.py --full-reprocess --upload-all"
+    },
+    {
+      "title": "Or process incrementally",
+      "content": "python3 proj344_master_processor.py --process-new --analyze --upload\n```\n---"
+    },
+    {
+      "title": "📋 Quick Checklist for Mac Mini",
+      "content": "Run through this checklist on your Mac Mini:\n- [ ] Verify all processing scripts are installed\n- [ ] Check cron jobs or scheduled tasks are running\n- [ ] Review logs for errors in last 24 hours\n- [ ] Confirm Supabase credentials match Windows\n- [ ] Test INSERT permissions on all tables\n- [ ] Manually run page analyzer script\n- [ ] Manually run violation processor script\n- [ ] Check disk space (low space can cause silent failures)\n- [ ] Verify Python dependencies are installed\n- [ ] Check network connectivity to Supabase\n- [ ] Review any \"skip\" or \"disabled\" configuration flags\n- [ ] Ensure file paths to documents are correct\n---"
+    },
+    {
+      "title": "🎯 Expected Behavior After Fix",
+      "content": "Once Mac Mini processing is fully working, you should see:"
+    },
+    {
+      "title": "Immediate Changes:",
+      "content": "- `document_pages`: 5,000-10,000+ records (one per page of each document)\n- `legal_violations`: 50-100+ records (constitutional violations identified)\n- `communications_matrix`: 100-500+ records (emails, texts, etc.)\n- `false_statements`: 20-50+ records (perjury instances)\n- `checkbox_perjury`: 10-30+ records (false checkboxes on forms)"
+    },
+    {
+      "title": "Dashboard Impact:",
+      "content": "- **Overview page**: All 8 metrics show substantial numbers\n- **Documents Intelligence**: Full scoring (micro/macro/legal numbers populate)\n- **Legal Violations**: Dozens of tracked violations with perpetrator analysis\n- **Micro Analysis**: False statements, checkbox perjury, actions vs intentions\n- **Communications**: Full matrix of party interactions\n- **Timeline**: Rich, multi-dimensional timeline with all events\n---"
+    },
+    {
+      "title": "🔍 Diagnostic Tool",
+      "content": "**I've created a diagnostic dashboard for you:**\n**Local Access**: http://localhost:8502\n**Network Access**: http://192.168.4.24:8502\nThis tool will:\n- ✅ Check all 15+ core tables\n- ✅ Show exact row counts for each table\n- ✅ Display sample data from each table\n- ✅ Identify which tables are empty\n- ✅ Provide specific recommendations\n- ✅ Show last update timestamps\n**Run it now to see detailed analysis!**\n---"
+    },
+    {
+      "title": "💡 Recommendations",
+      "content": ""
+    },
+    {
+      "title": "Immediate Actions (Do These First):",
+      "content": "1. **Open diagnostic dashboard** at http://localhost:8502\n2. **Review which specific tables are empty**\n3. **Check Mac Mini logs** for processing errors\n4. **Verify Mac Mini scripts are running** (check processes)\n5. **Test Supabase INSERT permissions** on empty tables"
+    },
+    {
+      "title": "Short-term Actions:",
+      "content": "6. **Manually run analysis scripts** on Mac Mini\n7. **Review Mac Mini cron jobs** to ensure scheduled execution\n8. **Check configuration files** for \"skip_analysis\" flags\n9. **Verify file paths** to document directories are correct\n10. **Monitor logs** during next processing cycle"
+    },
+    {
+      "title": "Long-term Actions:",
+      "content": "11. **Set up monitoring** for Mac Mini processing health\n12. **Create alerts** for failed uploads\n13. **Implement retry logic** for failed analysis\n14. **Schedule regular full reprocessing**\n15. **Document Mac Mini setup** for reproducibility\n---"
+    },
+    {
+      "title": "📞 Next Steps",
+      "content": ""
+    },
+    {
+      "title": "For You:",
+      "content": "1. **Access diagnostic dashboard**: http://localhost:8502\n2. **Screenshot the results** (especially empty tables)\n3. **Check Mac Mini**:\n   - What scripts are running?\n   - Any errors in logs?\n   - When was last processing run?\n4. **Report back findings** so we can provide specific fixes"
+    },
+    {
+      "title": "For Mac Mini:",
+      "content": "- Identify which processing scripts exist\n- Determine which are running vs. not running\n- Fix or restart missing analysis processes\n- Monitor next processing cycle\n---"
+    },
+    {
+      "title": "🔐 Security Note",
+      "content": "Your Supabase **anon key** (currently in use) typically has:\n- ✅ SELECT permissions (reading data) - Working\n- ❓ INSERT permissions (writing data) - May be restricted on some tables\nIf INSERT permissions are blocked by RLS policies:\n- Document uploads work (basic metadata)\n- Detailed analysis uploads fail silently\n**Solution**: Check Supabase RLS policies or use service_role key for processing.\n---\n*Dashboard Last Updated: 2025-11-05 20:54*\n*Analysis Generated: 2025-11-05 21:00*"
+    }
+  ],
+  "extraction_success": true,
+  "extraction_error": null
+}

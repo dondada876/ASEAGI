@@ -1,0 +1,128 @@
+{
+  "metadata": {
+    "file_path": "C:\\Users\\DonBucknor_n0ufqwv\\GettingStarted\\ASEAGI\\TELEGRAM_BOT_TROUBLESHOOTING.md",
+    "file_name": "TELEGRAM_BOT_TROUBLESHOOTING.md",
+    "file_type": "md",
+    "file_size": 5179,
+    "file_hash": "23ae43ad0e0e3a2ce3e9ab5f610b7e87",
+    "extraction_date": "2025-11-06T09:18:56.752696",
+    "extraction_method": "direct_read",
+    "title": "# Telegram Bot Troubleshooting Guide",
+    "author": null,
+    "created_date": "2025-11-05T21:30:09.324310",
+    "modified_date": "2025-11-05T21:30:09.324310",
+    "page_count": null,
+    "word_count": 695,
+    "char_count": 4948
+  },
+  "content": "# Telegram Bot Troubleshooting Guide\n\n## Issue: Bot Not Responding to Messages\n\n### Root Cause Discovered\nYour bot has a **typo in the username**: It's **@ASIAGI_bot** (missing the 'E' from ASEAGI)\n\n### Checklist to Fix\n\n1. **Verify Bot Username**\n   ```bash\n   cd ASEAGI\n   python test_telegram_connection.py\n   ```\n\n   Look for the line: `Bot Username: @ASIAGI_bot`\n\n   **This is the exact username you must message.**\n\n2. **On Your Phone - Open Telegram**\n   - Tap the search icon\n   - Type EXACTLY: `@ASIAGI_bot`\n   - **NOT** @ASEAGI_bot\n   - **NOT** @ASEAGI-Mobile\n   - Must be: **@ASIAGI_bot**\n\n3. **Start Conversation**\n   - Tap on @ASIAGI_bot when it appears in search\n   - Send: `/start`\n   - Bot should respond with a welcome message\n\n4. **Send Test Image**\n   - Send any image or document\n   - Bot will guide you through the upload process\n\n5. **Verify Upload**\n   ```bash\n   cd ASEAGI\n   python check_telegram_uploads.py\n   ```\n\n   You should see your document in the list.\n\n---\n\n## Common Issues\n\n### Issue: \"I'm messaging the bot but no response\"\n\n**Solution A: Wrong Bot Username**\n- You might be messaging @ASEAGI_bot (with E)\n- Correct username is @ASIAGI_bot (without E)\n- Search again and make sure it's spelled correctly\n\n**Solution B: Haven't sent /start**\n- Telegram bots require `/start` to initialize\n- Send `/start` first, then try your image\n\n**Solution C: Multiple Bot Instances Running**\n```bash\ncd ASEAGI\npython -c \"\nimport psutil\nfor proc in psutil.process_iter(['pid', 'name', 'cmdline']):\n    try:\n        cmdline = proc.info.get('cmdline', [])\n        if cmdline and 'telegram_document_bot.py' in ' '.join(cmdline):\n            print(f'Found bot: PID {proc.info[\\\"pid\\\"]}')\n    except:\n        pass\n\"\n```\n\nIf you see multiple PIDs, kill them all:\n```bash\npython -c \"\nimport psutil\nfor proc in psutil.process_iter():\n    try:\n        if 'telegram_document_bot.py' in ' '.join(proc.cmdline()):\n            proc.kill()\n    except:\n        pass\n\"\n```\n\n### Issue: \"Bot was working, now it's not\"\n\n**Solution: Restart Bot**\n```bash\n# Kill any existing instances\npython -c \"import psutil; [p.kill() for p in psutil.process_iter() if 'telegram_document_bot.py' in ' '.join(p.cmdline() or [])]\"\n\n# Start fresh\ncd ASEAGI\npython telegram_document_bot.py\n```\n\n---\n\n## How to Create New Bot with Preferred Username\n\nIf you want a different username (like @ASEAGI_Mobile_Bot):\n\n1. **Open Telegram**, search for: `@BotFather`\n\n2. **Send**: `/newbot`\n\n3. **Bot Name**: Type `ASEAGI Mobile` (display name)\n\n4. **Bot Username**: Type `aseagi_mobile_bot` (must end with 'bot')\n\n5. **Copy Token**: BotFather will give you a token like:\n   ```\n   1234567890:ABCdefGHIjklMNOpqrsTUVwxyz\n   ```\n\n6. **Update secrets.toml**:\n   ```toml\n   TELEGRAM_BOT_TOKEN = \"your_new_token_here\"\n   ```\n\n7. **Restart Bot**:\n   ```bash\n   cd ASEAGI\n   python telegram_document_bot.py\n   ```\n\n---\n\n## Diagnostic Commands\n\n### Check if bot is reachable\n```bash\ncd ASEAGI\npython test_telegram_connection.py\n```\n\n### Check for recent uploads\n```bash\ncd ASEAGI\npython check_telegram_uploads.py\n```\n\n### Check Telegram API directly\n```bash\ncd ASEAGI\npython -c \"\nimport requests, toml\nfrom pathlib import Path\nsecrets = toml.load(Path('.streamlit/secrets.toml'))\ntoken = secrets.get('TELEGRAM_BOT_TOKEN')\nurl = f'https://api.telegram.org/bot{token}/getUpdates'\nresponse = requests.get(url)\ndata = response.json()\nprint(f'Messages waiting: {len(data.get(\\\"result\\\", []))}')\n\"\n```\n\n### Find running bot processes\n```bash\ntasklist | findstr python\n```\n\n---\n\n## Quick Fix: Start Fresh\n\nIf nothing works, start completely fresh:\n\n```bash\ncd ASEAGI\n\n# 1. Kill all bot instances\npython -c \"import psutil; [p.kill() for p in psutil.process_iter() if 'telegram' in ' '.join(p.cmdline() or []).lower()]\"\n\n# 2. Test connection\npython test_telegram_connection.py\n\n# 3. Note the bot username shown (likely @ASIAGI_bot)\n\n# 4. On phone: Search for that EXACT username in Telegram\n\n# 5. Send /start to that bot\n\n# 6. Start the bot\npython telegram_document_bot.py\n\n# 7. Send test image from phone\n\n# 8. Verify upload\npython check_telegram_uploads.py\n```\n\n---\n\n## Still Not Working?\n\n**Check these:**\n\n1. **Bot Token Valid?**\n   - Go to @BotFather on Telegram\n   - Send `/mybots`\n   - Select your bot\n   - Check token is correct in secrets.toml\n\n2. **Network/Firewall Issues?**\n   - Can you access api.telegram.org?\n   - Try: `curl https://api.telegram.org/`\n\n3. **Wrong Bot?**\n   - You might have created multiple bots with @BotFather\n   - Check `/mybots` to see all your bots\n   - Make sure you're using the right token\n\n---\n\n## Success Checklist\n\n- [ ] Bot username verified: @ASIAGI_bot\n- [ ] Searched for exact username in Telegram\n- [ ] Sent `/start` command\n- [ ] Bot responded with welcome message\n- [ ] Sent test image\n- [ ] Bot guided through upload process\n- [ ] Confirmed upload in database with `check_telegram_uploads.py`\n\n**Once all checked, you're good to go!** 🚀\n",
+  "content_preview": "# Telegram Bot Troubleshooting Guide\n\n## Issue: Bot Not Responding to Messages\n\n### Root Cause Discovered\nYour bot has a **typo in the username**: It's **@ASIAGI_bot** (missing the 'E' from ASEAGI)\n\n### Checklist to Fix\n\n1. **Verify Bot Username**\n   ```bash\n   cd ASEAGI\n   python test_telegram_connection.py\n   ```\n\n   Look for the line: `Bot Username: @ASIAGI_bot`\n\n   **This is the exact username you must message.**\n\n2. **On Your Phone - Open Telegram**\n   - Tap the search icon\n   - Type EXACTL...",
+  "sections": [
+    {
+      "title": "Telegram Bot Troubleshooting Guide",
+      "content": ""
+    },
+    {
+      "title": "Issue: Bot Not Responding to Messages",
+      "content": ""
+    },
+    {
+      "title": "Root Cause Discovered",
+      "content": "Your bot has a **typo in the username**: It's **@ASIAGI_bot** (missing the 'E' from ASEAGI)"
+    },
+    {
+      "title": "Checklist to Fix",
+      "content": "1. **Verify Bot Username**\n   ```bash\n   cd ASEAGI\n   python test_telegram_connection.py\n   ```\n   Look for the line: `Bot Username: @ASIAGI_bot`\n   **This is the exact username you must message.**\n2. **On Your Phone - Open Telegram**\n   - Tap the search icon\n   - Type EXACTLY: `@ASIAGI_bot`\n   - **NOT** @ASEAGI_bot\n   - **NOT** @ASEAGI-Mobile\n   - Must be: **@ASIAGI_bot**\n3. **Start Conversation**\n   - Tap on @ASIAGI_bot when it appears in search\n   - Send: `/start`\n   - Bot should respond with a welcome message\n4. **Send Test Image**\n   - Send any image or document\n   - Bot will guide you through the upload process\n5. **Verify Upload**\n   ```bash\n   cd ASEAGI\n   python check_telegram_uploads.py\n   ```\n   You should see your document in the list.\n---"
+    },
+    {
+      "title": "Common Issues",
+      "content": ""
+    },
+    {
+      "title": "Issue: \"I'm messaging the bot but no response\"",
+      "content": "**Solution A: Wrong Bot Username**\n- You might be messaging @ASEAGI_bot (with E)\n- Correct username is @ASIAGI_bot (without E)\n- Search again and make sure it's spelled correctly\n**Solution B: Haven't sent /start**\n- Telegram bots require `/start` to initialize\n- Send `/start` first, then try your image\n**Solution C: Multiple Bot Instances Running**\n```bash\ncd ASEAGI\npython -c \"\nimport psutil\nfor proc in psutil.process_iter(['pid', 'name', 'cmdline']):\n    try:\n        cmdline = proc.info.get('cmdline', [])\n        if cmdline and 'telegram_document_bot.py' in ' '.join(cmdline):\n            print(f'Found bot: PID {proc.info[\\\"pid\\\"]}')\n    except:\n        pass\n\"\n```\nIf you see multiple PIDs, kill them all:\n```bash\npython -c \"\nimport psutil\nfor proc in psutil.process_iter():\n    try:\n        if 'telegram_document_bot.py' in ' '.join(proc.cmdline()):\n            proc.kill()\n    except:\n        pass\n\"\n```"
+    },
+    {
+      "title": "Issue: \"Bot was working, now it's not\"",
+      "content": "**Solution: Restart Bot**\n```bash"
+    },
+    {
+      "title": "Kill any existing instances",
+      "content": "python -c \"import psutil; [p.kill() for p in psutil.process_iter() if 'telegram_document_bot.py' in ' '.join(p.cmdline() or [])]\""
+    },
+    {
+      "title": "Start fresh",
+      "content": "cd ASEAGI\npython telegram_document_bot.py\n```\n---"
+    },
+    {
+      "title": "How to Create New Bot with Preferred Username",
+      "content": "If you want a different username (like @ASEAGI_Mobile_Bot):\n1. **Open Telegram**, search for: `@BotFather`\n2. **Send**: `/newbot`\n3. **Bot Name**: Type `ASEAGI Mobile` (display name)\n4. **Bot Username**: Type `aseagi_mobile_bot` (must end with 'bot')\n5. **Copy Token**: BotFather will give you a token like:\n   ```\n   1234567890:ABCdefGHIjklMNOpqrsTUVwxyz\n   ```\n6. **Update secrets.toml**:\n   ```toml\n   TELEGRAM_BOT_TOKEN = \"your_new_token_here\"\n   ```\n7. **Restart Bot**:\n   ```bash\n   cd ASEAGI\n   python telegram_document_bot.py\n   ```\n---"
+    },
+    {
+      "title": "Diagnostic Commands",
+      "content": ""
+    },
+    {
+      "title": "Check if bot is reachable",
+      "content": "```bash\ncd ASEAGI\npython test_telegram_connection.py\n```"
+    },
+    {
+      "title": "Check for recent uploads",
+      "content": "```bash\ncd ASEAGI\npython check_telegram_uploads.py\n```"
+    },
+    {
+      "title": "Check Telegram API directly",
+      "content": "```bash\ncd ASEAGI\npython -c \"\nimport requests, toml\nfrom pathlib import Path\nsecrets = toml.load(Path('.streamlit/secrets.toml'))\ntoken = secrets.get('TELEGRAM_BOT_TOKEN')\nurl = f'https://api.telegram.org/bot{token}/getUpdates'\nresponse = requests.get(url)\ndata = response.json()\nprint(f'Messages waiting: {len(data.get(\\\"result\\\", []))}')\n\"\n```"
+    },
+    {
+      "title": "Find running bot processes",
+      "content": "```bash\ntasklist | findstr python\n```\n---"
+    },
+    {
+      "title": "Quick Fix: Start Fresh",
+      "content": "If nothing works, start completely fresh:\n```bash\ncd ASEAGI"
+    },
+    {
+      "title": "1. Kill all bot instances",
+      "content": "python -c \"import psutil; [p.kill() for p in psutil.process_iter() if 'telegram' in ' '.join(p.cmdline() or []).lower()]\""
+    },
+    {
+      "title": "2. Test connection",
+      "content": "python test_telegram_connection.py"
+    },
+    {
+      "title": "3. Note the bot username shown (likely @ASIAGI_bot)",
+      "content": ""
+    },
+    {
+      "title": "4. On phone: Search for that EXACT username in Telegram",
+      "content": ""
+    },
+    {
+      "title": "5. Send /start to that bot",
+      "content": ""
+    },
+    {
+      "title": "6. Start the bot",
+      "content": "python telegram_document_bot.py"
+    },
+    {
+      "title": "7. Send test image from phone",
+      "content": ""
+    },
+    {
+      "title": "8. Verify upload",
+      "content": "python check_telegram_uploads.py\n```\n---"
+    },
+    {
+      "title": "Still Not Working?",
+      "content": "**Check these:**\n1. **Bot Token Valid?**\n   - Go to @BotFather on Telegram\n   - Send `/mybots`\n   - Select your bot\n   - Check token is correct in secrets.toml\n2. **Network/Firewall Issues?**\n   - Can you access api.telegram.org?\n   - Try: `curl https://api.telegram.org/`\n3. **Wrong Bot?**\n   - You might have created multiple bots with @BotFather\n   - Check `/mybots` to see all your bots\n   - Make sure you're using the right token\n---"
+    },
+    {
+      "title": "Success Checklist",
+      "content": "- [ ] Bot username verified: @ASIAGI_bot\n- [ ] Searched for exact username in Telegram\n- [ ] Sent `/start` command\n- [ ] Bot responded with welcome message\n- [ ] Sent test image\n- [ ] Bot guided through upload process\n- [ ] Confirmed upload in database with `check_telegram_uploads.py`\n**Once all checked, you're good to go!** 🚀"
+    }
+  ],
+  "extraction_success": true,
+  "extraction_error": null
+}

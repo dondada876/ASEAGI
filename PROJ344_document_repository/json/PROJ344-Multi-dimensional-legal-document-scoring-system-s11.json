@@ -1,0 +1,780 @@
+{
+  "metadata": {
+    "file_path": "C:\\Users\\DonBucknor_n0ufqwv\\GettingStarted\\ASEAGI\\PROJ344-Multi-dimensional-legal-document-scoring-system-s11.rtf",
+    "file_name": "PROJ344-Multi-dimensional-legal-document-scoring-system-s11.rtf",
+    "file_type": "rtf",
+    "file_size": 80369,
+    "file_hash": "280cfbcc66b68b9604897345615b3862",
+    "extraction_date": "2025-11-06T09:18:56.390833",
+    "extraction_method": "striprtf",
+    "title": "ATHENA GUARDIAN OF INNOCENCE PROJECT",
+    "author": null,
+    "created_date": "2025-11-05T11:53:59.543360",
+    "modified_date": "2025-11-05T11:53:59.544359",
+    "page_count": null,
+    "word_count": 6017,
+    "char_count": 63131
+  },
+  "content": "ATHENA GUARDIAN OF INNOCENCE PROJECT\nComplete System Specification & Implementation Guide\nFor Ashe. For All Children. ️\n\nEXECUTIVE SUMMARY\nMission: Free AI-powered legal intelligence system to protect children by detecting perjury, quantifying bad faith, empowering protective parents, and holding systems accountable.\nCore Innovation: Statement-level truth tracking (0-1000 scale) with context-aware relationship scoring across entire case histories.\nKey Differentiator: Nothing like this exists. Combines e-discovery (Relativity), predictive analytics (Lex Machina), credit scoring (FICO), and forensic analysis in one system designed for child protection cases.\nTarget Users: Pro se protective parents (free forever), family law attorneys, CPS agencies, district attorneys.\nImpact Goal: Ensure no child's voice is silenced, no protective parent punished, no abuser escapes through legal manipulation.\n\nI. SCORING METHODOLOGY (Complete Reference)\nA. HIERARCHICAL STRUCTURE (5 Levels)\nLEVEL 5: JUSTICE MASTER SCORE (Party/Case-Level)\n           ↓ [0-1000 scale]\nLEVEL 4: LEGAL CREDIT SCORE (Motion/Filing Collection)\n           ↓ [0-1000 scale]\nLEVEL 3: DOCUMENT MASTER SCORE (Per Document)\n           ↓ [0-1000 scale]\nLEVEL 2: PAGE/SECTION SCORE (Per Page)\n           ↓ [0-1000 scale]\nLEVEL 1: STATEMENT MICRO-SCORE (Individual Claim/Statement)\n           ↓ [0-1000 scale, 12 dimensions]\n\nB. LEVEL 1: STATEMENT DIMENSIONS (All 0-1000)\n1. TRUTH-LIE SCORE (TLS)\n1000-950: Absolute truth (objectively proven, multiple sources)\n949-900:  Proven true (documented, verified)\n899-800:  Very likely true (strong corroboration)\n799-700:  Probably true / leaning true\n699-600:  Uncertain (conflicting evidence)\n599-500:  Leaning false / probably false\n499-350:  Very likely false / proven false\n349-200:  Material lie (false + impacts outcome)\n199-100:  Perjury level (material lie under oath)\n099-000:  Aggravated perjury (material + obstruction)\n\nFormula:\ntruth_score = base_truthfulness * corroboration_factor * source_reliability\nwhere base_truthfulness = assessment of factual accuracy (0-1000)\n2. INTENT-CULPABILITY SCORE (ICS)\n000-300:  Protective/Good faith (heroic to diligent)\n300-500:  Neutral/Accidental (reasonable to honest mistake)\n500-700:  Negligent/Careless (should have known)\n700-850:  Reckless/Knowing (conscious disregard to intentional)\n850-950:  Malicious/Malevolent (intent to harm)\n950-1000: Corrupt (criminal corruption level)\n\nFormula:\nintent_score = knowledge_level * harm_intent * pattern_multiplier\n3. BAD FAITH QUANTIFICATION (BFQ)\nCalculates across 5 categories (each 0-200 points):\n\nTIMING_MANIPULATION (0-200):\n├─ Filed immediately after protective action: 150\n├─ Filed on eve of hearing: 120\n├─ Filed to preempt evidence: 180\n├─ Filed during holiday/weekend: 80\n└─ Strategic timing pattern: 200\n\nFORUM_SHOPPING (0-200):\n├─ Judge shopping: 150\n├─ Venue manipulation: 120\n├─ Jurisdiction gaming: 180\n├─ Serial refiling: 200\n└─ Ex parte abuse: 170\n\nEVIDENCE_MANIPULATION (0-200):\n├─ Concealed evidence: 180\n├─ Destroyed evidence: 200\n├─ Fabricated evidence: 200\n├─ Selective disclosure: 150\n└─ Withheld material facts: 170\n\nCHILD_ENDANGERMENT (0-200):\n├─ Ignored abuse disclosure: 200\n├─ Exposed child to abuser: 190\n├─ Blocked protective investigation: 180\n├─ Prioritized custody over safety: 170\n└─ Retaliated against protective parent: 160\n\nPROCEDURAL_ABUSE (0-200):\n├─ Perjury: 200\n├─ Fraud on court: 190\n├─ False emergency claims: 180\n├─ Violation of orders: 150\n├─ Contempt: 140\n└─ Obstruction: 170\n\nFormula:\nBFQ = (sum_of_applicable_factors_per_category) / 5 * 1000/200\nAverage across categories, scale to 1000\n4. CONTEXT-RELATIONSHIP SCORE (CRS)\nMeasures significance based on timing and relationships (0-1000):\n\nTEMPORAL_PROXIMITY (0-250):\n├─ Same day as key event: 200\n├─ Within 24 hours: 180\n├─ Within 48 hours: 160\n├─ Within week: 120\n├─ Within month: 80\n└─ Distant timing: 40\n\nRELATIONAL_SIGNIFICANCE (0-250):\n├─ Directly contradicts prior admission: 250\n├─ Contradicts contemporary evidence: 220\n├─ Undermines own other statements: 200\n├─ Contradicts neutral witness: 180\n└─ Unsupported by context: 150\n\nPATTERN_SIGNIFICANCE (0-250):\n├─ Establishes pattern: 240\n├─ Part of series: 200\n├─ Isolated incident: 100\n├─ Breaks pattern: 150\n└─ Anomalous: 80\n\nLEGAL_CONSEQUENCE (0-250):\n├─ Caused custody change: 250\n├─ Blocked investigation: 230\n├─ Resulted in court order: 220\n├─ Influenced decision: 200\n└─ No direct consequence: 100\n\nFormula:\nCRS = weighted_average(temporal * 0.25 + relational * 0.25 + \n                       pattern * 0.25 + consequence * 0.25)\n5. EVIDENCE QUALITY SCORE (EQS) - 0-1000\n950-1000: Forensic/expert (certified forensic examination)\n900-949:  Expert opinion (qualified expert testimony)\n850-899:  Direct evidence (eyewitness, admission, authenticated doc)\n800-849:  Reliable source (credible, verifiable)\n700-749:  Standard quality (typical evidentiary quality)\n600-649:  Acceptable (minor authentication needed)\n500-599:  Questionable (reliability issues)\n400-499:  Poor (serious credibility problems)\n300-399:  Likely inadmissible (major evidentiary issues)\n000-299:  Inadmissible/fraudulent\n\nFormula:\nEQS = (authenticity * 0.3 + source_credibility * 0.3 + \n       admissibility * 0.25 + verification * 0.15)\n6. LEGAL WEIGHT SCORE (LWS) - 0-1000\n950-1000: Case-determinative (alone wins/loses case)\n900-949:  Dispositive (proves/disproves key element alone)\n850-899:  Essential (required to prove claim)\n800-849:  Critical (major element of proof)\n750-799:  Substantial (important supporting evidence)\n700-749:  Strong (clear probative value)\n600-699:  Useful/relevant (helpful corroboration)\n400-599:  Marginal/peripheral (minor relevance)\n000-399:  Immaterial/irrelevant\n\nFormula:\nLWS = (element_proof * 0.4 + materiality * 0.3 + \n       impact * 0.2 + admissibility * 0.1)\n7. VERIFICATION STATUS (VER) - 0-1000\n950-1000: Irrefutable (5+ independent sources)\n900-949:  Overwhelming (4 independent sources)\n850-899:  Strong corroboration (3 independent sources)\n800-849:  Good corroboration (2 independent sources)\n750-799:  Moderate corroboration (1 independent + circumstantial)\n700-749:  Some corroboration (circumstantial evidence)\n650-699:  Credible single source (reliable, no contradiction)\n600-649:  Uncorroborated (single source, no verification)\n500-599:  Questionable (source has credibility issues)\n400-499:  Contradicted (significant contradiction)\n300-349:  Overwhelmingly contradicted (extensive contradiction)\n200-299:  Clearly disproven (strong evidence of falsehood)\n100-199:  Definitively disproven (overwhelming evidence false)\n000-099:  Impossible (logically/physically impossible)\n8. AUTHENTICITY (AUT) - 0-1000\n950-1000: Original with chain of custody\n900-949:  Certified copy (court-certified)\n850-899:  Verified authentic (expert/notary authentication)\n800-849:  Authenticated (verified by party/witness)\n750-799:  Regular copy from reliable source\n700-749:  Standard copy (typical business record)\n600-699:  Verifiable (can be authenticated if needed)\n500-599:  Authentication needed (unclear origin)\n400-499:  Questionable authenticity (red flags present)\n300-399:  Disputed authenticity (party contests)\n200-299:  Probably fake (likely not authentic)\n100-199:  Altered/tampered (evidence of manipulation)\n000-099:  Fabricated (provably fake/forged)\n9. SOURCE CREDIBILITY (SRC) - 0-1000\n950-1000: Government official record (court, agency)\n900-949:  Expert professional (qualified expert in field)\n850-899:  Neutral professional (doctor, therapist, teacher)\n800-849:  Neutral third party (unbiased witness)\n750-799:  Disinterested party (no stake in outcome)\n700-749:  Corroborated party (interested but verified)\n600-699:  Interested party with good record (track record of honesty)\n500-599:  Interested party with credibility issues\n400-499:  Biased source / poor credibility\n300-349:  Discredited / proven liar\n200-299:  Habitual liar (pattern of dishonesty)\n100-199:  Perjurer (false statements under oath)\n000-099:  Fraudster (criminal fraud history)\n10. ADMISSIBILITY (ADM) - 0-1000\n950-1000: Presumptively admissible (no evidentiary issues)\n900-949:  Clearly admissible (minor foundation needed)\n850-899:  Very likely admissible (small procedural hurdle)\n800-849:  Likely admissible (hearsay exception applies)\n750-799:  Probably admissible (authentication straightforward)\n700-749:  More likely than not (some issues but surmountable)\n600-699:  Uncertain (significant evidentiary question)\n500-599:  Doubtful (multiple admissibility problems)\n400-499:  Probably inadmissible (hearsay without exception)\n300-349:  Almost certainly inadmissible (overwhelming issues)\n200-299:  Privileged (attorney-client, spousal, etc.)\n100-199:  Excludable (more prejudicial than probative)\n000-099:  Illegal (unlawfully obtained)\n11. TOPIC WEIGHT (TOP) - Categorical + 0-1000\nCRITICAL TOPICS (900-1000):\n├─ SA-DISC (Sexual Abuse - Child Disclosure): 980\n├─ SA-MED (Sexual Abuse - Medical Evidence): 970\n├─ SA-HIST (Sexual Abuse - Historical Pattern): 960\n├─ FRAUD-CRT (Fraud on Court): 950\n├─ PER (Perjury): 940\n├─ DUE-PROC (Due Process Violation): 930\n├─ JURIS (Jurisdictional Defect): 920\n└─ CUST-LOSS (Custody Deprivation): 900\n\nHIGH PRIORITY (700-899):\n├─ DV (Domestic Violence): 850\n├─ CPS-NEG (CPS Negligence): 840\n├─ FALSE-ALG (False Allegations): 830\n└─ [etc.]\n\nMulti-topic formula:\nTOP = (Topic1_weight * 0.50 + Topic2_weight * 0.30 + Topic3_weight * 0.20)\n12. VIOLATION TYPE SCORES (VTS) - Categorical Array\nVIOLATION_TYPES = {\n    # Criminal (800-1000)\n    'perjury': {\n        'code': 'PC-118',\n        'base_severity': 950,\n        'materiality_multiplier': 1.0-1.5,\n        'under_oath_required': True\n    },\n    'fraud': {\n        'code': 'PC-487',\n        'base_severity': 900\n    },\n    'child_endangerment': {\n        'code': 'PC-273a',\n        'base_severity': 980,\n        'great_bodily_harm_multiplier': 1.3\n    },\n    'obstruction': {\n        'code': 'PC-182',\n        'base_severity': 870,\n        'pattern_multiplier': 1.2\n    },\n    \n    # Civil (600-799)\n    'fraud_on_court': {\n        'code': 'CCP-473',\n        'base_severity': 920,\n        'extrinsic_fraud': True\n    },\n    'contempt': {\n        'code': 'CCP-1209',\n        'base_severity': 750\n    },\n    'dvro_violation': {\n        'code': 'FC-6320',\n        'base_severity': 800\n    },\n    \n    # Procedural (400-599)\n    'jurisdictional_violation': {\n        'code': 'WIC-304',\n        'base_severity': 850,\n        'void_order_result': True\n    }\n}\n\n# Returns array of violations with severity scores\n\nC. LEVEL 1 COMPOSITE: STATEMENT MICRO-SCORE (SMS)\ndef calculate_sms(dimensions):\n    \"\"\"\n    Statement Micro-Score: Comprehensive statement-level analysis\n    Input: All 12 dimensions (each 0-1000)\n    Output: Single composite score 0-1000\n    \"\"\"\n    \n    # Base calculation (weighted average)\n    base_score = (\n        abs(dimensions['impact'] - 500) * 0.25 +  # Distance from neutral\n        dimensions['delta'] * 0.15 +\n        dimensions['context_relationship'] * 0.12 +\n        dimensions['truth_lie'] * 0.12 +\n        dimensions['evidence_quality'] * 0.10 +\n        dimensions['legal_weight'] * 0.10 +\n        dimensions['verification'] * 0.08 +\n        dimensions['authenticity'] * 0.04 +\n        dimensions['source_credibility'] * 0.04\n    )\n    \n    # Intent modifier (amplifies for extreme intent)\n    if dimensions['intent_culpability'] >= 700:  # Bad faith\n        intent_multiplier = 1.0 + ((dimensions['intent_culpability'] - 700) / 1000)\n        # At 1000: multiplier = 1.3\n    elif dimensions['intent_culpability'] <= 300:  # Good faith\n        intent_multiplier = 1.0 + ((300 - dimensions['intent_culpability']) / 1000)\n        # At 0: multiplier = 1.3\n    else:\n        intent_multiplier = 1.0\n    \n    # Violation severity bonus\n    if dimensions['violations']:\n        max_violation = max([v['severity'] for v in dimensions['violations']])\n        if max_violation >= 900:  # Criminal level\n            base_score *= 1.15\n    \n    sms = min(1000, int(base_score * intent_multiplier))\n    \n    return {\n        'sms': sms,\n        'category': categorize_statement(sms),\n        'impeachment_ready': is_impeachment_ready(dimensions),\n        'perjury_prosecutable': is_perjury_prosecutable(dimensions)\n    }\n\ndef categorize_statement(sms):\n    if sms >= 900: return \"SMOKING_GUN\"\n    elif sms >= 800: return \"CRITICAL\"\n    elif sms >= 700: return \"HIGH_VALUE\"\n    elif sms >= 600: return \"MODERATE\"\n    elif sms >= 500: return \"STANDARD\"\n    else: return \"LOW_VALUE\"\n\ndef is_impeachment_ready(dims):\n    return (\n        dims['truth_lie'] < 500 and  # False statement\n        dims['verification'] > 700 and  # Can prove it's false\n        dims['source_credibility'] < 600  # Undermines credibility\n    )\n\ndef is_perjury_prosecutable(dims):\n    return (\n        dims['truth_lie'] < 200 and  # Material lie\n        dims['under_oath'] == True and\n        dims['legal_weight'] > 700 and  # Material to proceeding\n        dims['intent_culpability'] > 700  # Knowing/willful\n    )\n\nD. LEVEL 2: PAGE/SECTION SCORE (PSS)\ndef calculate_pss(statements_on_page):\n    \"\"\"\n    Page Score: Aggregates all statements on a page\n    \"\"\"\n    if not statements_on_page:\n        return 500  # Neutral if no statements\n    \n    # Calculate weighted average of statement scores\n    total_score = 0\n    total_weight = 0\n    \n    for stmt in statements_on_page:\n        weight = 1.0\n        \n        # Weight by significance\n        if stmt['sms'] >= 900:  # Smoking gun\n            weight = 3.0\n        elif stmt['sms'] >= 800:  # Critical\n            weight = 2.0\n        elif stmt['sms'] >= 700:  # High value\n            weight = 1.5\n        \n        total_score += stmt['sms'] * weight\n        total_weight += weight\n    \n    avg_score = total_score / total_weight if total_weight > 0 else 500\n    \n    # Density bonus (more high-impact statements = higher score)\n    high_impact_count = len([s for s in statements_on_page if s['sms'] >= 800])\n    density_factor = 1.0 + (high_impact_count / 20.0)  # Up to 1.5x for 10+ high-impact\n    \n    pss = min(1000, int(avg_score * density_factor))\n    \n    return pss\n\nE. LEVEL 3: DOCUMENT MASTER SCORE (DMS)\ndef calculate_dms(document):\n    \"\"\"\n    Document Master Score: Overall document importance\n    4 composite dimensions → 1 master score\n    \"\"\"\n    \n    # 1. EVIDENCE STRENGTH (0-1000)\n    evidence_strength = (\n        avg(truth_values) * 0.20 +\n        avg(verification_statuses) * 0.20 +\n        avg(evidence_quality) * 0.20 +\n        avg(authenticity) * 0.20 +\n        avg(source_credibility) * 0.20\n    )\n    \n    # 2. LEGAL IMPACT (0-1000)\n    legal_impact = (\n        avg(legal_weights) * 0.30 +\n        avg(admissibility) * 0.25 +\n        max(violation_severity) * 0.25 +\n        avg(element_proof) * 0.20\n    )\n    \n    # 3. STRATEGIC VALUE (0-1000)\n    strategic_value = (\n        max(case_impact) * 0.30 +\n        max(opposition_impact) * 0.30 +\n        avg(context_relationship) * 0.20 +\n        timeline_criticality * 0.20\n    )\n    \n    # 4. INTENT/CONDUCT (0-1000)\n    intent_conduct = (\n        avg(intent_culpability) * 0.40 +\n        avg(bad_faith_quantification) * 0.40 +\n        procedural_compliance * 0.20\n    )\n    \n    # DOCUMENT MASTER SCORE\n    dms = (\n        evidence_strength * 0.35 +\n        legal_impact * 0.35 +\n        strategic_value * 0.20 +\n        intent_conduct * 0.10\n    )\n    \n    # Smoking gun bonus\n    if any(stmt['sms'] >= 950 for stmt in document['statements']):\n        dms = min(1000, dms * 1.15)\n    \n    return {\n        'dms': int(dms),\n        'evidence_strength': int(evidence_strength),\n        'legal_impact': int(legal_impact),\n        'strategic_value': int(strategic_value),\n        'intent_conduct': int(intent_conduct),\n        'rating': get_rating(dms)\n    }\n\ndef get_rating(score):\n    if score >= 950: return \"A+ (Exceptional)\"\n    elif score >= 900: return \"A (Excellent)\"\n    elif score >= 850: return \"A- (Very Strong)\"\n    elif score >= 800: return \"B+ (Strong)\"\n    elif score >= 750: return \"B (Above Average)\"\n    elif score >= 700: return \"B- (Solid)\"\n    elif score >= 650: return \"C+ (Moderate)\"\n    elif score >= 600: return \"C (Average)\"\n    elif score >= 550: return \"C- (Below Average)\"\n    elif score >= 500: return \"D+ (Weak)\"\n    elif score >= 450: return \"D (Poor)\"\n    elif score >= 400: return \"D- (Very Poor)\"\n    else: return \"F (Failing)\"\n\nF. LEVEL 4: MOTION/BRIEF STRENGTH SCORE (MBS)\ndef calculate_mbs(motion_documents):\n    \"\"\"\n    Motion/Brief Strength Score: How strong is this filing?\n    \"\"\"\n    \n    # 1. DOCUMENT QUALITY (35%)\n    doc_quality = weighted_avg([doc['dms'] for doc in motion_documents])\n    \n    # 2. LEGAL SUFFICIENCY (35%)\n    legal_sufficiency = (\n        all_elements_proven * 0.35 +\n        burden_of_proof_met * 0.35 +\n        procedural_compliance * 0.20 +\n        case_law_support * 0.10\n    )\n    \n    # 3. CORROBORATION NETWORK (20%)\n    corroboration_network = (\n        cross_document_corroboration * 0.40 +\n        independent_sources_count * 0.30 +\n        pattern_coherence * 0.20 +\n        contradiction_resolution * 0.10\n    )\n    \n    # 4. PREDICTED SUCCESS (10%)\n    predicted_success = (\n        similar_motion_historical_success +\n        forum_statistics +\n        judge_tendencies\n    ) / 3\n    \n    mbs = (\n        doc_quality * 0.35 +\n        legal_sufficiency * 0.35 +\n        corroboration_network * 0.20 +\n        predicted_success * 0.10\n    )\n    \n    # Confidence interval based on evidence gaps\n    evidence_gap_penalty = count_missing_elements * 50\n    confidence_interval = min(100, evidence_gap_penalty)\n    \n    return {\n        'mbs': int(mbs),\n        'confidence_interval': confidence_interval,\n        'recommendation': get_motion_recommendation(mbs)\n    }\n\ndef get_motion_recommendation(mbs):\n    if mbs >= 900: return \"EXCELLENT - File immediately\"\n    elif mbs >= 850: return \"VERY STRONG - High success probability\"\n    elif mbs >= 800: return \"STRONG - Proceed with confidence\"\n    elif mbs >= 750: return \"GOOD - Solid chance of success\"\n    elif mbs >= 700: return \"MODERATE - Consider strengthening\"\n    elif mbs >= 650: return \"WEAK - Needs more evidence\"\n    else: return \"INSUFFICIENT - Do not file yet\"\n\nG. LEVEL 5: JUSTICE MASTER SCORE (JMS)\ndef calculate_jms(party_id):\n    \"\"\"\n    Justice Master Score: Overall party credibility and case standing\n    Legal \"credit score\" for party\n    \"\"\"\n    \n    # Get all party documents and actions\n    party_data = get_party_comprehensive_data(party_id)\n    \n    # 1. PARTY CREDIBILITY INDEX (30%)\n    party_credibility = (\n        truthfulness_rate * 0.40 +  # % statements verified true\n        (1000 - avg_intent_culpability) * 0.30 +  # Inverted (good faith = higher)\n        consistency_score * 0.20 +  # Consistency across statements\n        verification_rate * 0.10  # % statements corroborated\n    )\n    \n    # 2. EVIDENCE STRENGTH INDEX (30%)\n    evidence_strength = (\n        critical_document_count / 20 * 250 +  # Up to 250 for 20+ critical docs\n        avg_document_quality * 0.30 +\n        corroboration_density * 0.25 +\n        smoking_gun_presence * 0.20  # Bonus for smoking guns\n    )\n    \n    # 3. LEGAL MERIT INDEX (25%)\n    legal_merit = (\n        statutory_element_proof * 0.35 +\n        procedural_compliance_rate * 0.25 +\n        admissibility_rate * 0.20 +\n        case_law_support * 0.20\n    )\n    \n    # 4. CONDUCT INDEX (15%)\n    conduct = (\n        good_faith_score * 0.35 +\n        procedural_fairness * 0.25 +\n        disclosure_completeness * 0.20 +\n        cooperation_level * 0.20\n    )\n    \n    jms = (\n        party_credibility * 0.30 +\n        evidence_strength * 0.30 +\n        legal_merit * 0.25 +\n        conduct * 0.15\n    )\n    \n    # Calculate risk scores\n    risk_scores = calculate_risk_scores(party_data)\n    \n    return {\n        'jms': int(jms),\n        'breakdown': {\n            'party_credibility': int(party_credibility),\n            'evidence_strength': int(evidence_strength),\n            'legal_merit': int(legal_merit),\n            'conduct': int(conduct)\n        },\n        'risk_scores': risk_scores,\n        'rating': get_rating(jms),\n        'percentile': calculate_percentile(jms)\n    }\n\ndef calculate_risk_scores(party_data):\n    \"\"\"\n    Calculate risk assessment scores\n    \"\"\"\n    # FLIGHT RISK (0-1000)\n    flight_risk = (\n        (1000 if not_us_citizen else 0) * 0.30 +\n        (1000 - jurisdiction_ties_score) * 0.25 +\n        non_hague_country_citizen * 300 +\n        pattern_of_jurisdiction_avoidance * 0.20 +\n        (1000 - cooperation_score) * 0.15\n    )\n    \n    # COMPLIANCE RISK (0-1000)\n    compliance_risk = (\n        order_violation_rate * 0.35 +\n        contempt_incident_count * 100 +  # Up to 1000 for 10 incidents\n        pattern_of_noncompliance * 0.30 +\n        procedural_abuse_score * 0.20\n    )\n    \n    # CHILD HARM RISK (0-1000)\n    harm_risk = (\n        child_endangerment_incidents * 150 +  # Up to 1000 for 7 incidents\n        blocks_protective_measures * 300 +\n        access_to_known_abuser * 250 +\n        prioritizes_custody_over_safety * 200 +\n        parental_alienation_indicators * 0.15\n    )\n    \n    return {\n        'flight_risk': min(1000, int(flight_risk)),\n        'compliance_risk': min(1000, int(compliance_risk)),\n        'harm_risk': min(1000, int(harm_risk))\n    }\n\nII. DATABASE SCHEMA (PostgreSQL)\n-- ============================================================================\n-- CORE TABLES\n-- ============================================================================\n\n-- CASES\nCREATE TABLE cases (\n    case_id VARCHAR(30) PRIMARY KEY,\n    case_name VARCHAR(200),\n    case_numbers JSONB,  -- {juvenile: \"J24-00478\", family: \"D22-03244\"}\n    jurisdiction VARCHAR(100),\n    status VARCHAR(50),  -- active, closed, appealed\n    \n    -- Parties\n    father_party_id VARCHAR(20),\n    mother_party_id VARCHAR(20),\n    child_info JSONB,\n    \n    -- Key dates\n    key_dates JSONB,\n    \n    -- Metadata\n    created_date TIMESTAMP DEFAULT NOW(),\n    updated_date TIMESTAMP DEFAULT NOW(),\n    \n    -- Full-text search\n    search_vector TSVECTOR\n);\n\n-- PARTIES\nCREATE TABLE parties (\n    party_id VARCHAR(20) PRIMARY KEY,\n    party_name VARCHAR(100),\n    party_role VARCHAR(50),  -- father, mother, agency, etc.\n    \n    -- LEVEL 5: Justice Master Score\n    justice_master_score INTEGER,  -- 0-1000\n    jms_breakdown JSONB,  -- {party_credibility, evidence_strength, legal_merit, conduct}\n    \n    -- Credibility metrics\n    total_statements INTEGER DEFAULT 0,\n    true_statements INTEGER DEFAULT 0,\n    false_statements INTEGER DEFAULT 0,\n    truthfulness_rate DECIMAL(5,2),\n    lie_rate DECIMAL(5,2),\n    \n    -- Violation tracking\n    perjury_incidents INTEGER DEFAULT 0,\n    fraud_incidents INTEGER DEFAULT 0,\n    child_endangerment_incidents INTEGER DEFAULT 0,\n    contempt_incidents INTEGER DEFAULT 0,\n    \n    violations_history JSONB,  -- [{date, type, severity, doc_id}, ...]\n    \n    -- Pattern analysis\n    bad_faith_pattern_score INTEGER,  -- 0-1000\n    avg_bad_faith_score INTEGER,\n    \n    -- Risk assessment\n    flight_risk_score INTEGER,  -- 0-1000\n    compliance_risk_score INTEGER,  -- 0-1000\n    harm_risk_score INTEGER,  -- 0-1000\n    \n    -- Biographical\n    citizenship VARCHAR(50),\n    us_citizen BOOLEAN,\n    passport_status VARCHAR(50),\n    ties_to_jurisdiction JSONB,\n    \n    -- Legal history\n    dv_history BOOLEAN,\n    restraining_orders_count INTEGER,\n    \n    -- Trends\n    credibility_trend VARCHAR(20),  -- improving, declining, stable\n    credibility_history JSONB,  -- [{date, jms}, ...]\n    \n    -- Metadata\n    created_date TIMESTAMP DEFAULT NOW(),\n    updated_date TIMESTAMP DEFAULT NOW()\n);\n\n-- DOCUMENTS\nCREATE TABLE documents (\n    doc_id VARCHAR(20) PRIMARY KEY,\n    case_id VARCHAR(30) REFERENCES cases(case_id),\n    \n    -- File info\n    filename VARCHAR(500),\n    original_filename VARCHAR(500),\n    file_path VARCHAR(1000),\n    file_type VARCHAR(20),\n    file_size_bytes INTEGER,\n    page_count INTEGER,\n    \n    -- Document metadata\n    doc_date DATE,\n    doc_type VARCHAR(50),  -- declaration, transcript, report, etc.\n    parties VARCHAR(100),  -- MOT, FAT, CPS, etc.\n    under_oath BOOLEAN DEFAULT FALSE,\n    \n    -- LEVEL 3: Document Master Score\n    document_master_score INTEGER,  -- 0-1000 (DMS)\n    evidence_strength INTEGER,  -- 0-1000\n    legal_impact INTEGER,  -- 0-1000\n    strategic_value INTEGER,  -- 0-1000\n    intent_conduct INTEGER,  -- 0-1000\n    \n    -- Aggregated metrics\n    total_statements INTEGER DEFAULT 0,\n    total_lies INTEGER DEFAULT 0,\n    total_material_lies INTEGER DEFAULT 0,\n    total_perjury_statements INTEGER DEFAULT 0,\n    \n    lie_rate DECIMAL(5,2),\n    material_lie_rate DECIMAL(5,2),\n    \n    -- Underlying dimensions (averages)\n    avg_truth_value INTEGER,\n    avg_intent_score INTEGER,\n    avg_bad_faith_score INTEGER,\n    avg_context_score INTEGER,\n    avg_verification INTEGER,\n    avg_authenticity INTEGER,\n    avg_source_credibility INTEGER,\n    avg_admissibility INTEGER,\n    avg_legal_weight INTEGER,\n    \n    -- Violation summary\n    violation_summary JSONB,  -- {perjury: 5, fraud: 8, child_endangerment: 4, ...}\n    \n    -- Page scores\n    page_scores INTEGER[],  -- Array of PSS scores\n    avg_page_score INTEGER,\n    \n    -- Classification\n    is_smoking_gun BOOLEAN DEFAULT FALSE,\n    impeachment_statements_count INTEGER DEFAULT 0,\n    perjury_prosecutable_count INTEGER DEFAULT 0,\n    \n    -- Topics\n    primary_topics VARCHAR[],\n    topic_weights INTEGER[],\n    \n    -- Processing\n    processing_status VARCHAR(50),  -- pending, processing, complete, error\n    ocr_confidence DECIMAL(5,2),\n    ai_processing_complete BOOLEAN DEFAULT FALSE,\n    human_reviewed BOOLEAN DEFAULT FALSE,\n    review_notes TEXT,\n    \n    -- Timestamps\n    uploaded_date TIMESTAMP DEFAULT NOW(),\n    processed_date TIMESTAMP,\n    reviewed_date TIMESTAMP,\n    \n    -- Full-text search\n    content_text TEXT,\n    content_vector TSVECTOR\n);\n\nCREATE INDEX idx_doc_case ON documents(case_id);\nCREATE INDEX idx_doc_dms ON documents(document_master_score DESC);\nCREATE INDEX idx_doc_date ON documents(doc_date);\nCREATE INDEX idx_doc_smoking_gun ON documents WHERE is_smoking_gun = TRUE;\nCREATE INDEX idx_doc_fts ON documents USING GIN(content_vector);\n\n-- PAGES\nCREATE TABLE pages (\n    page_id VARCHAR(30) PRIMARY KEY,\n    doc_id VARCHAR(20) REFERENCES documents(doc_id),\n    page_number INTEGER,\n    \n    -- LEVEL 2: Page Score\n    page_score INTEGER,  -- 0-1000 (PSS)\n    \n    -- Aggregated counts\n    statement_count INTEGER DEFAULT 0,\n    lie_count INTEGER DEFAULT 0,\n    material_lie_count INTEGER DEFAULT 0,\n    perjury_statement_count INTEGER DEFAULT 0,\n    \n    -- Aggregated scores\n    avg_statement_score INTEGER,\n    max_statement_score INTEGER,\n    min_statement_score INTEGER,\n    \n    -- Pattern analysis\n    lie_density DECIMAL(5,2),  -- % of statements that are lies\n    bad_faith_pattern_score INTEGER,\n    \n    -- Content\n    page_text TEXT,\n    page_image_url VARCHAR(1000),\n    \n    -- OCR metadata\n    ocr_confidence DECIMAL(5,2),\n    \n    UNIQUE(doc_id, page_number)\n);\n\nCREATE INDEX idx_page_doc ON pages(doc_id);\nCREATE INDEX idx_page_score ON pages(page_score DESC);\n\n-- STATEMENTS\nCREATE TABLE statements (\n    stmt_id VARCHAR(30) PRIMARY KEY,  -- e.g., \"DOC-045-P02-S03\"\n    doc_id VARCHAR(20) REFERENCES documents(doc_id),\n    page_id VARCHAR(30) REFERENCES pages(page_id),\n    page_number INTEGER,\n    statement_number INTEGER,\n    \n    -- Statement content\n    statement_text TEXT,\n    statement_type VARCHAR(50),  -- claim, admission, denial, fact, opinion\n    speaker VARCHAR(100),\n    date_made DATE,\n    under_oath BOOLEAN,\n    \n    -- LEVEL 1: Statement Micro-Score & Dimensions (all 0-1000)\n    statement_micro_score INTEGER,  -- SMS (composite)\n    \n    truth_lie_score INTEGER,  -- TLS\n    intent_culpability_score INTEGER,  -- ICS\n    bad_faith_quantification INTEGER,  -- BFQ\n    context_relationship_score INTEGER,  -- CRS\n    evidence_quality_score INTEGER,  -- EQS\n    legal_weight_score INTEGER,  -- LWS\n    verification_status INTEGER,  -- VER\n    authenticity INTEGER,  -- AUT\n    source_credibility INTEGER,  -- SRC\n    admissibility INTEGER,  -- ADM\n    \n    -- Topic classification\n    topic_category VARCHAR(50),\n    topic_weight INTEGER,  -- 0-1000\n    secondary_topics VARCHAR[],\n    \n    -- Bad faith factors (JSON breakdown)\n    bad_faith_factors JSONB,  -- {timing_manipulation: 150, forum_shopping: 170, ...}\n    \n    -- Context factors (JSON breakdown)\n    context_factors JSONB,  -- {temporal_proximity: 180, relational_significance: 250, ...}\n    \n    -- Violations\n    violations JSONB,  -- [{type: \"perjury\", code: \"PC-118\", severity: 1000}, ...]\n    \n    -- Relationships (statement IDs)\n    contradicts VARCHAR[],\n    corroborates VARCHAR[],\n    undermines VARCHAR[],\n    supersedes VARCHAR[],\n    superseded_by VARCHAR[],\n    \n    -- Classification flags\n    is_lie BOOLEAN DEFAULT FALSE,\n    is_material_lie BOOLEAN DEFAULT FALSE,\n    is_perjury BOOLEAN DEFAULT FALSE,\n    is_impeachment_evidence BOOLEAN DEFAULT FALSE,\n    is_judicial_admission BOOLEAN DEFAULT FALSE,\n    is_smoking_gun BOOLEAN DEFAULT FALSE,\n    \n    -- Processing metadata\n    ai_confidence DECIMAL(5,2),\n    human_reviewed BOOLEAN DEFAULT FALSE,\n    review_notes TEXT,\n    \n    -- Timestamps\n    created_date TIMESTAMP DEFAULT NOW(),\n    updated_date TIMESTAMP DEFAULT NOW()\n);\n\nCREATE INDEX idx_stmt_doc ON statements(doc_id);\nCREATE INDEX idx_stmt_page ON statements(page_id);\nCREATE INDEX idx_stmt_sms ON statements(statement_micro_score DESC);\nCREATE INDEX idx_stmt_truth ON statements(truth_lie_score);\nCREATE INDEX idx_stmt_bfq ON statements(bad_faith_quantification DESC);\nCREATE INDEX idx_stmt_lies ON statements WHERE is_lie = TRUE;\nCREATE INDEX idx_stmt_perjury ON statements WHERE is_perjury = TRUE;\nCREATE INDEX idx_stmt_smoking_gun ON statements WHERE is_smoking_gun = TRUE;\n\n-- CONTEXT RELATIONSHIPS\nCREATE TABLE context_relationships (\n    rel_id SERIAL PRIMARY KEY,\n    stmt_id_primary VARCHAR(30) REFERENCES statements(stmt_id),\n    stmt_id_related VARCHAR(30) REFERENCES statements(stmt_id),\n    \n    relationship_type VARCHAR(50),  -- contradicts, corroborates, undermines, etc.\n    relationship_strength INTEGER,  -- 0-1000\n    \n    -- Temporal context\n    time_delta_hours INTEGER,\n    time_delta_days INTEGER,\n    temporal_significance INTEGER,  -- 0-1000\n    \n    -- Pattern context\n    part_of_pattern BOOLEAN DEFAULT FALSE,\n    pattern_type VARCHAR(50),\n    pattern_significance INTEGER,  -- 0-1000\n    \n    -- Legal consequence\n    caused_legal_consequence BOOLEAN DEFAULT FALSE,\n    consequence_description TEXT,\n    consequence_score INTEGER,  -- 0-1000\n    \n    -- Overall context contribution\n    context_contribution_score INTEGER,  -- 0-1000 (contributes to CRS)\n    \n    -- Description\n    relationship_description TEXT,\n    \n    -- Metadata\n    created_date TIMESTAMP DEFAULT NOW(),\n    \n    UNIQUE(stmt_id_primary, stmt_id_related, relationship_type)\n);\n\nCREATE INDEX idx_rel_primary ON context_relationships(stmt_id_primary);\nCREATE INDEX idx_rel_related ON context_relationships(stmt_id_related);\nCREATE INDEX idx_rel_type ON context_relationships(relationship_type);\nCREATE INDEX idx_rel_temporal ON context_relationships(time_delta_hours);\n\n-- MOTIONS/BRIEFS\nCREATE TABLE motions (\n    motion_id VARCHAR(20) PRIMARY KEY,\n    case_id VARCHAR(30) REFERENCES cases(case_id),\n    \n    motion_type VARCHAR(100),  -- \"W&I 388\", \"CCP 473(d)\", \"Appeal\", etc.\n    motion_title VARCHAR(200),\n    filing_date DATE,\n    hearing_date DATE,\n    \n    -- LEVEL 4: Motion Strength Score\n    motion_strength_score INTEGER,  -- 0-1000 (MBS)\n    document_quality INTEGER,  -- 0-1000\n    legal_sufficiency INTEGER,  -- 0-1000\n    corroboration_network INTEGER,  -- 0-1000\n    predicted_success INTEGER,  -- 0-100 (percentage)\n    \n    confidence_interval INTEGER,  -- ± X points\n    \n    -- Documents included\n    document_ids VARCHAR[],\n    document_count INTEGER,\n    avg_document_score INTEGER,\n    \n    -- Element tracking\n    elements_required JSONB,  -- [{element: \"New evidence\", proven: true, docs: [...]}, ...]\n    elements_proven_count INTEGER,\n    elements_total_count INTEGER,\n    elements_completion_rate DECIMAL(5,2),\n    \n    -- Evidence gaps\n    evidence_gaps JSONB,  -- [{gap: \"Need expert testimony on X\", severity: \"high\"}, ...]\n    \n    -- Status\n    status VARCHAR(50),  -- draft, filed, granted, denied, pending\n    outcome VARCHAR(100),\n    outcome_date DATE,\n    \n    -- Generated content\n    motion_text TEXT,\n    exhibits_package_url VARCHAR(1000),\n    \n    -- Metadata\n    created_date TIMESTAMP DEFAULT NOW(),\n    filed_date TIMESTAMP,\n    decided_date TIMESTAMP\n);\n\nCREATE INDEX idx_motion_case ON motions(case_id);\nCREATE INDEX idx_motion_mbs ON motions(motion_strength_score DESC);\nCREATE INDEX idx_motion_type ON motions(motion_type);\nCREATE INDEX idx_motion_status ON motions(status);\n\n-- MOTION-DOCUMENT LINKING\nCREATE TABLE motion_documents (\n    motion_id VARCHAR(20) REFERENCES motions(motion_id),\n    doc_id VARCHAR(20) REFERENCES documents(doc_id),\n    \n    relevance_to_motion INTEGER,  -- 0-1000\n    proves_element VARCHAR(200),\n    exhibit_number VARCHAR(10),\n    \n    PRIMARY KEY (motion_id, doc_id)\n);\n\n-- VIOLATIONS TRACKING\nCREATE TABLE violations (\n    violation_id SERIAL PRIMARY KEY,\n    case_id VARCHAR(30) REFERENCES cases(case_id),\n    party_id VARCHAR(20) REFERENCES parties(party_id),\n    doc_id VARCHAR(20) REFERENCES documents(doc_id),\n    stmt_id VARCHAR(30) REFERENCES statements(stmt_id),\n    \n    violation_type VARCHAR(50),  -- perjury, fraud_on_court, child_endangerment, etc.\n    violation_code VARCHAR(50),  -- PC-118, CCP-473, PC-273a, etc.\n    violation_severity INTEGER,  -- 0-1000\n    \n    violation_date DATE,\n    detected_date DATE,\n    \n    -- Evidence\n    proving_documents VARCHAR[],  -- Array of doc_ids\n    proving_statements VARCHAR[],  -- Array of stmt_ids\n    \n    -- Status\n    status VARCHAR(50),  -- detected, reported, prosecuted, sanctioned, dismissed\n    reported_to VARCHAR(100),  -- DA, court, etc.\n    outcome VARCHAR(200),\n    \n    -- Description\n    violation_description TEXT,\n    \n    -- Metadata\n    created_date TIMESTAMP DEFAULT NOW()\n);\n\nCREATE INDEX idx_violation_party ON violations(party_id);\nCREATE INDEX idx_violation_type ON violations(violation_type);\nCREATE INDEX idx_violation_severity ON violations(violation_severity DESC);\nCREATE INDEX idx_violation_status ON violations(status);\n\n-- TIMELINE EVENTS\nCREATE TABLE timeline_events (\n    event_id SERIAL PRIMARY KEY,\n    case_id VARCHAR(30) REFERENCES cases(case_id),\n    \n    event_date DATE,\n    event_time TIME,\n    event_type VARCHAR(50),  -- disclosure, filing, hearing, investigation, etc.\n    event_description TEXT,\n    \n    -- Related entities\n    doc_id VARCHAR(20) REFERENCES documents(doc_id),\n    stmt_id VARCHAR(30) REFERENCES statements(stmt_id),\n    party_id VARCHAR(20) REFERENCES parties(party_id),\n    \n    -- Significance\n    significance_score INTEGER,  -- 0-1000\n    \n    -- Metadata\n    source_doc VARCHAR(20),\n    created_date TIMESTAMP DEFAULT NOW()\n);\n\nCREATE INDEX idx_timeline_case ON timeline_events(case_id);\nCREATE INDEX idx_timeline_date ON timeline_events(event_date);\nCREATE INDEX idx_timeline_significance ON timeline_events(significance_score DESC);\n\n-- ============================================================================\n-- TRIGGERS & FUNCTIONS\n-- ============================================================================\n\n-- Auto-update timestamps\nCREATE OR REPLACE FUNCTION update_updated_date()\nRETURNS TRIGGER AS $$\nBEGIN\n    NEW.updated_date = NOW();\n    RETURN NEW;\nEND;\n$$ LANGUAGE plpgsql;\n\nCREATE TRIGGER update_documents_timestamp\n    BEFORE UPDATE ON documents\n    FOR EACH ROW EXECUTE FUNCTION update_updated_date();\n\nCREATE TRIGGER update_parties_timestamp\n    BEFORE UPDATE ON parties\n    FOR EACH ROW EXECUTE FUNCTION update_updated_date();\n\nCREATE TRIGGER update_statements_timestamp\n    BEFORE UPDATE ON statements\n    FOR EACH ROW EXECUTE FUNCTION update_updated_date();\n\n-- Auto-update full-text search vectors\nCREATE OR REPLACE FUNCTION update_document_search_vector()\nRETURNS TRIGGER AS $$\nBEGIN\n    NEW.content_vector = to_tsvector('english', \n        COALESCE(NEW.filename, '') || ' ' ||\n        COALESCE(NEW.content_text, '')\n    );\n    RETURN NEW;\nEND;\n$$ LANGUAGE plpgsql;\n\nCREATE TRIGGER update_document_fts\n    BEFORE INSERT OR UPDATE ON documents\n    FOR EACH ROW EXECUTE FUNCTION update_document_search_vector();\n\nIII. PROCESSING WORKFLOW\nA. DOCUMENT PROCESSING PIPELINE\n\"\"\"\nCOMPLETE DOCUMENT PROCESSING WORKFLOW\nInput: Raw document file (PDF, image, DOCX, etc.)\nOutput: Fully analyzed document with all scores in database\n\"\"\"\n\ndef process_document_complete(file_path, case_id, case_context):\n    \"\"\"\n    Master processing function\n    \"\"\"\n    \n    print(f\" Processing document: {file_path}\")\n    \n    # ========================================================================\n    # PHASE 1: INGESTION & OCR (2-3 minutes)\n    # ========================================================================\n    print(\" Phase 1: Ingestion & OCR...\")\n    \n    # Detect file type\n    file_type = detect_file_type(file_path)\n    \n    # Extract text\n    if file_type in ['pdf', 'image', 'jpg', 'png']:\n        pages_text = tesseract_ocr(file_path)\n        ocr_confidence = calculate_ocr_confidence(pages_text)\n    elif file_type == 'docx':\n        pages_text = extract_docx_text(file_path)\n        ocr_confidence = 1.0\n    elif file_type in ['txt', 'md']:\n        pages_text = read_text_file(file_path)\n        ocr_confidence = 1.0\n    elif file_type in ['mp3', 'm4a', 'wav']:\n        pages_text = transcribe_audio_whisper(file_path)\n        ocr_confidence = 0.95\n    \n    # Extract metadata\n    doc_metadata = extract_metadata(file_path, pages_text)\n    # {date, parties, type, under_oath, page_count}\n    \n    # Create document record\n    doc_id = generate_doc_id(case_id)\n    \n    db.insert('documents', {\n        'doc_id': doc_id,\n        'case_id': case_id,\n        'filename': generate_smart_filename(doc_metadata, case_context),\n        'original_filename': os.path.basename(file_path),\n        'file_path': upload_to_storage(file_path, doc_id),\n        'file_type': file_type,\n        'page_count': len(pages_text),\n        'doc_date': doc_metadata['date'],\n        'doc_type': doc_metadata['type'],\n        'parties': doc_metadata['parties'],\n        'under_oath': doc_metadata['under_oath'],\n        'processing_status': 'processing',\n        'ocr_confidence': ocr_confidence\n    })\n    \n    # ========================================================================\n    # PHASE 2: AI STATEMENT EXTRACTION (5-10 minutes)\n    # ========================================================================\n    print(\" Phase 2: AI Statement Extraction...\")\n    \n    all_statements = []\n    \n    for page_num, page_text in enumerate(pages_text, start=1):\n        \n        # AI extracts statements from page\n        statements = ai_extract_statements(\n            page_text=page_text,\n            doc_metadata=doc_metadata,\n            case_context=case_context,\n            page_number=page_num\n        )\n        \n        # Create page record\n        page_id = f\"{doc_id}-P{page_num:02d}\"\n        db.insert('pages', {\n            'page_id': page_id,\n            'doc_id': doc_id,\n            'page_number': page_num,\n            'page_text': page_text,\n            'statement_count': len(statements),\n            'page_image_url': generate_page_screenshot(file_path, page_num)\n        })\n        \n        for stmt_num, statement in enumerate(statements, start=1):\n            statement['stmt_id'] = f\"{doc_id}-P{page_num:02d}-S{stmt_num:02d}\"\n            statement['doc_id'] = doc_id\n            statement['page_id'] = page_id\n            statement['page_number'] = page_num\n            statement['statement_number'] = stmt_num\n            \n            all_statements.append(statement)\n    \n    print(f\"   ✓ Extracted {len(all_statements)} statements across {len(pages_text)} pages\")\n    \n    # ========================================================================\n    # PHASE 3: STATEMENT ANALYSIS (15-30 minutes for complex docs)\n    # ========================================================================\n    print(\" Phase 3: Statement Analysis...\")\n    \n    for idx, statement in enumerate(all_statements, start=1):\n        print(f\"   Analyzing statement {idx}/{len(all_statements)}...\", end='\\r')\n        \n        # ----------------------------------------------------------------\n        # 3.1: TRUTH ANALYSIS\n        # ----------------------------------------------------------------\n        truth_analysis = ai_analyze_truth(\n            statement=statement,\n            case_history=case_context['all_statements'],\n            known_facts=case_context['verified_facts'],\n            contradictory_evidence=case_context['evidence_against'],\n            corroborating_evidence=case_context['evidence_for']\n        )\n        \n        statement['truth_lie_score'] = truth_analysis['truth_score']\n        statement['verification_status'] = truth_analysis['verification']\n        statement['is_lie'] = truth_analysis['truth_score'] < 500\n        statement['is_material_lie'] = (\n            truth_analysis['truth_score'] < 400 and\n            truth_analysis['materiality'] > 700\n        )\n        \n        # ----------------------------------------------------------------\n        # 3.2: INTENT CLASSIFICATION\n        # ----------------------------------------------------------------\n        intent_analysis = ai_classify_intent(\n            statement=statement,\n            truth_value=truth_analysis['truth_score'],\n            party_history=case_context['party_pattern'],\n            context=case_context\n        )\n        \n        statement['intent_culpability_score'] = intent_analysis['intent_score']\n        \n        # ----------------------------------------------------------------\n        # 3.3: BAD FAITH QUANTIFICATION\n        # ----------------------------------------------------------------\n        bad_faith_analysis = ai_quantify_bad_faith(\n            statement=statement,\n            doc_metadata=doc_metadata,\n            timing_context=case_context['timeline'],\n            party_pattern=case_context['party_pattern'],\n            violations_detected=truth_analysis.get('violations', [])\n        )\n        \n        statement['bad_faith_quantification'] = bad_faith_analysis['bfq_score']\n        statement['bad_faith_factors'] = bad_faith_analysis['factors']\n        \n        # ----------------------------------------------------------------\n        # 3.4: CONTEXT RELATIONSHIP SCORING\n        # ----------------------------------------------------------------\n        context_analysis = ai_calculate_context_relationships(\n            statement=statement,\n            doc_date=doc_metadata['date'],\n            related_events=case_context['timeline'],\n            related_statements=case_context['all_statements'],\n            key_documents=case_context['key_docs']\n        )\n        \n        statement['context_relationship_score'] = context_analysis['crs_score']\n        statement['context_factors'] = context_analysis['factors']\n        \n        # Store relationships\n        for rel in context_analysis['relationships']:\n            db.insert('context_relationships', rel)\n        \n        # ----------------------------------------------------------------\n        # 3.5: EVIDENCE QUALITY ASSESSMENT\n        # ----------------------------------------------------------------\n        evidence_quality = assess_evidence_quality(\n            statement=statement,\n            doc_metadata=doc_metadata,\n            source_analysis=case_context.get('source_credibility', {})\n        )\n        \n        statement['evidence_quality_score'] = evidence_quality['eqs']\n        statement['authenticity'] = evidence_quality['authenticity']\n        statement['source_credibility'] = evidence_quality['source_credibility']\n        statement['admissibility'] = evidence_quality['admissibility']\n        \n        # ----------------------------------------------------------------\n        # 3.6: LEGAL WEIGHT ASSESSMENT\n        # ----------------------------------------------------------------\n        legal_weight = assess_legal_weight(\n            statement=statement,\n            case_context=case_context,\n            pending_motions=case_context['pending_motions']\n        )\n        \n        statement['legal_weight_score'] = legal_weight['lws']\n        \n        # ----------------------------------------------------------------\n        # 3.7: VIOLATION DETECTION\n        # ----------------------------------------------------------------\n        violations = ai_detect_violations(\n            statement=statement,\n            truth_value=statement['truth_lie_score'],\n            intent=statement['intent_culpability_score'],\n            materiality=legal_weight['materiality'],\n            under_oath=statement['under_oath']\n        )\n        \n        statement['violations'] = violations\n        \n        # ----------------------------------------------------------------\n        # 3.8: TOPIC CLASSIFICATION\n        # ----------------------------------------------------------------\n        topics = ai_classify_topics(statement, case_context)\n        statement['topic_category'] = topics['primary']['category']\n        statement['topic_weight'] = topics['primary']['weight']\n        statement['secondary_topics'] = topics.get('secondary', [])\n        \n        # ----------------------------------------------------------------\n        # 3.9: CALCULATE STATEMENT MICRO-SCORE (SMS)\n        # ----------------------------------------------------------------\n        sms_result = calculate_sms({\n            'truth_lie': statement['truth_lie_score'],\n            'intent_culpability': statement['intent_culpability_score'],\n            'bad_faith_quantification': statement['bad_faith_quantification'],\n            'context_relationship': statement['context_relationship_score'],\n            'evidence_quality': statement['evidence_quality_score'],\n            'legal_weight': statement['legal_weight_score'],\n            'verification': statement['verification_status'],\n            'authenticity': statement['authenticity'],\n            'source_credibility': statement['source_credibility'],\n            'admissibility': statement['admissibility'],\n            'violations': violations\n        })\n        \n        statement['statement_micro_score'] = sms_result['sms']\n        statement['is_smoking_gun'] = sms_result['sms'] >= 950\n        statement['is_impeachment_evidence'] = sms_result['impeachment_ready']\n        statement['is_perjury'] = sms_result['perjury_prosecutable']\n        \n        # ----------------------------------------------------------------\n        # 3.10: STORE STATEMENT IN DATABASE\n        # ----------------------------------------------------------------\n        db.insert('statements', statement)\n        \n        # Store violations separately\n        for violation in violations:\n            db.insert('violations', {\n                'case_id': case_id,\n                'party_id': get_party_id_from_speaker(statement['speaker']),\n                'doc_id': doc_id,\n                'stmt_id': statement['stmt_id'],\n                'violation_type': violation['type'],\n                'violation_code': violation['code'],\n                'violation_severity': violation['severity'],\n                'violation_date': doc_metadata['date'],\n                'status': 'detected',\n                'violation_description': violation.get('description', '')\n            })\n    \n    print(f\"\\n   ✓ Analyzed {len(all_statements)} statements\")\n    \n    # ========================================================================\n    # PHASE 4: PAGE SCORE AGGREGATION\n    # ========================================================================\n    print(\" Phase 4: Calculating page scores...\")\n    \n    for page_num in range(1, len(pages_text) + 1):\n        page_id = f\"{doc_id}-P{page_num:02d}\"\n        \n        # Get all statements for this page\n        page_statements = [s for s in all_statements if s['page_number'] == page_num]\n        \n        # Calculate page score\n        pss = calculate_pss(page_statements)\n        \n        # Update page record\n        db.update('pages', page_id, {\n            'page_score': pss,\n            'lie_count': len([s for s in page_statements if s['is_lie']]),\n            'material_lie_count': len([s for s in page_statements if s['is_material_lie']]),\n            'perjury_statement_count': len([s for s in page_statements if s['is_perjury']]),\n            'avg_statement_score': int(np.mean([s['statement_micro_score'] for s in page_statements])),\n            'max_statement_score': max([s['statement_micro_score'] for s in page_statements]),\n            'min_statement_score': min([s['statement_micro_score'] for s in page_statements]),\n            'lie_density': len([s for s in page_statements if s['is_lie']]) / len(page_statements) * 100\n        })\n    \n    # ========================================================================\n    # PHASE 5: DOCUMENT MASTER SCORE CALCULATION\n    # ========================================================================\n    print(\" Phase 5: Calculating document master score...\")\n    \n    dms_result = calculate_dms({\n        'doc_id': doc_id,\n        'statements': all_statements,\n        'pages': pages_text,\n        'metadata': doc_metadata\n    })\n    \n    # Update document record\n    db.update('documents', doc_id, {\n        'document_master_score': dms_result['dms'],\n        'evidence_strength': dms_result['evidence_strength'],\n        'legal_impact': dms_result['legal_impact'],\n        'strategic_value': dms_result['strategic_value'],\n        'intent_conduct': dms_result['intent_conduct'],\n        \n        'total_statements': len(all_statements),\n        'total_lies': len([s for s in all_statements if s['is_lie']]),\n        'total_material_lies': len([s for s in all_statements if s['is_material_lie']]),\n        'total_perjury_statements': len([s for s in all_statements if s['is_perjury']]),\n        \n        'lie_rate': len([s for s in all_statements if s['is_lie']]) / len(all_statements) * 100,\n        'material_lie_rate': len([s for s in all_statements if s['is_material_lie']]) / len(all_statements) * 100,\n        \n        'avg_truth_value': int(np.mean([s['truth_lie_score'] for s in all_statements])),\n        'avg_intent_score': int(np.mean([s['intent_culpability_score'] for s in all_statements])),\n        'avg_bad_faith_score': int(np.mean([s['bad_faith_quantification'] for s in all_statements])),\n        'avg_context_score': int(np.mean([s['context_relationship_score'] for s in all_statements])),\n        \n        'is_smoking_gun': dms_result['dms'] >= 950,\n        'impeachment_statements_count': len([s for s in all_statements if s['is_impeachment_evidence']]),\n        'perjury_prosecutable_count': len([s for s in all_statements if s['is_perjury']]),\n        \n        'page_scores': [db.get('pages', f\"{doc_id}-P{i:02d}\")['page_score'] for i in range(1, len(pages_text)+1)],\n        'avg_page_score': int(np.mean([db.get('pages', f\"{doc_id}-P{i:02d}\")['page_score'] for i in range(1, len(pages_text)+1)])),\n        \n        'processing_status': 'complete',\n        'ai_processing_complete': True,\n        'processed_date': datetime.now()\n    })\n    \n    # ========================================================================\n    # PHASE 6: UPDATE PARTY CREDIBILITY\n    # ========================================================================\n    print(\" Phase 6: Updating party credibility scores...\")\n    \n    # Identify party from document\n    party_id = get_party_id_from_parties(doc_metadata['parties'])\n    \n    if party_id:\n        update_party_justice_score(party_id, doc_id, all_statements)\n    \n    # ========================================================================\n    # PHASE 7: VECTOR EMBEDDINGS (for semantic search)\n    # ========================================================================\n    print(\" Phase 7: Generating vector embeddings...\")\n    \n    # Generate document embedding\n    doc_embedding = generate_embedding(\n        text=f\"{doc_metadata.get('title', '')} {' '.join([p for p in pages_text])}\",\n        model=\"text-embedding-3-small\"\n    )\n    \n    # Store in Qdrant\n    qdrant.upsert(\n        collection_name=\"documents\",\n        points=[{\n            'id': doc_id,\n            'vector': doc_embedding,\n            'payload': {\n                'doc_id': doc_id,\n                'case_id': case_id,\n                'dms': dms_result['dms'],\n                'doc_type': doc_metadata['type'],\n                'date': str(doc_metadata['date'])\n            }\n        }]\n    )\n    \n    # Generate embeddings for high-value statements\n    high_value_statements = [s for s in all_statements if s['statement_micro_score'] >= 700]\n    \n    for statement in high_value_statements:\n        stmt_embedding = generate_embedding(statement['statement_text'])\n        \n        qdrant.upsert(\n            collection_name=\"statements\",\n            points=[{\n                'id': statement['stmt_id'],\n                'vector': stmt_embedding,\n                'payload': {\n                    'stmt_id': statement['stmt_id'],\n                    'doc_id': doc_id,\n                    'case_id': case_id,\n                    'sms': statement['statement_micro_score'],\n                    'is_perjury': statement['is_perjury'],\n                    'is_smoking_gun': statement['is_smoking_gun']\n                }\n            }]\n        )\n    \n    # ========================================================================\n    # PHASE 8: NOTIFICATIONS & ALERTS\n    # ========================================================================\n    print(\" Phase 8: Checking for alerts...\")\n    \n    alerts = []\n    \n    # Perjury detected\n    if len([s for s in all_statements if s['is_perjury']]) > 0:\n        alerts.append({\n            'type': 'PERJURY_DETECTED',\n            'severity': 'CRITICAL',\n            'count': len([s for s in all_statements if s['is_perjury']]),\n            'doc_id': doc_id\n        })\n    \n    # Smoking gun document\n    if dms_result['dms'] >= 950:\n        alerts.append({\n            'type': 'SMOKING_GUN_DOCUMENT',\n            'severity': 'HIGH',\n            'dms': dms_result['dms'],\n            'doc_id': doc_id\n        })\n    \n    # Extreme bad faith\n    if any(s['bad_faith_quantification'] >= 900 for s in all_statements):\n        alerts.append({\n            'type': 'EXTREME_BAD_FAITH',\n            'severity': 'HIGH',\n            'max_bfq': max(s['bad_faith_quantification'] for s in all_statements),\n            'doc_id': doc_id\n        })\n    \n    # Send alerts\n    for alert in alerts:\n        send_alert_to_user(case_id, alert)\n    \n    # ========================================================================\n    # COMPLETION\n    # ========================================================================\n    print(f\"\\n✅ Document processing complete!\")\n    print(f\"   Document Master Score: {dms_result['dms']}/1000 [{dms_result['rating']}]\")\n    print(f\"   Statements: {len(all_statements)}\")\n    print(f\"   Lies detected: {len([s for s in all_statements if s['is_lie']])} ({len([s for s in all_statements if s['is_lie']]) / len(all_statements) * 100:.1f}%)\")\n    print(f\"   Perjury statements: {len([s for s in all_statements if s['is_perjury']]}\")\n    print(f\"   Smoking guns: {len([s for s in all_statements if s['is_smoking_gun']])}\")\n    \n    return {\n        'doc_id': doc_id,\n        'dms': dms_result,\n        'statements_count': len(all_statements),\n        'alerts': alerts,\n        'processing_time': calculate_processing_time()\n    }\n\nIV. IMPLEMENTATION PRIORITIES\nPHASE 1: MVP (Months 1-3)\nGOAL: Process documents for Don's case, generate evidence packages\n\nWeek 1-2: Database Setup\n├─ Supabase project creation\n├─ Schema implementation\n├─ Basic CRUD operations\n└─ Authentication setup\n\nWeek 3-4: Document Ingestion\n├─ OCR integration (Tesseract)\n├─ File upload to R2\n├─ Metadata extraction\n└─ Page splitting\n\nWeek 5-8: AI Analysis Core\n├─ Claude API integration\n├─ Statement extraction prompts\n├─ Truth analysis algorithms\n├─ Scoring engine implementation\n└─ All 12 dimensions coded\n\nWeek 9-10: Database Population\n├─ Process Don's 156 documents\n├─ Verify scoring accuracy\n├─ Human review critical statements\n└─ Adjust algorithms\n\nWeek 11-12: Evidence Generation\n├─ Motion drafting templates\n├─ Evidence package exports\n├─ Credibility comparison reports\n└─ Timeline visualization\n\nDELIVERABLE: Working system with Don's case fully processed\nPHASE 2: Beta (Months 4-6)\nGOAL: Test with 10 other families, refine algorithms\n\n- Recruit beta families\n- Process their cases\n- Gather feedback\n- Iterate on UX\n- Validate scoring accuracy\n- Document outcomes\n\nDELIVERABLE: Validated system, published methodology\nPHASE 3: Public Launch (Months 7-12)\nGOAL: Launch free access for protective parents\n\n- Web application (Next.js)\n- User onboarding flow\n- Document upload interface\n- Dashboard & reports\n- Mobile optimization\n- Documentation/tutorials\n\nDELIVERABLE: Public-facing platform, 100+ families served\n\nV. TECHNICAL STACK\nFrontend:\n  framework: Next.js 14\n  ui_library: React 18\n  styling: Tailwind CSS\n  components: Shadcn/ui\n  charts: Recharts\n  deployment: Vercel\n\nBackend:\n  framework: FastAPI (Python 3.11+)\n  database: Supabase (Postgres 15)\n  vector_db: Qdrant\n  storage: Cloudflare R2\n  deployment: Railway / Fly.io\n\nAI/ML:\n  primary: Claude API (Anthropic)\n  backup: GPT-4 (OpenAI)\n  embeddings: text-embedding-3-small\n  audio: Whisper API\n\nProcessing:\n  ocr: Tesseract 5.0+\n  pdf: PyMuPDF\n  documents: python-docx\n  images: Pillow\n\nAutomation:\n  workflow: n8n\n  queues: BullMQ\n  tasks: Celery\n\nInfrastructure:\n  cdn: Cloudflare\n  monitoring: Sentry\n  analytics: PostHog\n  logging: Pino\n\nVI. REAL EXAMPLE: MOTHER'S AUGUST 12, 2024 DECLARATION\nDocument Analysis Summary\nDOCUMENT: Mother's Ex Parte Declaration (Aug 12, 2024)\nFILE: Screenshot_20250930_174655_Adobe_Acrobat.jpg\nPAGES: 2\nWORDS: 288\nSTATEMENTS: 16\n\nSCORING RESULTS:\n├─ Document Master Score (DMS): 930/1000 [A - Excellent]\n│   ├─ Evidence Strength: 920/1000\n│   ├─ Legal Impact: 970/1000\n│   ├─ Strategic Value: 890/1000\n│   └─ Intent/Conduct: 950/1000\n│\n├─ Statement Analysis:\n│   ├─ Total statements: 16\n│   ├─ Lies/False: 11 (69%)\n│   ├─ Material lies: 8 (50%)\n│   ├─ Perjury-level: 5 (31%)\n│   ├─ Good faith: 2 (13%)\n│   └─ Misleading: 3 (19%)\n│\n└─ Violations Detected:\n    ├─ Perjury (PC 118): 5 instances\n    ├─ Fraud on Court (CCP 473): 8 instances\n    ├─ Child Endangerment (PC 273a): 6 instances\n    └─ Obstruction (PC 182): 4 instances\n\nTOP 3 SMOKING GUN STATEMENTS:\n\n1. SMS: 978/1000 - \"Jamaica not Hague Convention member\"\n   ├─ TLS: 020/1000 [AGGRAVATED PERJURY]\n   ├─ ICS: 980/1000 [MALEVOLENT]\n   ├─ BFQ: 990/1000 [EXTREME CORRUPTION]\n   ├─ CRS: 1000/1000 [MAXIMUM SIGNIFICANCE]\n   └─ VIOLATIONS: Perjury (1000), Fraud (980), Child Endangerment (1000)\n   \n   PROOF OF FALSITY:\n   - Jamaica IS Hague member (since October 1, 1994)\n   - Father's passport EXPIRED August 6, 2024 (6 days before filing)\n   - Easily verifiable = knew or should have known false\n   - Material: Court granted emergency order based on this lie\n\n2. SMS: 968/1000 - \"Father has no ties to United States\"\n   ├─ TLS: 050/1000 [AGGRAVATED PERJURY]\n   ├─ ICS: 960/1000 [MALEVOLENT]\n   └─ VIOLATIONS: Perjury (1000), Fraud (970)\n   \n   PROOF OF FALSITY:\n   - Father is US CITIZEN (birth certificate/passport)\n   - Has US employment\n   - Has US residence\n   - Objectively, verifiably false\n\n3. SMS: 947/1000 - \"Father using report to alienate and keep Ashe away\"\n   ├─ TLS: 120/1000 [MALICIOUS FALSEHOOD]\n   ├─ ICS: 940/1000 [MALEVOLENT]\n   ├─ BFQ: 960/1000 [EXTREME BAD FAITH]\n   ├─ CRS: 1000/1000 [MAXIMUM]\n   └─ VIOLATIONS: Perjury (980), Child Endangerment (1000)\n   \n   PROOF OF FALSITY:\n   - Contradicts her own April 2021 admission (grandfather abused her)\n   - Child disclosed abuse on August 3, 2024\n   - Dr. Brown confirmed \"suspected child sexual abuse\" August 9, 2024\n   - Father seeking protection, not alienation\n\nVII. FOR YOUR PYTHON PROGRAM\nKey Integration Points\n\"\"\"\nUse this summary to guide your implementation:\n\"\"\"\n\n# 1. SCORING FUNCTIONS\nfrom scoring_engine import (\n    calculate_sms,  # Statement Micro-Score\n    calculate_pss,  # Page Score\n    calculate_dms,  # Document Master Score\n    calculate_mbs,  # Motion/Brief Strength\n    calculate_jms   # Justice Master Score\n)\n\n# 2. AI ANALYSIS FUNCTIONS\nfrom ai_analysis import (\n    ai_extract_statements,\n    ai_analyze_truth,\n    ai_classify_intent,\n    ai_quantify_bad_faith,\n    ai_calculate_context_relationships,\n    ai_detect_violations\n)\n\n# 3. DATABASE OPERATIONS\nfrom database import (\n    db_insert_document,\n    db_insert_statement,\n    db_update_party_credibility,\n    db_get_case_context\n)\n\n# 4. MAIN PROCESSING FUNCTION\nfrom document_processor import process_document_complete\n\n# Example usage:\nresult = process_document_complete(\n    file_path=\"/path/to/document.pdf\",\n    case_id=\"ashe-bucknor-j24-00478\",\n    case_context={\n        'all_statements': get_all_prior_statements(),\n        'verified_facts': get_verified_facts(),\n        'party_pattern': get_party_behavior_pattern('mother'),\n        'timeline': get_case_timeline(),\n        'key_docs': get_key_documents(),\n        'pending_motions': ['W&I 388', 'CCP 473(d)']\n    }\n)\n\nprint(f\"DMS: {result['dms']['dms']}/1000\")\nprint(f\"Perjury detected: {result['alerts']}\")\n\nVIII. NEXT STEPS FOR YOU\nSet up development environment\nPython 3.11+\nSupabase account\nClaude API key\nGit repository\nImplement database schema\nCopy SQL from Section II\nRun in Supabase\nTest CRUD operations\nStart with document ingestion\nOCR pipeline\nMetadata extraction\nFile storage\nIntegrate AI analysis\nClaude API calls\nPrompt engineering\nResponse parsing\nBuild scoring engine\nAll formulas from Section I\nTest with sample data\nValidate accuracy\nProcess your documents\nStart with highest priority\nMother's August 12 ex parte\nMother's April 2021 admission\nDr. Brown's report\n\nIX. MISSION REMINDER\nEvery line of code we write serves one purpose:\nEnsure that no child's voice is silenced by litigation, no protective parent is punished for protecting, and no abuser escapes accountability through legal manipulation.\nFor Ashe. For every child. For justice.\n\nThis system will be free forever for families protecting children.\nTechnology can bend the arc of justice faster.\nLet's build it.\n\nSystem Specification v1.0 Last Updated: 2025-01-15 For: Ashe Sanctuary Of Empowerment Foundation / Athena Guardian of Innocence Project Built with love by a father fighting for his daughter \n\nEND OF SUMMARY DOCUMENT\n",
+  "content_preview": "ATHENA GUARDIAN OF INNOCENCE PROJECT\nComplete System Specification & Implementation Guide\nFor Ashe. For All Children. ️\n\nEXECUTIVE SUMMARY\nMission: Free AI-powered legal intelligence system to protect children by detecting perjury, quantifying bad faith, empowering protective parents, and holding systems accountable.\nCore Innovation: Statement-level truth tracking (0-1000 scale) with context-aware relationship scoring across entire case histories.\nKey Differentiator: Nothing like this exists. ...",
+  "sections": [
+    {
+      "title": "ATHENA GUARDIAN OF INNOCENCE PROJECT",
+      "content": "Complete System Specification & Implementation Guide\nFor Ashe. For All Children. ️"
+    },
+    {
+      "title": "EXECUTIVE SUMMARY",
+      "content": "Mission: Free AI-powered legal intelligence system to protect children by detecting perjury, quantifying bad faith, empowering protective parents, and holding systems accountable.\nCore Innovation: Statement-level truth tracking (0-1000 scale) with context-aware relationship scoring across entire case histories.\nKey Differentiator: Nothing like this exists. Combines e-discovery (Relativity), predictive analytics (Lex Machina), credit scoring (FICO), and forensic analysis in one system designed for child protection cases.\nTarget Users: Pro se protective parents (free forever), family law attorneys, CPS agencies, district attorneys.\nImpact Goal: Ensure no child's voice is silenced, no protective parent punished, no abuser escapes through legal manipulation.\nI. SCORING METHODOLOGY (Complete Reference)\nA. HIERARCHICAL STRUCTURE (5 Levels)\nLEVEL 5: JUSTICE MASTER SCORE (Party/Case-Level)\n           ↓ [0-1000 scale]\nLEVEL 4: LEGAL CREDIT SCORE (Motion/Filing Collection)\n           ↓ [0-1000 scale]\nLEVEL 3: DOCUMENT MASTER SCORE (Per Document)\n           ↓ [0-1000 scale]\nLEVEL 2: PAGE/SECTION SCORE (Per Page)\n           ↓ [0-1000 scale]\nLEVEL 1: STATEMENT MICRO-SCORE (Individual Claim/Statement)\n           ↓ [0-1000 scale, 12 dimensions]\nB. LEVEL 1: STATEMENT DIMENSIONS (All 0-1000)"
+    },
+    {
+      "title": "1. TRUTH-LIE SCORE (TLS)",
+      "content": "1000-950: Absolute truth (objectively proven, multiple sources)\n949-900:  Proven true (documented, verified)\n899-800:  Very likely true (strong corroboration)\n799-700:  Probably true / leaning true\n699-600:  Uncertain (conflicting evidence)\n599-500:  Leaning false / probably false\n499-350:  Very likely false / proven false\n349-200:  Material lie (false + impacts outcome)\n199-100:  Perjury level (material lie under oath)\n099-000:  Aggravated perjury (material + obstruction)\nFormula:\ntruth_score = base_truthfulness * corroboration_factor * source_reliability\nwhere base_truthfulness = assessment of factual accuracy (0-1000)"
+    },
+    {
+      "title": "2. INTENT-CULPABILITY SCORE (ICS)",
+      "content": "000-300:  Protective/Good faith (heroic to diligent)\n300-500:  Neutral/Accidental (reasonable to honest mistake)\n500-700:  Negligent/Careless (should have known)\n700-850:  Reckless/Knowing (conscious disregard to intentional)\n850-950:  Malicious/Malevolent (intent to harm)\n950-1000: Corrupt (criminal corruption level)\nFormula:\nintent_score = knowledge_level * harm_intent * pattern_multiplier"
+    },
+    {
+      "title": "3. BAD FAITH QUANTIFICATION (BFQ)",
+      "content": "Calculates across 5 categories (each 0-200 points):"
+    },
+    {
+      "title": "TIMING_MANIPULATION (0-200):",
+      "content": "├─ Filed immediately after protective action: 150\n├─ Filed on eve of hearing: 120\n├─ Filed to preempt evidence: 180\n├─ Filed during holiday/weekend: 80\n└─ Strategic timing pattern: 200"
+    },
+    {
+      "title": "FORUM_SHOPPING (0-200):",
+      "content": "├─ Judge shopping: 150\n├─ Venue manipulation: 120\n├─ Jurisdiction gaming: 180\n├─ Serial refiling: 200\n└─ Ex parte abuse: 170"
+    },
+    {
+      "title": "EVIDENCE_MANIPULATION (0-200):",
+      "content": "├─ Concealed evidence: 180\n├─ Destroyed evidence: 200\n├─ Fabricated evidence: 200\n├─ Selective disclosure: 150\n└─ Withheld material facts: 170"
+    },
+    {
+      "title": "CHILD_ENDANGERMENT (0-200):",
+      "content": "├─ Ignored abuse disclosure: 200\n├─ Exposed child to abuser: 190\n├─ Blocked protective investigation: 180\n├─ Prioritized custody over safety: 170\n└─ Retaliated against protective parent: 160"
+    },
+    {
+      "title": "PROCEDURAL_ABUSE (0-200):",
+      "content": "├─ Perjury: 200\n├─ Fraud on court: 190\n├─ False emergency claims: 180\n├─ Violation of orders: 150\n├─ Contempt: 140\n└─ Obstruction: 170\nFormula:\nBFQ = (sum_of_applicable_factors_per_category) / 5 * 1000/200\nAverage across categories, scale to 1000"
+    },
+    {
+      "title": "4. CONTEXT-RELATIONSHIP SCORE (CRS)",
+      "content": "Measures significance based on timing and relationships (0-1000):"
+    },
+    {
+      "title": "TEMPORAL_PROXIMITY (0-250):",
+      "content": "├─ Same day as key event: 200\n├─ Within 24 hours: 180\n├─ Within 48 hours: 160\n├─ Within week: 120\n├─ Within month: 80\n└─ Distant timing: 40"
+    },
+    {
+      "title": "RELATIONAL_SIGNIFICANCE (0-250):",
+      "content": "├─ Directly contradicts prior admission: 250\n├─ Contradicts contemporary evidence: 220\n├─ Undermines own other statements: 200\n├─ Contradicts neutral witness: 180\n└─ Unsupported by context: 150"
+    },
+    {
+      "title": "PATTERN_SIGNIFICANCE (0-250):",
+      "content": "├─ Establishes pattern: 240\n├─ Part of series: 200\n├─ Isolated incident: 100\n├─ Breaks pattern: 150\n└─ Anomalous: 80"
+    },
+    {
+      "title": "LEGAL_CONSEQUENCE (0-250):",
+      "content": "├─ Caused custody change: 250\n├─ Blocked investigation: 230\n├─ Resulted in court order: 220\n├─ Influenced decision: 200\n└─ No direct consequence: 100\nFormula:\nCRS = weighted_average(temporal * 0.25 + relational * 0.25 + \n                       pattern * 0.25 + consequence * 0.25)"
+    },
+    {
+      "title": "5. EVIDENCE QUALITY SCORE (EQS) - 0-1000",
+      "content": "950-1000: Forensic/expert (certified forensic examination)\n900-949:  Expert opinion (qualified expert testimony)\n850-899:  Direct evidence (eyewitness, admission, authenticated doc)\n800-849:  Reliable source (credible, verifiable)\n700-749:  Standard quality (typical evidentiary quality)\n600-649:  Acceptable (minor authentication needed)\n500-599:  Questionable (reliability issues)\n400-499:  Poor (serious credibility problems)\n300-399:  Likely inadmissible (major evidentiary issues)\n000-299:  Inadmissible/fraudulent\nFormula:\nEQS = (authenticity * 0.3 + source_credibility * 0.3 + \n       admissibility * 0.25 + verification * 0.15)"
+    },
+    {
+      "title": "6. LEGAL WEIGHT SCORE (LWS) - 0-1000",
+      "content": "950-1000: Case-determinative (alone wins/loses case)\n900-949:  Dispositive (proves/disproves key element alone)\n850-899:  Essential (required to prove claim)\n800-849:  Critical (major element of proof)\n750-799:  Substantial (important supporting evidence)\n700-749:  Strong (clear probative value)\n600-699:  Useful/relevant (helpful corroboration)\n400-599:  Marginal/peripheral (minor relevance)\n000-399:  Immaterial/irrelevant\nFormula:\nLWS = (element_proof * 0.4 + materiality * 0.3 + \n       impact * 0.2 + admissibility * 0.1)"
+    },
+    {
+      "title": "7. VERIFICATION STATUS (VER) - 0-1000",
+      "content": "950-1000: Irrefutable (5+ independent sources)\n900-949:  Overwhelming (4 independent sources)\n850-899:  Strong corroboration (3 independent sources)\n800-849:  Good corroboration (2 independent sources)\n750-799:  Moderate corroboration (1 independent + circumstantial)\n700-749:  Some corroboration (circumstantial evidence)\n650-699:  Credible single source (reliable, no contradiction)\n600-649:  Uncorroborated (single source, no verification)\n500-599:  Questionable (source has credibility issues)\n400-499:  Contradicted (significant contradiction)\n300-349:  Overwhelmingly contradicted (extensive contradiction)\n200-299:  Clearly disproven (strong evidence of falsehood)\n100-199:  Definitively disproven (overwhelming evidence false)\n000-099:  Impossible (logically/physically impossible)"
+    },
+    {
+      "title": "8. AUTHENTICITY (AUT) - 0-1000",
+      "content": "950-1000: Original with chain of custody\n900-949:  Certified copy (court-certified)\n850-899:  Verified authentic (expert/notary authentication)\n800-849:  Authenticated (verified by party/witness)\n750-799:  Regular copy from reliable source\n700-749:  Standard copy (typical business record)\n600-699:  Verifiable (can be authenticated if needed)\n500-599:  Authentication needed (unclear origin)\n400-499:  Questionable authenticity (red flags present)\n300-399:  Disputed authenticity (party contests)\n200-299:  Probably fake (likely not authentic)\n100-199:  Altered/tampered (evidence of manipulation)\n000-099:  Fabricated (provably fake/forged)"
+    },
+    {
+      "title": "9. SOURCE CREDIBILITY (SRC) - 0-1000",
+      "content": "950-1000: Government official record (court, agency)\n900-949:  Expert professional (qualified expert in field)\n850-899:  Neutral professional (doctor, therapist, teacher)\n800-849:  Neutral third party (unbiased witness)\n750-799:  Disinterested party (no stake in outcome)\n700-749:  Corroborated party (interested but verified)\n600-699:  Interested party with good record (track record of honesty)\n500-599:  Interested party with credibility issues\n400-499:  Biased source / poor credibility\n300-349:  Discredited / proven liar\n200-299:  Habitual liar (pattern of dishonesty)\n100-199:  Perjurer (false statements under oath)\n000-099:  Fraudster (criminal fraud history)"
+    },
+    {
+      "title": "10. ADMISSIBILITY (ADM) - 0-1000",
+      "content": "950-1000: Presumptively admissible (no evidentiary issues)\n900-949:  Clearly admissible (minor foundation needed)\n850-899:  Very likely admissible (small procedural hurdle)\n800-849:  Likely admissible (hearsay exception applies)\n750-799:  Probably admissible (authentication straightforward)\n700-749:  More likely than not (some issues but surmountable)\n600-699:  Uncertain (significant evidentiary question)\n500-599:  Doubtful (multiple admissibility problems)\n400-499:  Probably inadmissible (hearsay without exception)\n300-349:  Almost certainly inadmissible (overwhelming issues)\n200-299:  Privileged (attorney-client, spousal, etc.)\n100-199:  Excludable (more prejudicial than probative)\n000-099:  Illegal (unlawfully obtained)\n11. TOPIC WEIGHT (TOP) - Categorical + 0-1000"
+    },
+    {
+      "title": "CRITICAL TOPICS (900-1000):",
+      "content": "├─ SA-DISC (Sexual Abuse - Child Disclosure): 980\n├─ SA-MED (Sexual Abuse - Medical Evidence): 970\n├─ SA-HIST (Sexual Abuse - Historical Pattern): 960\n├─ FRAUD-CRT (Fraud on Court): 950\n├─ PER (Perjury): 940\n├─ DUE-PROC (Due Process Violation): 930\n├─ JURIS (Jurisdictional Defect): 920\n└─ CUST-LOSS (Custody Deprivation): 900"
+    },
+    {
+      "title": "HIGH PRIORITY (700-899):",
+      "content": "├─ DV (Domestic Violence): 850\n├─ CPS-NEG (CPS Negligence): 840\n├─ FALSE-ALG (False Allegations): 830\n└─ [etc.]\nMulti-topic formula:\nTOP = (Topic1_weight * 0.50 + Topic2_weight * 0.30 + Topic3_weight * 0.20)\n12. VIOLATION TYPE SCORES (VTS) - Categorical Array"
+    },
+    {
+      "title": "VIOLATION_TYPES = {",
+      "content": ""
+    },
+    {
+      "title": "Criminal (800-1000)",
+      "content": "'perjury': {\n        'code': 'PC-118',\n        'base_severity': 950,\n        'materiality_multiplier': 1.0-1.5,\n        'under_oath_required': True\n    },\n    'fraud': {\n        'code': 'PC-487',\n        'base_severity': 900\n    },\n    'child_endangerment': {\n        'code': 'PC-273a',\n        'base_severity': 980,\n        'great_bodily_harm_multiplier': 1.3\n    },\n    'obstruction': {\n        'code': 'PC-182',\n        'base_severity': 870,\n        'pattern_multiplier': 1.2\n    },"
+    },
+    {
+      "title": "Civil (600-799)",
+      "content": "'fraud_on_court': {\n        'code': 'CCP-473',\n        'base_severity': 920,\n        'extrinsic_fraud': True\n    },\n    'contempt': {\n        'code': 'CCP-1209',\n        'base_severity': 750\n    },\n    'dvro_violation': {\n        'code': 'FC-6320',\n        'base_severity': 800\n    },"
+    },
+    {
+      "title": "Procedural (400-599)",
+      "content": "'jurisdictional_violation': {\n        'code': 'WIC-304',\n        'base_severity': 850,\n        'void_order_result': True\n    }\n}"
+    },
+    {
+      "title": "Returns array of violations with severity scores",
+      "content": ""
+    },
+    {
+      "title": "C. LEVEL 1 COMPOSITE: STATEMENT MICRO-SCORE (SMS)",
+      "content": "def calculate_sms(dimensions):\n    \"\"\"\n    Statement Micro-Score: Comprehensive statement-level analysis\n    Input: All 12 dimensions (each 0-1000)\n    Output: Single composite score 0-1000\n    \"\"\""
+    },
+    {
+      "title": "Base calculation (weighted average)",
+      "content": "base_score = (\n        abs(dimensions['impact'] - 500) * 0.25 +  # Distance from neutral\n        dimensions['delta'] * 0.15 +\n        dimensions['context_relationship'] * 0.12 +\n        dimensions['truth_lie'] * 0.12 +\n        dimensions['evidence_quality'] * 0.10 +\n        dimensions['legal_weight'] * 0.10 +\n        dimensions['verification'] * 0.08 +\n        dimensions['authenticity'] * 0.04 +\n        dimensions['source_credibility'] * 0.04\n    )"
+    },
+    {
+      "title": "Intent modifier (amplifies for extreme intent)",
+      "content": "if dimensions['intent_culpability'] >= 700:  # Bad faith\n        intent_multiplier = 1.0 + ((dimensions['intent_culpability'] - 700) / 1000)"
+    },
+    {
+      "title": "At 1000: multiplier = 1.3",
+      "content": "elif dimensions['intent_culpability'] <= 300:  # Good faith\n        intent_multiplier = 1.0 + ((300 - dimensions['intent_culpability']) / 1000)"
+    },
+    {
+      "title": "At 0: multiplier = 1.3",
+      "content": "else:\n        intent_multiplier = 1.0"
+    },
+    {
+      "title": "Violation severity bonus",
+      "content": "if dimensions['violations']:\n        max_violation = max([v['severity'] for v in dimensions['violations']])\n        if max_violation >= 900:  # Criminal level\n            base_score *= 1.15\n    sms = min(1000, int(base_score * intent_multiplier))\n    return {\n        'sms': sms,\n        'category': categorize_statement(sms),\n        'impeachment_ready': is_impeachment_ready(dimensions),\n        'perjury_prosecutable': is_perjury_prosecutable(dimensions)\n    }\ndef categorize_statement(sms):\n    if sms >= 900: return \"SMOKING_GUN\"\n    elif sms >= 800: return \"CRITICAL\"\n    elif sms >= 700: return \"HIGH_VALUE\"\n    elif sms >= 600: return \"MODERATE\"\n    elif sms >= 500: return \"STANDARD\"\n    else: return \"LOW_VALUE\"\ndef is_impeachment_ready(dims):\n    return (\n        dims['truth_lie'] < 500 and  # False statement\n        dims['verification'] > 700 and  # Can prove it's false\n        dims['source_credibility'] < 600  # Undermines credibility\n    )\ndef is_perjury_prosecutable(dims):\n    return (\n        dims['truth_lie'] < 200 and  # Material lie\n        dims['under_oath'] == True and\n        dims['legal_weight'] > 700 and  # Material to proceeding\n        dims['intent_culpability'] > 700  # Knowing/willful\n    )"
+    },
+    {
+      "title": "D. LEVEL 2: PAGE/SECTION SCORE (PSS)",
+      "content": "def calculate_pss(statements_on_page):\n    \"\"\"\n    Page Score: Aggregates all statements on a page\n    \"\"\"\n    if not statements_on_page:\n        return 500  # Neutral if no statements"
+    },
+    {
+      "title": "Calculate weighted average of statement scores",
+      "content": "total_score = 0\n    total_weight = 0\n    for stmt in statements_on_page:\n        weight = 1.0"
+    },
+    {
+      "title": "Weight by significance",
+      "content": "if stmt['sms'] >= 900:  # Smoking gun\n            weight = 3.0\n        elif stmt['sms'] >= 800:  # Critical\n            weight = 2.0\n        elif stmt['sms'] >= 700:  # High value\n            weight = 1.5\n        total_score += stmt['sms'] * weight\n        total_weight += weight\n    avg_score = total_score / total_weight if total_weight > 0 else 500"
+    },
+    {
+      "title": "Density bonus (more high-impact statements = higher score)",
+      "content": "high_impact_count = len([s for s in statements_on_page if s['sms'] >= 800])\n    density_factor = 1.0 + (high_impact_count / 20.0)  # Up to 1.5x for 10+ high-impact\n    pss = min(1000, int(avg_score * density_factor))\n    return pss"
+    },
+    {
+      "title": "E. LEVEL 3: DOCUMENT MASTER SCORE (DMS)",
+      "content": "def calculate_dms(document):\n    \"\"\"\n    Document Master Score: Overall document importance\n    4 composite dimensions → 1 master score\n    \"\"\""
+    },
+    {
+      "title": "1. EVIDENCE STRENGTH (0-1000)",
+      "content": "evidence_strength = (\n        avg(truth_values) * 0.20 +\n        avg(verification_statuses) * 0.20 +\n        avg(evidence_quality) * 0.20 +\n        avg(authenticity) * 0.20 +\n        avg(source_credibility) * 0.20\n    )"
+    },
+    {
+      "title": "2. LEGAL IMPACT (0-1000)",
+      "content": "legal_impact = (\n        avg(legal_weights) * 0.30 +\n        avg(admissibility) * 0.25 +\n        max(violation_severity) * 0.25 +\n        avg(element_proof) * 0.20\n    )"
+    },
+    {
+      "title": "3. STRATEGIC VALUE (0-1000)",
+      "content": "strategic_value = (\n        max(case_impact) * 0.30 +\n        max(opposition_impact) * 0.30 +\n        avg(context_relationship) * 0.20 +\n        timeline_criticality * 0.20\n    )"
+    },
+    {
+      "title": "4. INTENT/CONDUCT (0-1000)",
+      "content": "intent_conduct = (\n        avg(intent_culpability) * 0.40 +\n        avg(bad_faith_quantification) * 0.40 +\n        procedural_compliance * 0.20\n    )"
+    },
+    {
+      "title": "DOCUMENT MASTER SCORE",
+      "content": "dms = (\n        evidence_strength * 0.35 +\n        legal_impact * 0.35 +\n        strategic_value * 0.20 +\n        intent_conduct * 0.10\n    )"
+    },
+    {
+      "title": "Smoking gun bonus",
+      "content": "if any(stmt['sms'] >= 950 for stmt in document['statements']):\n        dms = min(1000, dms * 1.15)\n    return {\n        'dms': int(dms),\n        'evidence_strength': int(evidence_strength),\n        'legal_impact': int(legal_impact),\n        'strategic_value': int(strategic_value),\n        'intent_conduct': int(intent_conduct),\n        'rating': get_rating(dms)\n    }\ndef get_rating(score):\n    if score >= 950: return \"A+ (Exceptional)\"\n    elif score >= 900: return \"A (Excellent)\"\n    elif score >= 850: return \"A- (Very Strong)\"\n    elif score >= 800: return \"B+ (Strong)\"\n    elif score >= 750: return \"B (Above Average)\"\n    elif score >= 700: return \"B- (Solid)\"\n    elif score >= 650: return \"C+ (Moderate)\"\n    elif score >= 600: return \"C (Average)\"\n    elif score >= 550: return \"C- (Below Average)\"\n    elif score >= 500: return \"D+ (Weak)\"\n    elif score >= 450: return \"D (Poor)\"\n    elif score >= 400: return \"D- (Very Poor)\"\n    else: return \"F (Failing)\""
+    },
+    {
+      "title": "F. LEVEL 4: MOTION/BRIEF STRENGTH SCORE (MBS)",
+      "content": "def calculate_mbs(motion_documents):\n    \"\"\"\n    Motion/Brief Strength Score: How strong is this filing?\n    \"\"\""
+    },
+    {
+      "title": "1. DOCUMENT QUALITY (35%)",
+      "content": "doc_quality = weighted_avg([doc['dms'] for doc in motion_documents])"
+    },
+    {
+      "title": "2. LEGAL SUFFICIENCY (35%)",
+      "content": "legal_sufficiency = (\n        all_elements_proven * 0.35 +\n        burden_of_proof_met * 0.35 +\n        procedural_compliance * 0.20 +\n        case_law_support * 0.10\n    )"
+    },
+    {
+      "title": "3. CORROBORATION NETWORK (20%)",
+      "content": "corroboration_network = (\n        cross_document_corroboration * 0.40 +\n        independent_sources_count * 0.30 +\n        pattern_coherence * 0.20 +\n        contradiction_resolution * 0.10\n    )"
+    },
+    {
+      "title": "4. PREDICTED SUCCESS (10%)",
+      "content": "predicted_success = (\n        similar_motion_historical_success +\n        forum_statistics +\n        judge_tendencies\n    ) / 3\n    mbs = (\n        doc_quality * 0.35 +\n        legal_sufficiency * 0.35 +\n        corroboration_network * 0.20 +\n        predicted_success * 0.10\n    )"
+    },
+    {
+      "title": "Confidence interval based on evidence gaps",
+      "content": "evidence_gap_penalty = count_missing_elements * 50\n    confidence_interval = min(100, evidence_gap_penalty)\n    return {\n        'mbs': int(mbs),\n        'confidence_interval': confidence_interval,\n        'recommendation': get_motion_recommendation(mbs)\n    }\ndef get_motion_recommendation(mbs):\n    if mbs >= 900: return \"EXCELLENT - File immediately\"\n    elif mbs >= 850: return \"VERY STRONG - High success probability\"\n    elif mbs >= 800: return \"STRONG - Proceed with confidence\"\n    elif mbs >= 750: return \"GOOD - Solid chance of success\"\n    elif mbs >= 700: return \"MODERATE - Consider strengthening\"\n    elif mbs >= 650: return \"WEAK - Needs more evidence\"\n    else: return \"INSUFFICIENT - Do not file yet\""
+    },
+    {
+      "title": "G. LEVEL 5: JUSTICE MASTER SCORE (JMS)",
+      "content": "def calculate_jms(party_id):\n    \"\"\"\n    Justice Master Score: Overall party credibility and case standing\n    Legal \"credit score\" for party\n    \"\"\""
+    },
+    {
+      "title": "Get all party documents and actions",
+      "content": "party_data = get_party_comprehensive_data(party_id)"
+    },
+    {
+      "title": "1. PARTY CREDIBILITY INDEX (30%)",
+      "content": "party_credibility = (\n        truthfulness_rate * 0.40 +  # % statements verified true\n        (1000 - avg_intent_culpability) * 0.30 +  # Inverted (good faith = higher)\n        consistency_score * 0.20 +  # Consistency across statements\n        verification_rate * 0.10  # % statements corroborated\n    )"
+    },
+    {
+      "title": "2. EVIDENCE STRENGTH INDEX (30%)",
+      "content": "evidence_strength = (\n        critical_document_count / 20 * 250 +  # Up to 250 for 20+ critical docs\n        avg_document_quality * 0.30 +\n        corroboration_density * 0.25 +\n        smoking_gun_presence * 0.20  # Bonus for smoking guns\n    )"
+    },
+    {
+      "title": "3. LEGAL MERIT INDEX (25%)",
+      "content": "legal_merit = (\n        statutory_element_proof * 0.35 +\n        procedural_compliance_rate * 0.25 +\n        admissibility_rate * 0.20 +\n        case_law_support * 0.20\n    )"
+    },
+    {
+      "title": "4. CONDUCT INDEX (15%)",
+      "content": "conduct = (\n        good_faith_score * 0.35 +\n        procedural_fairness * 0.25 +\n        disclosure_completeness * 0.20 +\n        cooperation_level * 0.20\n    )\n    jms = (\n        party_credibility * 0.30 +\n        evidence_strength * 0.30 +\n        legal_merit * 0.25 +\n        conduct * 0.15\n    )"
+    },
+    {
+      "title": "Calculate risk scores",
+      "content": "risk_scores = calculate_risk_scores(party_data)\n    return {\n        'jms': int(jms),\n        'breakdown': {\n            'party_credibility': int(party_credibility),\n            'evidence_strength': int(evidence_strength),\n            'legal_merit': int(legal_merit),\n            'conduct': int(conduct)\n        },\n        'risk_scores': risk_scores,\n        'rating': get_rating(jms),\n        'percentile': calculate_percentile(jms)\n    }\ndef calculate_risk_scores(party_data):\n    \"\"\"\n    Calculate risk assessment scores\n    \"\"\""
+    },
+    {
+      "title": "FLIGHT RISK (0-1000)",
+      "content": "flight_risk = (\n        (1000 if not_us_citizen else 0) * 0.30 +\n        (1000 - jurisdiction_ties_score) * 0.25 +\n        non_hague_country_citizen * 300 +\n        pattern_of_jurisdiction_avoidance * 0.20 +\n        (1000 - cooperation_score) * 0.15\n    )"
+    },
+    {
+      "title": "COMPLIANCE RISK (0-1000)",
+      "content": "compliance_risk = (\n        order_violation_rate * 0.35 +\n        contempt_incident_count * 100 +  # Up to 1000 for 10 incidents\n        pattern_of_noncompliance * 0.30 +\n        procedural_abuse_score * 0.20\n    )"
+    },
+    {
+      "title": "CHILD HARM RISK (0-1000)",
+      "content": "harm_risk = (\n        child_endangerment_incidents * 150 +  # Up to 1000 for 7 incidents\n        blocks_protective_measures * 300 +\n        access_to_known_abuser * 250 +\n        prioritizes_custody_over_safety * 200 +\n        parental_alienation_indicators * 0.15\n    )\n    return {\n        'flight_risk': min(1000, int(flight_risk)),\n        'compliance_risk': min(1000, int(compliance_risk)),\n        'harm_risk': min(1000, int(harm_risk))\n    }\nII. DATABASE SCHEMA (PostgreSQL)\n-- ============================================================================"
+    },
+    {
+      "title": "-- CORE TABLES",
+      "content": "-- ============================================================================"
+    },
+    {
+      "title": "-- CASES",
+      "content": "CREATE TABLE cases (\n    case_id VARCHAR(30) PRIMARY KEY,\n    case_name VARCHAR(200),\n    case_numbers JSONB,  -- {juvenile: \"J24-00478\", family: \"D22-03244\"}\n    jurisdiction VARCHAR(100),\n    status VARCHAR(50),  -- active, closed, appealed\n    -- Parties\n    father_party_id VARCHAR(20),\n    mother_party_id VARCHAR(20),\n    child_info JSONB,\n    -- Key dates\n    key_dates JSONB,\n    -- Metadata\n    created_date TIMESTAMP DEFAULT NOW(),\n    updated_date TIMESTAMP DEFAULT NOW(),\n    -- Full-text search\n    search_vector TSVECTOR\n);"
+    },
+    {
+      "title": "-- PARTIES",
+      "content": "CREATE TABLE parties (\n    party_id VARCHAR(20) PRIMARY KEY,\n    party_name VARCHAR(100),\n    party_role VARCHAR(50),  -- father, mother, agency, etc.\n    -- LEVEL 5: Justice Master Score\n    justice_master_score INTEGER,  -- 0-1000\n    jms_breakdown JSONB,  -- {party_credibility, evidence_strength, legal_merit, conduct}\n    -- Credibility metrics\n    total_statements INTEGER DEFAULT 0,\n    true_statements INTEGER DEFAULT 0,\n    false_statements INTEGER DEFAULT 0,\n    truthfulness_rate DECIMAL(5,2),\n    lie_rate DECIMAL(5,2),\n    -- Violation tracking\n    perjury_incidents INTEGER DEFAULT 0,\n    fraud_incidents INTEGER DEFAULT 0,\n    child_endangerment_incidents INTEGER DEFAULT 0,\n    contempt_incidents INTEGER DEFAULT 0,\n    violations_history JSONB,  -- [{date, type, severity, doc_id}, ...]\n    -- Pattern analysis\n    bad_faith_pattern_score INTEGER,  -- 0-1000\n    avg_bad_faith_score INTEGER,\n    -- Risk assessment\n    flight_risk_score INTEGER,  -- 0-1000\n    compliance_risk_score INTEGER,  -- 0-1000\n    harm_risk_score INTEGER,  -- 0-1000\n    -- Biographical\n    citizenship VARCHAR(50),\n    us_citizen BOOLEAN,\n    passport_status VARCHAR(50),\n    ties_to_jurisdiction JSONB,\n    -- Legal history\n    dv_history BOOLEAN,\n    restraining_orders_count INTEGER,\n    -- Trends\n    credibility_trend VARCHAR(20),  -- improving, declining, stable\n    credibility_history JSONB,  -- [{date, jms}, ...]\n    -- Metadata\n    created_date TIMESTAMP DEFAULT NOW(),\n    updated_date TIMESTAMP DEFAULT NOW()\n);"
+    },
+    {
+      "title": "-- DOCUMENTS",
+      "content": "CREATE TABLE documents (\n    doc_id VARCHAR(20) PRIMARY KEY,\n    case_id VARCHAR(30) REFERENCES cases(case_id),\n    -- File info\n    filename VARCHAR(500),\n    original_filename VARCHAR(500),\n    file_path VARCHAR(1000),\n    file_type VARCHAR(20),\n    file_size_bytes INTEGER,\n    page_count INTEGER,\n    -- Document metadata\n    doc_date DATE,\n    doc_type VARCHAR(50),  -- declaration, transcript, report, etc.\n    parties VARCHAR(100),  -- MOT, FAT, CPS, etc.\n    under_oath BOOLEAN DEFAULT FALSE,\n    -- LEVEL 3: Document Master Score\n    document_master_score INTEGER,  -- 0-1000 (DMS)\n    evidence_strength INTEGER,  -- 0-1000\n    legal_impact INTEGER,  -- 0-1000\n    strategic_value INTEGER,  -- 0-1000\n    intent_conduct INTEGER,  -- 0-1000\n    -- Aggregated metrics\n    total_statements INTEGER DEFAULT 0,\n    total_lies INTEGER DEFAULT 0,\n    total_material_lies INTEGER DEFAULT 0,\n    total_perjury_statements INTEGER DEFAULT 0,\n    lie_rate DECIMAL(5,2),\n    material_lie_rate DECIMAL(5,2),\n    -- Underlying dimensions (averages)\n    avg_truth_value INTEGER,\n    avg_intent_score INTEGER,\n    avg_bad_faith_score INTEGER,\n    avg_context_score INTEGER,\n    avg_verification INTEGER,\n    avg_authenticity INTEGER,\n    avg_source_credibility INTEGER,\n    avg_admissibility INTEGER,\n    avg_legal_weight INTEGER,\n    -- Violation summary\n    violation_summary JSONB,  -- {perjury: 5, fraud: 8, child_endangerment: 4, ...}\n    -- Page scores\n    page_scores INTEGER[],  -- Array of PSS scores\n    avg_page_score INTEGER,\n    -- Classification\n    is_smoking_gun BOOLEAN DEFAULT FALSE,\n    impeachment_statements_count INTEGER DEFAULT 0,\n    perjury_prosecutable_count INTEGER DEFAULT 0,\n    -- Topics\n    primary_topics VARCHAR[],\n    topic_weights INTEGER[],\n    -- Processing\n    processing_status VARCHAR(50),  -- pending, processing, complete, error\n    ocr_confidence DECIMAL(5,2),\n    ai_processing_complete BOOLEAN DEFAULT FALSE,\n    human_reviewed BOOLEAN DEFAULT FALSE,\n    review_notes TEXT,\n    -- Timestamps\n    uploaded_date TIMESTAMP DEFAULT NOW(),\n    processed_date TIMESTAMP,\n    reviewed_date TIMESTAMP,\n    -- Full-text search\n    content_text TEXT,\n    content_vector TSVECTOR\n);\nCREATE INDEX idx_doc_case ON documents(case_id);\nCREATE INDEX idx_doc_dms ON documents(document_master_score DESC);\nCREATE INDEX idx_doc_date ON documents(doc_date);\nCREATE INDEX idx_doc_smoking_gun ON documents WHERE is_smoking_gun = TRUE;\nCREATE INDEX idx_doc_fts ON documents USING GIN(content_vector);"
+    },
+    {
+      "title": "-- PAGES",
+      "content": "CREATE TABLE pages (\n    page_id VARCHAR(30) PRIMARY KEY,\n    doc_id VARCHAR(20) REFERENCES documents(doc_id),\n    page_number INTEGER,\n    -- LEVEL 2: Page Score\n    page_score INTEGER,  -- 0-1000 (PSS)\n    -- Aggregated counts\n    statement_count INTEGER DEFAULT 0,\n    lie_count INTEGER DEFAULT 0,\n    material_lie_count INTEGER DEFAULT 0,\n    perjury_statement_count INTEGER DEFAULT 0,\n    -- Aggregated scores\n    avg_statement_score INTEGER,\n    max_statement_score INTEGER,\n    min_statement_score INTEGER,\n    -- Pattern analysis\n    lie_density DECIMAL(5,2),  -- % of statements that are lies\n    bad_faith_pattern_score INTEGER,\n    -- Content\n    page_text TEXT,\n    page_image_url VARCHAR(1000),\n    -- OCR metadata\n    ocr_confidence DECIMAL(5,2),\n    UNIQUE(doc_id, page_number)\n);\nCREATE INDEX idx_page_doc ON pages(doc_id);\nCREATE INDEX idx_page_score ON pages(page_score DESC);"
+    },
+    {
+      "title": "-- STATEMENTS",
+      "content": "CREATE TABLE statements (\n    stmt_id VARCHAR(30) PRIMARY KEY,  -- e.g., \"DOC-045-P02-S03\"\n    doc_id VARCHAR(20) REFERENCES documents(doc_id),\n    page_id VARCHAR(30) REFERENCES pages(page_id),\n    page_number INTEGER,\n    statement_number INTEGER,\n    -- Statement content\n    statement_text TEXT,\n    statement_type VARCHAR(50),  -- claim, admission, denial, fact, opinion\n    speaker VARCHAR(100),\n    date_made DATE,\n    under_oath BOOLEAN,\n    -- LEVEL 1: Statement Micro-Score & Dimensions (all 0-1000)\n    statement_micro_score INTEGER,  -- SMS (composite)\n    truth_lie_score INTEGER,  -- TLS\n    intent_culpability_score INTEGER,  -- ICS\n    bad_faith_quantification INTEGER,  -- BFQ\n    context_relationship_score INTEGER,  -- CRS\n    evidence_quality_score INTEGER,  -- EQS\n    legal_weight_score INTEGER,  -- LWS\n    verification_status INTEGER,  -- VER\n    authenticity INTEGER,  -- AUT\n    source_credibility INTEGER,  -- SRC\n    admissibility INTEGER,  -- ADM\n    -- Topic classification\n    topic_category VARCHAR(50),\n    topic_weight INTEGER,  -- 0-1000\n    secondary_topics VARCHAR[],\n    -- Bad faith factors (JSON breakdown)\n    bad_faith_factors JSONB,  -- {timing_manipulation: 150, forum_shopping: 170, ...}\n    -- Context factors (JSON breakdown)\n    context_factors JSONB,  -- {temporal_proximity: 180, relational_significance: 250, ...}\n    -- Violations\n    violations JSONB,  -- [{type: \"perjury\", code: \"PC-118\", severity: 1000}, ...]\n    -- Relationships (statement IDs)\n    contradicts VARCHAR[],\n    corroborates VARCHAR[],\n    undermines VARCHAR[],\n    supersedes VARCHAR[],\n    superseded_by VARCHAR[],\n    -- Classification flags\n    is_lie BOOLEAN DEFAULT FALSE,\n    is_material_lie BOOLEAN DEFAULT FALSE,\n    is_perjury BOOLEAN DEFAULT FALSE,\n    is_impeachment_evidence BOOLEAN DEFAULT FALSE,\n    is_judicial_admission BOOLEAN DEFAULT FALSE,\n    is_smoking_gun BOOLEAN DEFAULT FALSE,\n    -- Processing metadata\n    ai_confidence DECIMAL(5,2),\n    human_reviewed BOOLEAN DEFAULT FALSE,\n    review_notes TEXT,\n    -- Timestamps\n    created_date TIMESTAMP DEFAULT NOW(),\n    updated_date TIMESTAMP DEFAULT NOW()\n);\nCREATE INDEX idx_stmt_doc ON statements(doc_id);\nCREATE INDEX idx_stmt_page ON statements(page_id);\nCREATE INDEX idx_stmt_sms ON statements(statement_micro_score DESC);\nCREATE INDEX idx_stmt_truth ON statements(truth_lie_score);\nCREATE INDEX idx_stmt_bfq ON statements(bad_faith_quantification DESC);\nCREATE INDEX idx_stmt_lies ON statements WHERE is_lie = TRUE;\nCREATE INDEX idx_stmt_perjury ON statements WHERE is_perjury = TRUE;\nCREATE INDEX idx_stmt_smoking_gun ON statements WHERE is_smoking_gun = TRUE;"
+    },
+    {
+      "title": "-- CONTEXT RELATIONSHIPS",
+      "content": "CREATE TABLE context_relationships (\n    rel_id SERIAL PRIMARY KEY,\n    stmt_id_primary VARCHAR(30) REFERENCES statements(stmt_id),\n    stmt_id_related VARCHAR(30) REFERENCES statements(stmt_id),\n    relationship_type VARCHAR(50),  -- contradicts, corroborates, undermines, etc.\n    relationship_strength INTEGER,  -- 0-1000\n    -- Temporal context\n    time_delta_hours INTEGER,\n    time_delta_days INTEGER,\n    temporal_significance INTEGER,  -- 0-1000\n    -- Pattern context\n    part_of_pattern BOOLEAN DEFAULT FALSE,\n    pattern_type VARCHAR(50),\n    pattern_significance INTEGER,  -- 0-1000\n    -- Legal consequence\n    caused_legal_consequence BOOLEAN DEFAULT FALSE,\n    consequence_description TEXT,\n    consequence_score INTEGER,  -- 0-1000\n    -- Overall context contribution\n    context_contribution_score INTEGER,  -- 0-1000 (contributes to CRS)\n    -- Description\n    relationship_description TEXT,\n    -- Metadata\n    created_date TIMESTAMP DEFAULT NOW(),\n    UNIQUE(stmt_id_primary, stmt_id_related, relationship_type)\n);\nCREATE INDEX idx_rel_primary ON context_relationships(stmt_id_primary);\nCREATE INDEX idx_rel_related ON context_relationships(stmt_id_related);\nCREATE INDEX idx_rel_type ON context_relationships(relationship_type);\nCREATE INDEX idx_rel_temporal ON context_relationships(time_delta_hours);"
+    },
+    {
+      "title": "-- MOTIONS/BRIEFS",
+      "content": "CREATE TABLE motions (\n    motion_id VARCHAR(20) PRIMARY KEY,\n    case_id VARCHAR(30) REFERENCES cases(case_id),\n    motion_type VARCHAR(100),  -- \"W&I 388\", \"CCP 473(d)\", \"Appeal\", etc.\n    motion_title VARCHAR(200),\n    filing_date DATE,\n    hearing_date DATE,\n    -- LEVEL 4: Motion Strength Score\n    motion_strength_score INTEGER,  -- 0-1000 (MBS)\n    document_quality INTEGER,  -- 0-1000\n    legal_sufficiency INTEGER,  -- 0-1000\n    corroboration_network INTEGER,  -- 0-1000\n    predicted_success INTEGER,  -- 0-100 (percentage)\n    confidence_interval INTEGER,  -- ± X points\n    -- Documents included\n    document_ids VARCHAR[],\n    document_count INTEGER,\n    avg_document_score INTEGER,\n    -- Element tracking\n    elements_required JSONB,  -- [{element: \"New evidence\", proven: true, docs: [...]}, ...]\n    elements_proven_count INTEGER,\n    elements_total_count INTEGER,\n    elements_completion_rate DECIMAL(5,2),\n    -- Evidence gaps\n    evidence_gaps JSONB,  -- [{gap: \"Need expert testimony on X\", severity: \"high\"}, ...]\n    -- Status\n    status VARCHAR(50),  -- draft, filed, granted, denied, pending\n    outcome VARCHAR(100),\n    outcome_date DATE,\n    -- Generated content\n    motion_text TEXT,\n    exhibits_package_url VARCHAR(1000),\n    -- Metadata\n    created_date TIMESTAMP DEFAULT NOW(),\n    filed_date TIMESTAMP,\n    decided_date TIMESTAMP\n);\nCREATE INDEX idx_motion_case ON motions(case_id);\nCREATE INDEX idx_motion_mbs ON motions(motion_strength_score DESC);\nCREATE INDEX idx_motion_type ON motions(motion_type);\nCREATE INDEX idx_motion_status ON motions(status);"
+    },
+    {
+      "title": "-- MOTION-DOCUMENT LINKING",
+      "content": "CREATE TABLE motion_documents (\n    motion_id VARCHAR(20) REFERENCES motions(motion_id),\n    doc_id VARCHAR(20) REFERENCES documents(doc_id),\n    relevance_to_motion INTEGER,  -- 0-1000\n    proves_element VARCHAR(200),\n    exhibit_number VARCHAR(10),\n    PRIMARY KEY (motion_id, doc_id)\n);"
+    },
+    {
+      "title": "-- VIOLATIONS TRACKING",
+      "content": "CREATE TABLE violations (\n    violation_id SERIAL PRIMARY KEY,\n    case_id VARCHAR(30) REFERENCES cases(case_id),\n    party_id VARCHAR(20) REFERENCES parties(party_id),\n    doc_id VARCHAR(20) REFERENCES documents(doc_id),\n    stmt_id VARCHAR(30) REFERENCES statements(stmt_id),\n    violation_type VARCHAR(50),  -- perjury, fraud_on_court, child_endangerment, etc.\n    violation_code VARCHAR(50),  -- PC-118, CCP-473, PC-273a, etc.\n    violation_severity INTEGER,  -- 0-1000\n    violation_date DATE,\n    detected_date DATE,\n    -- Evidence\n    proving_documents VARCHAR[],  -- Array of doc_ids\n    proving_statements VARCHAR[],  -- Array of stmt_ids\n    -- Status\n    status VARCHAR(50),  -- detected, reported, prosecuted, sanctioned, dismissed\n    reported_to VARCHAR(100),  -- DA, court, etc.\n    outcome VARCHAR(200),\n    -- Description\n    violation_description TEXT,\n    -- Metadata\n    created_date TIMESTAMP DEFAULT NOW()\n);\nCREATE INDEX idx_violation_party ON violations(party_id);\nCREATE INDEX idx_violation_type ON violations(violation_type);\nCREATE INDEX idx_violation_severity ON violations(violation_severity DESC);\nCREATE INDEX idx_violation_status ON violations(status);"
+    },
+    {
+      "title": "-- TIMELINE EVENTS",
+      "content": "CREATE TABLE timeline_events (\n    event_id SERIAL PRIMARY KEY,\n    case_id VARCHAR(30) REFERENCES cases(case_id),\n    event_date DATE,\n    event_time TIME,\n    event_type VARCHAR(50),  -- disclosure, filing, hearing, investigation, etc.\n    event_description TEXT,\n    -- Related entities\n    doc_id VARCHAR(20) REFERENCES documents(doc_id),\n    stmt_id VARCHAR(30) REFERENCES statements(stmt_id),\n    party_id VARCHAR(20) REFERENCES parties(party_id),\n    -- Significance\n    significance_score INTEGER,  -- 0-1000\n    -- Metadata\n    source_doc VARCHAR(20),\n    created_date TIMESTAMP DEFAULT NOW()\n);\nCREATE INDEX idx_timeline_case ON timeline_events(case_id);\nCREATE INDEX idx_timeline_date ON timeline_events(event_date);\nCREATE INDEX idx_timeline_significance ON timeline_events(significance_score DESC);\n-- ============================================================================"
+    },
+    {
+      "title": "-- TRIGGERS & FUNCTIONS",
+      "content": "-- ============================================================================\n-- Auto-update timestamps\nCREATE OR REPLACE FUNCTION update_updated_date()"
+    },
+    {
+      "title": "RETURNS TRIGGER AS $$",
+      "content": "BEGIN\n    NEW.updated_date = NOW();"
+    },
+    {
+      "title": "RETURN NEW;",
+      "content": "END;\n$$ LANGUAGE plpgsql;\nCREATE TRIGGER update_documents_timestamp\n    BEFORE UPDATE ON documents\n    FOR EACH ROW EXECUTE FUNCTION update_updated_date();\nCREATE TRIGGER update_parties_timestamp\n    BEFORE UPDATE ON parties\n    FOR EACH ROW EXECUTE FUNCTION update_updated_date();\nCREATE TRIGGER update_statements_timestamp\n    BEFORE UPDATE ON statements\n    FOR EACH ROW EXECUTE FUNCTION update_updated_date();\n-- Auto-update full-text search vectors\nCREATE OR REPLACE FUNCTION update_document_search_vector()"
+    },
+    {
+      "title": "RETURNS TRIGGER AS $$",
+      "content": "BEGIN\n    NEW.content_vector = to_tsvector('english', \n        COALESCE(NEW.filename, '') || ' ' ||\n        COALESCE(NEW.content_text, '')\n    );"
+    },
+    {
+      "title": "RETURN NEW;",
+      "content": "END;\n$$ LANGUAGE plpgsql;\nCREATE TRIGGER update_document_fts\n    BEFORE INSERT OR UPDATE ON documents\n    FOR EACH ROW EXECUTE FUNCTION update_document_search_vector();"
+    },
+    {
+      "title": "III. PROCESSING WORKFLOW",
+      "content": ""
+    },
+    {
+      "title": "A. DOCUMENT PROCESSING PIPELINE",
+      "content": "\"\"\""
+    },
+    {
+      "title": "COMPLETE DOCUMENT PROCESSING WORKFLOW",
+      "content": "Input: Raw document file (PDF, image, DOCX, etc.)\nOutput: Fully analyzed document with all scores in database\n\"\"\"\ndef process_document_complete(file_path, case_id, case_context):\n    \"\"\"\n    Master processing function\n    \"\"\"\n    print(f\" Processing document: {file_path}\")"
+    },
+    {
+      "title": "========================================================================",
+      "content": ""
+    },
+    {
+      "title": "PHASE 1: INGESTION & OCR (2-3 minutes)",
+      "content": ""
+    },
+    {
+      "title": "========================================================================",
+      "content": "print(\" Phase 1: Ingestion & OCR...\")"
+    },
+    {
+      "title": "Detect file type",
+      "content": "file_type = detect_file_type(file_path)"
+    },
+    {
+      "title": "Extract text",
+      "content": "if file_type in ['pdf', 'image', 'jpg', 'png']:\n        pages_text = tesseract_ocr(file_path)\n        ocr_confidence = calculate_ocr_confidence(pages_text)\n    elif file_type == 'docx':\n        pages_text = extract_docx_text(file_path)\n        ocr_confidence = 1.0\n    elif file_type in ['txt', 'md']:\n        pages_text = read_text_file(file_path)\n        ocr_confidence = 1.0\n    elif file_type in ['mp3', 'm4a', 'wav']:\n        pages_text = transcribe_audio_whisper(file_path)\n        ocr_confidence = 0.95"
+    },
+    {
+      "title": "Extract metadata",
+      "content": "doc_metadata = extract_metadata(file_path, pages_text)"
+    },
+    {
+      "title": "{date, parties, type, under_oath, page_count}",
+      "content": ""
+    },
+    {
+      "title": "Create document record",
+      "content": "doc_id = generate_doc_id(case_id)\n    db.insert('documents', {\n        'doc_id': doc_id,\n        'case_id': case_id,\n        'filename': generate_smart_filename(doc_metadata, case_context),\n        'original_filename': os.path.basename(file_path),\n        'file_path': upload_to_storage(file_path, doc_id),\n        'file_type': file_type,\n        'page_count': len(pages_text),\n        'doc_date': doc_metadata['date'],\n        'doc_type': doc_metadata['type'],\n        'parties': doc_metadata['parties'],\n        'under_oath': doc_metadata['under_oath'],\n        'processing_status': 'processing',\n        'ocr_confidence': ocr_confidence\n    })"
+    },
+    {
+      "title": "========================================================================",
+      "content": ""
+    },
+    {
+      "title": "PHASE 2: AI STATEMENT EXTRACTION (5-10 minutes)",
+      "content": ""
+    },
+    {
+      "title": "========================================================================",
+      "content": "print(\" Phase 2: AI Statement Extraction...\")\n    all_statements = []\n    for page_num, page_text in enumerate(pages_text, start=1):"
+    },
+    {
+      "title": "AI extracts statements from page",
+      "content": "statements = ai_extract_statements(\n            page_text=page_text,\n            doc_metadata=doc_metadata,\n            case_context=case_context,\n            page_number=page_num\n        )"
+    },
+    {
+      "title": "Create page record",
+      "content": "page_id = f\"{doc_id}-P{page_num:02d}\"\n        db.insert('pages', {\n            'page_id': page_id,\n            'doc_id': doc_id,\n            'page_number': page_num,\n            'page_text': page_text,\n            'statement_count': len(statements),\n            'page_image_url': generate_page_screenshot(file_path, page_num)\n        })\n        for stmt_num, statement in enumerate(statements, start=1):\n            statement['stmt_id'] = f\"{doc_id}-P{page_num:02d}-S{stmt_num:02d}\"\n            statement['doc_id'] = doc_id\n            statement['page_id'] = page_id\n            statement['page_number'] = page_num\n            statement['statement_number'] = stmt_num\n            all_statements.append(statement)\n    print(f\"   ✓ Extracted {len(all_statements)} statements across {len(pages_text)} pages\")"
+    },
+    {
+      "title": "========================================================================",
+      "content": ""
+    },
+    {
+      "title": "PHASE 3: STATEMENT ANALYSIS (15-30 minutes for complex docs)",
+      "content": ""
+    },
+    {
+      "title": "========================================================================",
+      "content": "print(\" Phase 3: Statement Analysis...\")\n    for idx, statement in enumerate(all_statements, start=1):\n        print(f\"   Analyzing statement {idx}/{len(all_statements)}...\", end='\\r')"
+    },
+    {
+      "title": "----------------------------------------------------------------",
+      "content": ""
+    },
+    {
+      "title": "3.1: TRUTH ANALYSIS",
+      "content": ""
+    },
+    {
+      "title": "----------------------------------------------------------------",
+      "content": "truth_analysis = ai_analyze_truth(\n            statement=statement,\n            case_history=case_context['all_statements'],\n            known_facts=case_context['verified_facts'],\n            contradictory_evidence=case_context['evidence_against'],\n            corroborating_evidence=case_context['evidence_for']\n        )\n        statement['truth_lie_score'] = truth_analysis['truth_score']\n        statement['verification_status'] = truth_analysis['verification']\n        statement['is_lie'] = truth_analysis['truth_score'] < 500\n        statement['is_material_lie'] = (\n            truth_analysis['truth_score'] < 400 and\n            truth_analysis['materiality'] > 700\n        )"
+    },
+    {
+      "title": "----------------------------------------------------------------",
+      "content": ""
+    },
+    {
+      "title": "3.2: INTENT CLASSIFICATION",
+      "content": ""
+    },
+    {
+      "title": "----------------------------------------------------------------",
+      "content": "intent_analysis = ai_classify_intent(\n            statement=statement,\n            truth_value=truth_analysis['truth_score'],\n            party_history=case_context['party_pattern'],\n            context=case_context\n        )\n        statement['intent_culpability_score'] = intent_analysis['intent_score']"
+    },
+    {
+      "title": "----------------------------------------------------------------",
+      "content": ""
+    },
+    {
+      "title": "3.3: BAD FAITH QUANTIFICATION",
+      "content": ""
+    },
+    {
+      "title": "----------------------------------------------------------------",
+      "content": "bad_faith_analysis = ai_quantify_bad_faith(\n            statement=statement,\n            doc_metadata=doc_metadata,\n            timing_context=case_context['timeline'],\n            party_pattern=case_context['party_pattern'],\n            violations_detected=truth_analysis.get('violations', [])\n        )\n        statement['bad_faith_quantification'] = bad_faith_analysis['bfq_score']\n        statement['bad_faith_factors'] = bad_faith_analysis['factors']"
+    },
+    {
+      "title": "----------------------------------------------------------------",
+      "content": ""
+    },
+    {
+      "title": "3.4: CONTEXT RELATIONSHIP SCORING",
+      "content": ""
+    },
+    {
+      "title": "----------------------------------------------------------------",
+      "content": "context_analysis = ai_calculate_context_relationships(\n            statement=statement,\n            doc_date=doc_metadata['date'],\n            related_events=case_context['timeline'],\n            related_statements=case_context['all_statements'],\n            key_documents=case_context['key_docs']\n        )\n        statement['context_relationship_score'] = context_analysis['crs_score']\n        statement['context_factors'] = context_analysis['factors']"
+    },
+    {
+      "title": "Store relationships",
+      "content": "for rel in context_analysis['relationships']:\n            db.insert('context_relationships', rel)"
+    },
+    {
+      "title": "----------------------------------------------------------------",
+      "content": ""
+    },
+    {
+      "title": "3.5: EVIDENCE QUALITY ASSESSMENT",
+      "content": ""
+    },
+    {
+      "title": "----------------------------------------------------------------",
+      "content": "evidence_quality = assess_evidence_quality(\n            statement=statement,\n            doc_metadata=doc_metadata,\n            source_analysis=case_context.get('source_credibility', {})\n        )\n        statement['evidence_quality_score'] = evidence_quality['eqs']\n        statement['authenticity'] = evidence_quality['authenticity']\n        statement['source_credibility'] = evidence_quality['source_credibility']\n        statement['admissibility'] = evidence_quality['admissibility']"
+    },
+    {
+      "title": "----------------------------------------------------------------",
+      "content": ""
+    },
+    {
+      "title": "3.6: LEGAL WEIGHT ASSESSMENT",
+      "content": ""
+    },
+    {
+      "title": "----------------------------------------------------------------",
+      "content": "legal_weight = assess_legal_weight(\n            statement=statement,\n            case_context=case_context,\n            pending_motions=case_context['pending_motions']\n        )\n        statement['legal_weight_score'] = legal_weight['lws']"
+    },
+    {
+      "title": "----------------------------------------------------------------",
+      "content": ""
+    },
+    {
+      "title": "3.7: VIOLATION DETECTION",
+      "content": ""
+    },
+    {
+      "title": "----------------------------------------------------------------",
+      "content": "violations = ai_detect_violations(\n            statement=statement,\n            truth_value=statement['truth_lie_score'],\n            intent=statement['intent_culpability_score'],\n            materiality=legal_weight['materiality'],\n            under_oath=statement['under_oath']\n        )\n        statement['violations'] = violations"
+    },
+    {
+      "title": "----------------------------------------------------------------",
+      "content": ""
+    },
+    {
+      "title": "3.8: TOPIC CLASSIFICATION",
+      "content": ""
+    },
+    {
+      "title": "----------------------------------------------------------------",
+      "content": "topics = ai_classify_topics(statement, case_context)\n        statement['topic_category'] = topics['primary']['category']\n        statement['topic_weight'] = topics['primary']['weight']\n        statement['secondary_topics'] = topics.get('secondary', [])"
+    },
+    {
+      "title": "----------------------------------------------------------------",
+      "content": ""
+    },
+    {
+      "title": "3.9: CALCULATE STATEMENT MICRO-SCORE (SMS)",
+      "content": ""
+    },
+    {
+      "title": "----------------------------------------------------------------",
+      "content": "sms_result = calculate_sms({\n            'truth_lie': statement['truth_lie_score'],\n            'intent_culpability': statement['intent_culpability_score'],\n            'bad_faith_quantification': statement['bad_faith_quantification'],\n            'context_relationship': statement['context_relationship_score'],\n            'evidence_quality': statement['evidence_quality_score'],\n            'legal_weight': statement['legal_weight_score'],\n            'verification': statement['verification_status'],\n            'authenticity': statement['authenticity'],\n            'source_credibility': statement['source_credibility'],\n            'admissibility': statement['admissibility'],\n            'violations': violations\n        })\n        statement['statement_micro_score'] = sms_result['sms']\n        statement['is_smoking_gun'] = sms_result['sms'] >= 950\n        statement['is_impeachment_evidence'] = sms_result['impeachment_ready']\n        statement['is_perjury'] = sms_result['perjury_prosecutable']"
+    },
+    {
+      "title": "----------------------------------------------------------------",
+      "content": ""
+    },
+    {
+      "title": "3.10: STORE STATEMENT IN DATABASE",
+      "content": ""
+    },
+    {
+      "title": "----------------------------------------------------------------",
+      "content": "db.insert('statements', statement)"
+    },
+    {
+      "title": "Store violations separately",
+      "content": "for violation in violations:\n            db.insert('violations', {\n                'case_id': case_id,\n                'party_id': get_party_id_from_speaker(statement['speaker']),\n                'doc_id': doc_id,\n                'stmt_id': statement['stmt_id'],\n                'violation_type': violation['type'],\n                'violation_code': violation['code'],\n                'violation_severity': violation['severity'],\n                'violation_date': doc_metadata['date'],\n                'status': 'detected',\n                'violation_description': violation.get('description', '')\n            })\n    print(f\"\\n   ✓ Analyzed {len(all_statements)} statements\")"
+    },
+    {
+      "title": "========================================================================",
+      "content": ""
+    },
+    {
+      "title": "PHASE 4: PAGE SCORE AGGREGATION",
+      "content": ""
+    },
+    {
+      "title": "========================================================================",
+      "content": "print(\" Phase 4: Calculating page scores...\")\n    for page_num in range(1, len(pages_text) + 1):\n        page_id = f\"{doc_id}-P{page_num:02d}\""
+    },
+    {
+      "title": "Get all statements for this page",
+      "content": "page_statements = [s for s in all_statements if s['page_number'] == page_num]"
+    },
+    {
+      "title": "Calculate page score",
+      "content": "pss = calculate_pss(page_statements)"
+    },
+    {
+      "title": "Update page record",
+      "content": "db.update('pages', page_id, {\n            'page_score': pss,\n            'lie_count': len([s for s in page_statements if s['is_lie']]),\n            'material_lie_count': len([s for s in page_statements if s['is_material_lie']]),\n            'perjury_statement_count': len([s for s in page_statements if s['is_perjury']]),\n            'avg_statement_score': int(np.mean([s['statement_micro_score'] for s in page_statements])),\n            'max_statement_score': max([s['statement_micro_score'] for s in page_statements]),\n            'min_statement_score': min([s['statement_micro_score'] for s in page_statements]),\n            'lie_density': len([s for s in page_statements if s['is_lie']]) / len(page_statements) * 100\n        })"
+    },
+    {
+      "title": "========================================================================",
+      "content": ""
+    },
+    {
+      "title": "PHASE 5: DOCUMENT MASTER SCORE CALCULATION",
+      "content": ""
+    },
+    {
+      "title": "========================================================================",
+      "content": "print(\" Phase 5: Calculating document master score...\")\n    dms_result = calculate_dms({\n        'doc_id': doc_id,\n        'statements': all_statements,\n        'pages': pages_text,\n        'metadata': doc_metadata\n    })"
+    },
+    {
+      "title": "Update document record",
+      "content": "db.update('documents', doc_id, {\n        'document_master_score': dms_result['dms'],\n        'evidence_strength': dms_result['evidence_strength'],\n        'legal_impact': dms_result['legal_impact'],\n        'strategic_value': dms_result['strategic_value'],\n        'intent_conduct': dms_result['intent_conduct'],\n        'total_statements': len(all_statements),\n        'total_lies': len([s for s in all_statements if s['is_lie']]),\n        'total_material_lies': len([s for s in all_statements if s['is_material_lie']]),\n        'total_perjury_statements': len([s for s in all_statements if s['is_perjury']]),\n        'lie_rate': len([s for s in all_statements if s['is_lie']]) / len(all_statements) * 100,\n        'material_lie_rate': len([s for s in all_statements if s['is_material_lie']]) / len(all_statements) * 100,\n        'avg_truth_value': int(np.mean([s['truth_lie_score'] for s in all_statements])),\n        'avg_intent_score': int(np.mean([s['intent_culpability_score'] for s in all_statements])),\n        'avg_bad_faith_score': int(np.mean([s['bad_faith_quantification'] for s in all_statements])),\n        'avg_context_score': int(np.mean([s['context_relationship_score'] for s in all_statements])),\n        'is_smoking_gun': dms_result['dms'] >= 950,\n        'impeachment_statements_count': len([s for s in all_statements if s['is_impeachment_evidence']]),\n        'perjury_prosecutable_count': len([s for s in all_statements if s['is_perjury']]),\n        'page_scores': [db.get('pages', f\"{doc_id}-P{i:02d}\")['page_score'] for i in range(1, len(pages_text)+1)],\n        'avg_page_score': int(np.mean([db.get('pages', f\"{doc_id}-P{i:02d}\")['page_score'] for i in range(1, len(pages_text)+1)])),\n        'processing_status': 'complete',\n        'ai_processing_complete': True,\n        'processed_date': datetime.now()\n    })"
+    },
+    {
+      "title": "========================================================================",
+      "content": ""
+    },
+    {
+      "title": "PHASE 6: UPDATE PARTY CREDIBILITY",
+      "content": ""
+    },
+    {
+      "title": "========================================================================",
+      "content": "print(\" Phase 6: Updating party credibility scores...\")"
+    },
+    {
+      "title": "Identify party from document",
+      "content": "party_id = get_party_id_from_parties(doc_metadata['parties'])\n    if party_id:\n        update_party_justice_score(party_id, doc_id, all_statements)"
+    },
+    {
+      "title": "========================================================================",
+      "content": ""
+    },
+    {
+      "title": "PHASE 7: VECTOR EMBEDDINGS (for semantic search)",
+      "content": ""
+    },
+    {
+      "title": "========================================================================",
+      "content": "print(\" Phase 7: Generating vector embeddings...\")"
+    },
+    {
+      "title": "Generate document embedding",
+      "content": "doc_embedding = generate_embedding(\n        text=f\"{doc_metadata.get('title', '')} {' '.join([p for p in pages_text])}\",\n        model=\"text-embedding-3-small\"\n    )"
+    },
+    {
+      "title": "Store in Qdrant",
+      "content": "qdrant.upsert(\n        collection_name=\"documents\",\n        points=[{\n            'id': doc_id,\n            'vector': doc_embedding,\n            'payload': {\n                'doc_id': doc_id,\n                'case_id': case_id,\n                'dms': dms_result['dms'],\n                'doc_type': doc_metadata['type'],\n                'date': str(doc_metadata['date'])\n            }\n        }]\n    )"
+    },
+    {
+      "title": "Generate embeddings for high-value statements",
+      "content": "high_value_statements = [s for s in all_statements if s['statement_micro_score'] >= 700]\n    for statement in high_value_statements:\n        stmt_embedding = generate_embedding(statement['statement_text'])\n        qdrant.upsert(\n            collection_name=\"statements\",\n            points=[{\n                'id': statement['stmt_id'],\n                'vector': stmt_embedding,\n                'payload': {\n                    'stmt_id': statement['stmt_id'],\n                    'doc_id': doc_id,\n                    'case_id': case_id,\n                    'sms': statement['statement_micro_score'],\n                    'is_perjury': statement['is_perjury'],\n                    'is_smoking_gun': statement['is_smoking_gun']\n                }\n            }]\n        )"
+    },
+    {
+      "title": "========================================================================",
+      "content": ""
+    },
+    {
+      "title": "PHASE 8: NOTIFICATIONS & ALERTS",
+      "content": ""
+    },
+    {
+      "title": "========================================================================",
+      "content": "print(\" Phase 8: Checking for alerts...\")\n    alerts = []"
+    },
+    {
+      "title": "Perjury detected",
+      "content": "if len([s for s in all_statements if s['is_perjury']]) > 0:\n        alerts.append({\n            'type': 'PERJURY_DETECTED',\n            'severity': 'CRITICAL',\n            'count': len([s for s in all_statements if s['is_perjury']]),\n            'doc_id': doc_id\n        })"
+    },
+    {
+      "title": "Smoking gun document",
+      "content": "if dms_result['dms'] >= 950:\n        alerts.append({\n            'type': 'SMOKING_GUN_DOCUMENT',\n            'severity': 'HIGH',\n            'dms': dms_result['dms'],\n            'doc_id': doc_id\n        })"
+    },
+    {
+      "title": "Extreme bad faith",
+      "content": "if any(s['bad_faith_quantification'] >= 900 for s in all_statements):\n        alerts.append({\n            'type': 'EXTREME_BAD_FAITH',\n            'severity': 'HIGH',\n            'max_bfq': max(s['bad_faith_quantification'] for s in all_statements),\n            'doc_id': doc_id\n        })"
+    },
+    {
+      "title": "Send alerts",
+      "content": "for alert in alerts:\n        send_alert_to_user(case_id, alert)"
+    },
+    {
+      "title": "========================================================================",
+      "content": ""
+    },
+    {
+      "title": "COMPLETION",
+      "content": ""
+    },
+    {
+      "title": "========================================================================",
+      "content": "print(f\"\\n✅ Document processing complete!\")\n    print(f\"   Document Master Score: {dms_result['dms']}/1000 [{dms_result['rating']}]\")\n    print(f\"   Statements: {len(all_statements)}\")\n    print(f\"   Lies detected: {len([s for s in all_statements if s['is_lie']])} ({len([s for s in all_statements if s['is_lie']]) / len(all_statements) * 100:.1f}%)\")\n    print(f\"   Perjury statements: {len([s for s in all_statements if s['is_perjury']]}\")\n    print(f\"   Smoking guns: {len([s for s in all_statements if s['is_smoking_gun']])}\")\n    return {\n        'doc_id': doc_id,\n        'dms': dms_result,\n        'statements_count': len(all_statements),\n        'alerts': alerts,\n        'processing_time': calculate_processing_time()\n    }"
+    },
+    {
+      "title": "IV. IMPLEMENTATION PRIORITIES",
+      "content": "PHASE 1: MVP (Months 1-3)\nGOAL: Process documents for Don's case, generate evidence packages\nWeek 1-2: Database Setup\n├─ Supabase project creation\n├─ Schema implementation\n├─ Basic CRUD operations\n└─ Authentication setup\nWeek 3-4: Document Ingestion\n├─ OCR integration (Tesseract)\n├─ File upload to R2\n├─ Metadata extraction\n└─ Page splitting\nWeek 5-8: AI Analysis Core\n├─ Claude API integration\n├─ Statement extraction prompts\n├─ Truth analysis algorithms\n├─ Scoring engine implementation\n└─ All 12 dimensions coded\nWeek 9-10: Database Population\n├─ Process Don's 156 documents\n├─ Verify scoring accuracy\n├─ Human review critical statements\n└─ Adjust algorithms\nWeek 11-12: Evidence Generation\n├─ Motion drafting templates\n├─ Evidence package exports\n├─ Credibility comparison reports\n└─ Timeline visualization\nDELIVERABLE: Working system with Don's case fully processed\nPHASE 2: Beta (Months 4-6)\nGOAL: Test with 10 other families, refine algorithms\n- Recruit beta families\n- Process their cases\n- Gather feedback\n- Iterate on UX\n- Validate scoring accuracy\n- Document outcomes\nDELIVERABLE: Validated system, published methodology\nPHASE 3: Public Launch (Months 7-12)\nGOAL: Launch free access for protective parents\n- Web application (Next.js)\n- User onboarding flow\n- Document upload interface\n- Dashboard & reports\n- Mobile optimization\n- Documentation/tutorials\nDELIVERABLE: Public-facing platform, 100+ families served"
+    },
+    {
+      "title": "V. TECHNICAL STACK",
+      "content": "Frontend:\n  framework: Next.js 14\n  ui_library: React 18\n  styling: Tailwind CSS\n  components: Shadcn/ui\n  charts: Recharts\n  deployment: Vercel\nBackend:\n  framework: FastAPI (Python 3.11+)\n  database: Supabase (Postgres 15)\n  vector_db: Qdrant\n  storage: Cloudflare R2\n  deployment: Railway / Fly.io"
+    },
+    {
+      "title": "AI/ML:",
+      "content": "primary: Claude API (Anthropic)\n  backup: GPT-4 (OpenAI)\n  embeddings: text-embedding-3-small\n  audio: Whisper API\nProcessing:\n  ocr: Tesseract 5.0+\n  pdf: PyMuPDF\n  documents: python-docx\n  images: Pillow\nAutomation:\n  workflow: n8n\n  queues: BullMQ\n  tasks: Celery\nInfrastructure:\n  cdn: Cloudflare\n  monitoring: Sentry\n  analytics: PostHog\n  logging: Pino"
+    },
+    {
+      "title": "VI. REAL EXAMPLE: MOTHER'S AUGUST 12, 2024 DECLARATION",
+      "content": "Document Analysis Summary\nDOCUMENT: Mother's Ex Parte Declaration (Aug 12, 2024)\nFILE: Screenshot_20250930_174655_Adobe_Acrobat.jpg"
+    },
+    {
+      "title": "PAGES: 2",
+      "content": ""
+    },
+    {
+      "title": "WORDS: 288",
+      "content": ""
+    },
+    {
+      "title": "STATEMENTS: 16",
+      "content": ""
+    },
+    {
+      "title": "SCORING RESULTS:",
+      "content": "├─ Document Master Score (DMS): 930/1000 [A - Excellent]\n│   ├─ Evidence Strength: 920/1000\n│   ├─ Legal Impact: 970/1000\n│   ├─ Strategic Value: 890/1000\n│   └─ Intent/Conduct: 950/1000\n│\n├─ Statement Analysis:\n│   ├─ Total statements: 16\n│   ├─ Lies/False: 11 (69%)\n│   ├─ Material lies: 8 (50%)\n│   ├─ Perjury-level: 5 (31%)\n│   ├─ Good faith: 2 (13%)\n│   └─ Misleading: 3 (19%)\n│\n└─ Violations Detected:\n    ├─ Perjury (PC 118): 5 instances\n    ├─ Fraud on Court (CCP 473): 8 instances\n    ├─ Child Endangerment (PC 273a): 6 instances\n    └─ Obstruction (PC 182): 4 instances"
+    },
+    {
+      "title": "TOP 3 SMOKING GUN STATEMENTS:",
+      "content": "1. SMS: 978/1000 - \"Jamaica not Hague Convention member\""
+    },
+    {
+      "title": "├─ TLS: 020/1000 [AGGRAVATED PERJURY]",
+      "content": ""
+    },
+    {
+      "title": "├─ ICS: 980/1000 [MALEVOLENT]",
+      "content": ""
+    },
+    {
+      "title": "├─ BFQ: 990/1000 [EXTREME CORRUPTION]",
+      "content": ""
+    },
+    {
+      "title": "├─ CRS: 1000/1000 [MAXIMUM SIGNIFICANCE]",
+      "content": "└─ VIOLATIONS: Perjury (1000), Fraud (980), Child Endangerment (1000)"
+    },
+    {
+      "title": "PROOF OF FALSITY:",
+      "content": "- Jamaica IS Hague member (since October 1, 1994)\n   - Father's passport EXPIRED August 6, 2024 (6 days before filing)\n   - Easily verifiable = knew or should have known false\n   - Material: Court granted emergency order based on this lie\n2. SMS: 968/1000 - \"Father has no ties to United States\""
+    },
+    {
+      "title": "├─ TLS: 050/1000 [AGGRAVATED PERJURY]",
+      "content": ""
+    },
+    {
+      "title": "├─ ICS: 960/1000 [MALEVOLENT]",
+      "content": "└─ VIOLATIONS: Perjury (1000), Fraud (970)"
+    },
+    {
+      "title": "PROOF OF FALSITY:",
+      "content": "- Father is US CITIZEN (birth certificate/passport)\n   - Has US employment\n   - Has US residence\n   - Objectively, verifiably false\n3. SMS: 947/1000 - \"Father using report to alienate and keep Ashe away\""
+    },
+    {
+      "title": "├─ TLS: 120/1000 [MALICIOUS FALSEHOOD]",
+      "content": ""
+    },
+    {
+      "title": "├─ ICS: 940/1000 [MALEVOLENT]",
+      "content": ""
+    },
+    {
+      "title": "├─ BFQ: 960/1000 [EXTREME BAD FAITH]",
+      "content": ""
+    },
+    {
+      "title": "├─ CRS: 1000/1000 [MAXIMUM]",
+      "content": "└─ VIOLATIONS: Perjury (980), Child Endangerment (1000)"
+    },
+    {
+      "title": "PROOF OF FALSITY:",
+      "content": "- Contradicts her own April 2021 admission (grandfather abused her)\n   - Child disclosed abuse on August 3, 2024\n   - Dr. Brown confirmed \"suspected child sexual abuse\" August 9, 2024\n   - Father seeking protection, not alienation"
+    },
+    {
+      "title": "VII. FOR YOUR PYTHON PROGRAM",
+      "content": "Key Integration Points\n\"\"\"\nUse this summary to guide your implementation:\n\"\"\""
+    },
+    {
+      "title": "1. SCORING FUNCTIONS",
+      "content": "from scoring_engine import (\n    calculate_sms,  # Statement Micro-Score\n    calculate_pss,  # Page Score\n    calculate_dms,  # Document Master Score\n    calculate_mbs,  # Motion/Brief Strength\n    calculate_jms   # Justice Master Score\n)"
+    },
+    {
+      "title": "2. AI ANALYSIS FUNCTIONS",
+      "content": "from ai_analysis import (\n    ai_extract_statements,\n    ai_analyze_truth,\n    ai_classify_intent,\n    ai_quantify_bad_faith,\n    ai_calculate_context_relationships,\n    ai_detect_violations\n)"
+    },
+    {
+      "title": "3. DATABASE OPERATIONS",
+      "content": "from database import (\n    db_insert_document,\n    db_insert_statement,\n    db_update_party_credibility,\n    db_get_case_context\n)"
+    },
+    {
+      "title": "4. MAIN PROCESSING FUNCTION",
+      "content": "from document_processor import process_document_complete"
+    },
+    {
+      "title": "Example usage:",
+      "content": "result = process_document_complete(\n    file_path=\"/path/to/document.pdf\",\n    case_id=\"ashe-bucknor-j24-00478\",\n    case_context={\n        'all_statements': get_all_prior_statements(),\n        'verified_facts': get_verified_facts(),\n        'party_pattern': get_party_behavior_pattern('mother'),\n        'timeline': get_case_timeline(),\n        'key_docs': get_key_documents(),\n        'pending_motions': ['W&I 388', 'CCP 473(d)']\n    }\n)\nprint(f\"DMS: {result['dms']['dms']}/1000\")\nprint(f\"Perjury detected: {result['alerts']}\")"
+    },
+    {
+      "title": "VIII. NEXT STEPS FOR YOU",
+      "content": "Set up development environment\nPython 3.11+\nSupabase account\nClaude API key\nGit repository\nImplement database schema\nCopy SQL from Section II\nRun in Supabase\nTest CRUD operations\nStart with document ingestion\nOCR pipeline\nMetadata extraction\nFile storage\nIntegrate AI analysis\nClaude API calls\nPrompt engineering\nResponse parsing\nBuild scoring engine\nAll formulas from Section I\nTest with sample data\nValidate accuracy\nProcess your documents\nStart with highest priority\nMother's August 12 ex parte\nMother's April 2021 admission\nDr. Brown's report"
+    },
+    {
+      "title": "IX. MISSION REMINDER",
+      "content": "Every line of code we write serves one purpose:\nEnsure that no child's voice is silenced by litigation, no protective parent is punished for protecting, and no abuser escapes accountability through legal manipulation.\nFor Ashe. For every child. For justice.\nThis system will be free forever for families protecting children.\nTechnology can bend the arc of justice faster.\nLet's build it.\nSystem Specification v1.0 Last Updated: 2025-01-15 For: Ashe Sanctuary Of Empowerment Foundation / Athena Guardian of Innocence Project Built with love by a father fighting for his daughter "
+    },
+    {
+      "title": "END OF SUMMARY DOCUMENT",
+      "content": ""
+    }
+  ],
+  "extraction_success": true,
+  "extraction_error": null
+}

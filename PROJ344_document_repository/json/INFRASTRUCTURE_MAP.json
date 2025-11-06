@@ -1,0 +1,156 @@
+{
+  "metadata": {
+    "file_path": "C:\\Users\\DonBucknor_n0ufqwv\\GettingStarted\\ASEAGI\\INFRASTRUCTURE_MAP.md",
+    "file_name": "INFRASTRUCTURE_MAP.md",
+    "file_type": "md",
+    "file_size": 5373,
+    "file_hash": "93e6f585a8a0fdd27adf9cbea84a52c2",
+    "extraction_date": "2025-11-06T09:18:56.669408",
+    "extraction_method": "direct_read",
+    "title": "# ASEAGI Global Infrastructure Map",
+    "author": null,
+    "created_date": "2025-11-05T22:25:38.397382",
+    "modified_date": "2025-11-05T22:25:38.397382",
+    "page_count": null,
+    "word_count": 595,
+    "char_count": 5149
+  },
+  "content": "# ASEAGI Global Infrastructure Map\nGenerated: 2025-11-05 22:25:38\n======================================================================\n\n## 🗄️  Supabase Tables\n\n**Total Tables:** 0\n\n\n## 🔗 Table Relationships\n\n**Total Relationships:** 0\n\n### High Confidence Relationships (0)\n\n\n## 📊 Streamlit Dashboards\n\n**Total Dashboards:** 24\n\n### bulk_document_ingestion\n- **File:** `bulk_document_ingestion.py`\n- **Size:** 25,749 bytes\n- **Tables Accessed:** None\n- **Components:** 0 Streamlit components\n- **Functions:** 22 functions\n\n### bulk_ingestion_dashboard\n- **File:** `bulk_ingestion_dashboard.py`\n- **Size:** 12,568 bytes\n- **Tables Accessed:** None\n- **Components:** 16 Streamlit components\n- **Functions:** 5 functions\n\n### ceo_global_dashboard\n- **File:** `ceo_global_dashboard.py`\n- **Size:** 29,207 bytes\n- **Tables Accessed:** None\n- **Components:** 15 Streamlit components\n- **Functions:** 6 functions\n\n### check_error_logs\n- **File:** `check_error_logs.py`\n- **Size:** 6,328 bytes\n- **Tables Accessed:** None\n- **Components:** 18 Streamlit components\n- **Functions:** 1 functions\n\n### check_telegram_uploads\n- **File:** `check_telegram_uploads.py`\n- **Size:** 2,115 bytes\n- **Tables Accessed:** None\n- **Components:** 0 Streamlit components\n- **Functions:** 0 functions\n\n### court_events_dashboard\n- **File:** `court_events_dashboard.py`\n- **Size:** 17,763 bytes\n- **Tables Accessed:** None\n- **Components:** 24 Streamlit components\n- **Functions:** 7 functions\n\n### dashboard\n- **File:** `dashboard.py`\n- **Size:** 12,113 bytes\n- **Tables Accessed:** None\n- **Components:** 19 Streamlit components\n- **Functions:** 2 functions\n\n### error_log_uploader\n- **File:** `error_log_uploader.py`\n- **Size:** 17,188 bytes\n- **Tables Accessed:** None\n- **Components:** 24 Streamlit components\n- **Functions:** 9 functions\n\n### global_infrastructure_analyzer\n- **File:** `global_infrastructure_analyzer.py`\n- **Size:** 29,361 bytes\n- **Tables Accessed:** None\n- **Components:** 0 Streamlit components\n- **Functions:** 19 functions\n\n### legal_intelligence_dashboard\n- **File:** `legal_intelligence_dashboard.py`\n- **Size:** 26,698 bytes\n- **Tables Accessed:** None\n- **Components:** 23 Streamlit components\n- **Functions:** 6 functions\n\n### proj344_master_dashboard\n- **File:** `proj344_master_dashboard.py`\n- **Size:** 20,513 bytes\n- **Tables Accessed:** None\n- **Components:** 13 Streamlit components\n- **Functions:** 5 functions\n\n### proj344_style\n- **File:** `proj344_style.py`\n- **Size:** 12,564 bytes\n- **Tables Accessed:** None\n- **Components:** 1 Streamlit components\n- **Functions:** 8 functions\n\n### setup_storage_bucket\n- **File:** `setup_storage_bucket.py`\n- **Size:** 4,149 bytes\n- **Tables Accessed:** None\n- **Components:** 0 Streamlit components\n- **Functions:** 1 functions\n\n### start_telegram_bot\n- **File:** `start_telegram_bot.py`\n- **Size:** 5,583 bytes\n- **Tables Accessed:** None\n- **Components:** 0 Streamlit components\n- **Functions:** 1 functions\n\n### streamlit_log_viewer\n- **File:** `streamlit_log_viewer.py`\n- **Size:** 2,320 bytes\n- **Tables Accessed:** None\n- **Components:** 12 Streamlit components\n- **Functions:** 0 functions\n\n### supabase_dashboard\n- **File:** `supabase_dashboard.py`\n- **Size:** 24,831 bytes\n- **Tables Accessed:** None\n- **Components:** 24 Streamlit components\n- **Functions:** 9 functions\n\n### supabase_data_diagnostic\n- **File:** `supabase_data_diagnostic.py`\n- **Size:** 7,366 bytes\n- **Tables Accessed:** None\n- **Components:** 18 Streamlit components\n- **Functions:** 1 functions\n\n### telegram_bot_orchestrator\n- **File:** `telegram_bot_orchestrator.py`\n- **Size:** 33,880 bytes\n- **Tables Accessed:** None\n- **Components:** 0 Streamlit components\n- **Functions:** 16 functions\n\n### telegram_document_bot\n- **File:** `telegram_document_bot.py`\n- **Size:** 15,390 bytes\n- **Tables Accessed:** None\n- **Components:** 0 Streamlit components\n- **Functions:** 10 functions\n\n### telegram_document_bot_enhanced\n- **File:** `telegram_document_bot_enhanced.py`\n- **Size:** 31,720 bytes\n- **Tables Accessed:** None\n- **Components:** 0 Streamlit components\n- **Functions:** 15 functions\n\n### test_schema_deployment\n- **File:** `test_schema_deployment.py`\n- **Size:** 3,891 bytes\n- **Tables Accessed:** None\n- **Components:** 0 Streamlit components\n- **Functions:** 1 functions\n\n### test_telegram_connection\n- **File:** `test_telegram_connection.py`\n- **Size:** 3,181 bytes\n- **Tables Accessed:** None\n- **Components:** 0 Streamlit components\n- **Functions:** 0 functions\n\n### timeline_constitutional_violations\n- **File:** `timeline_constitutional_violations.py`\n- **Size:** 21,252 bytes\n- **Tables Accessed:** None\n- **Components:** 27 Streamlit components\n- **Functions:** 2 functions\n\n### truth_justice_timeline\n- **File:** `truth_justice_timeline.py`\n- **Size:** 20,254 bytes\n- **Tables Accessed:** None\n- **Components:** 22 Streamlit components\n- **Functions:** 4 functions\n\n\n## 🐍 Python Scripts\n\n**Total Scripts:** 2\n\n### Test Script (1)\n\n- **test_context_manager**\n  - Tables: None\n\n### Utility Script (1)\n\n- **fix_secrets_all**\n  - Tables: None\n\n\n## 🔄 Orchestration Patterns\n\n**Total Patterns:** 0\n",
+  "content_preview": "# ASEAGI Global Infrastructure Map\nGenerated: 2025-11-05 22:25:38\n======================================================================\n\n## 🗄️  Supabase Tables\n\n**Total Tables:** 0\n\n\n## 🔗 Table Relationships\n\n**Total Relationships:** 0\n\n### High Confidence Relationships (0)\n\n\n## 📊 Streamlit Dashboards\n\n**Total Dashboards:** 24\n\n### bulk_document_ingestion\n- **File:** `bulk_document_ingestion.py`\n- **Size:** 25,749 bytes\n- **Tables Accessed:** None\n- **Components:** 0 Streamlit components\n- **Fu...",
+  "sections": [
+    {
+      "title": "ASEAGI Global Infrastructure Map",
+      "content": "Generated: 2025-11-05 22:25:38\n======================================================================"
+    },
+    {
+      "title": "🗄️  Supabase Tables",
+      "content": "**Total Tables:** 0"
+    },
+    {
+      "title": "🔗 Table Relationships",
+      "content": "**Total Relationships:** 0"
+    },
+    {
+      "title": "High Confidence Relationships (0)",
+      "content": ""
+    },
+    {
+      "title": "📊 Streamlit Dashboards",
+      "content": "**Total Dashboards:** 24"
+    },
+    {
+      "title": "bulk_document_ingestion",
+      "content": "- **File:** `bulk_document_ingestion.py`\n- **Size:** 25,749 bytes\n- **Tables Accessed:** None\n- **Components:** 0 Streamlit components\n- **Functions:** 22 functions"
+    },
+    {
+      "title": "bulk_ingestion_dashboard",
+      "content": "- **File:** `bulk_ingestion_dashboard.py`\n- **Size:** 12,568 bytes\n- **Tables Accessed:** None\n- **Components:** 16 Streamlit components\n- **Functions:** 5 functions"
+    },
+    {
+      "title": "ceo_global_dashboard",
+      "content": "- **File:** `ceo_global_dashboard.py`\n- **Size:** 29,207 bytes\n- **Tables Accessed:** None\n- **Components:** 15 Streamlit components\n- **Functions:** 6 functions"
+    },
+    {
+      "title": "check_error_logs",
+      "content": "- **File:** `check_error_logs.py`\n- **Size:** 6,328 bytes\n- **Tables Accessed:** None\n- **Components:** 18 Streamlit components\n- **Functions:** 1 functions"
+    },
+    {
+      "title": "check_telegram_uploads",
+      "content": "- **File:** `check_telegram_uploads.py`\n- **Size:** 2,115 bytes\n- **Tables Accessed:** None\n- **Components:** 0 Streamlit components\n- **Functions:** 0 functions"
+    },
+    {
+      "title": "court_events_dashboard",
+      "content": "- **File:** `court_events_dashboard.py`\n- **Size:** 17,763 bytes\n- **Tables Accessed:** None\n- **Components:** 24 Streamlit components\n- **Functions:** 7 functions"
+    },
+    {
+      "title": "dashboard",
+      "content": "- **File:** `dashboard.py`\n- **Size:** 12,113 bytes\n- **Tables Accessed:** None\n- **Components:** 19 Streamlit components\n- **Functions:** 2 functions"
+    },
+    {
+      "title": "error_log_uploader",
+      "content": "- **File:** `error_log_uploader.py`\n- **Size:** 17,188 bytes\n- **Tables Accessed:** None\n- **Components:** 24 Streamlit components\n- **Functions:** 9 functions"
+    },
+    {
+      "title": "global_infrastructure_analyzer",
+      "content": "- **File:** `global_infrastructure_analyzer.py`\n- **Size:** 29,361 bytes\n- **Tables Accessed:** None\n- **Components:** 0 Streamlit components\n- **Functions:** 19 functions"
+    },
+    {
+      "title": "legal_intelligence_dashboard",
+      "content": "- **File:** `legal_intelligence_dashboard.py`\n- **Size:** 26,698 bytes\n- **Tables Accessed:** None\n- **Components:** 23 Streamlit components\n- **Functions:** 6 functions"
+    },
+    {
+      "title": "proj344_master_dashboard",
+      "content": "- **File:** `proj344_master_dashboard.py`\n- **Size:** 20,513 bytes\n- **Tables Accessed:** None\n- **Components:** 13 Streamlit components\n- **Functions:** 5 functions"
+    },
+    {
+      "title": "proj344_style",
+      "content": "- **File:** `proj344_style.py`\n- **Size:** 12,564 bytes\n- **Tables Accessed:** None\n- **Components:** 1 Streamlit components\n- **Functions:** 8 functions"
+    },
+    {
+      "title": "setup_storage_bucket",
+      "content": "- **File:** `setup_storage_bucket.py`\n- **Size:** 4,149 bytes\n- **Tables Accessed:** None\n- **Components:** 0 Streamlit components\n- **Functions:** 1 functions"
+    },
+    {
+      "title": "start_telegram_bot",
+      "content": "- **File:** `start_telegram_bot.py`\n- **Size:** 5,583 bytes\n- **Tables Accessed:** None\n- **Components:** 0 Streamlit components\n- **Functions:** 1 functions"
+    },
+    {
+      "title": "streamlit_log_viewer",
+      "content": "- **File:** `streamlit_log_viewer.py`\n- **Size:** 2,320 bytes\n- **Tables Accessed:** None\n- **Components:** 12 Streamlit components\n- **Functions:** 0 functions"
+    },
+    {
+      "title": "supabase_dashboard",
+      "content": "- **File:** `supabase_dashboard.py`\n- **Size:** 24,831 bytes\n- **Tables Accessed:** None\n- **Components:** 24 Streamlit components\n- **Functions:** 9 functions"
+    },
+    {
+      "title": "supabase_data_diagnostic",
+      "content": "- **File:** `supabase_data_diagnostic.py`\n- **Size:** 7,366 bytes\n- **Tables Accessed:** None\n- **Components:** 18 Streamlit components\n- **Functions:** 1 functions"
+    },
+    {
+      "title": "telegram_bot_orchestrator",
+      "content": "- **File:** `telegram_bot_orchestrator.py`\n- **Size:** 33,880 bytes\n- **Tables Accessed:** None\n- **Components:** 0 Streamlit components\n- **Functions:** 16 functions"
+    },
+    {
+      "title": "telegram_document_bot",
+      "content": "- **File:** `telegram_document_bot.py`\n- **Size:** 15,390 bytes\n- **Tables Accessed:** None\n- **Components:** 0 Streamlit components\n- **Functions:** 10 functions"
+    },
+    {
+      "title": "telegram_document_bot_enhanced",
+      "content": "- **File:** `telegram_document_bot_enhanced.py`\n- **Size:** 31,720 bytes\n- **Tables Accessed:** None\n- **Components:** 0 Streamlit components\n- **Functions:** 15 functions"
+    },
+    {
+      "title": "test_schema_deployment",
+      "content": "- **File:** `test_schema_deployment.py`\n- **Size:** 3,891 bytes\n- **Tables Accessed:** None\n- **Components:** 0 Streamlit components\n- **Functions:** 1 functions"
+    },
+    {
+      "title": "test_telegram_connection",
+      "content": "- **File:** `test_telegram_connection.py`\n- **Size:** 3,181 bytes\n- **Tables Accessed:** None\n- **Components:** 0 Streamlit components\n- **Functions:** 0 functions"
+    },
+    {
+      "title": "timeline_constitutional_violations",
+      "content": "- **File:** `timeline_constitutional_violations.py`\n- **Size:** 21,252 bytes\n- **Tables Accessed:** None\n- **Components:** 27 Streamlit components\n- **Functions:** 2 functions"
+    },
+    {
+      "title": "truth_justice_timeline",
+      "content": "- **File:** `truth_justice_timeline.py`\n- **Size:** 20,254 bytes\n- **Tables Accessed:** None\n- **Components:** 22 Streamlit components\n- **Functions:** 4 functions"
+    },
+    {
+      "title": "🐍 Python Scripts",
+      "content": "**Total Scripts:** 2"
+    },
+    {
+      "title": "Test Script (1)",
+      "content": "- **test_context_manager**\n  - Tables: None"
+    },
+    {
+      "title": "Utility Script (1)",
+      "content": "- **fix_secrets_all**\n  - Tables: None"
+    },
+    {
+      "title": "🔄 Orchestration Patterns",
+      "content": "**Total Patterns:** 0"
+    }
+  ],
+  "extraction_success": true,
+  "extraction_error": null
+}

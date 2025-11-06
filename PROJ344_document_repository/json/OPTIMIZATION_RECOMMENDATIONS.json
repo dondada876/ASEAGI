@@ -1,0 +1,56 @@
+{
+  "metadata": {
+    "file_path": "C:\\Users\\DonBucknor_n0ufqwv\\GettingStarted\\ASEAGI\\OPTIMIZATION_RECOMMENDATIONS.md",
+    "file_name": "OPTIMIZATION_RECOMMENDATIONS.md",
+    "file_type": "md",
+    "file_size": 1292,
+    "file_hash": "25ffd563f90b5d23fc042c7fbb30bba6",
+    "extraction_date": "2025-11-06T09:18:56.677936",
+    "extraction_method": "direct_read",
+    "title": "# ASEAGI Optimization Recommendations",
+    "author": null,
+    "created_date": "2025-11-05T22:25:38.398382",
+    "modified_date": "2025-11-05T22:25:38.398382",
+    "page_count": null,
+    "word_count": 134,
+    "char_count": 1134
+  },
+  "content": "# ASEAGI Optimization Recommendations\nGenerated: 2025-11-05 22:25:38\n======================================================================\n\n## 1. 🗄️  Database Optimization\n\n✅ No obvious table consolidation needed\n\n\n## 2. 📊 Dashboard Optimization\n\n### Dashboard-Table Access Patterns:\n\n\n## 3. 📥 Ingestion Pipeline Optimization\n\n✅ Single ingestion pipeline detected\n\n\n## 4. 🔗 Missing Relationships\n\n✅ All tables have relationships\n\n\n## 5. 🔄 Workflow Optimization\n\n### Recommended Unified Workflow:\n\n\n```\n1. Document Ingestion (All Sources)\n   ├── Telegram Bot (Phone uploads)\n   ├── Bulk Processor (Folder scans)\n   └── Cloud Sync (Google Drive, etc.)\n              ↓\n2. Central Processing Pipeline\n   ├── Duplicate Detection (MD5 hash)\n   ├── OCR Processing (Tesseract + Claude)\n   ├── Metadata Extraction\n   └── Quality Validation\n              ↓\n3. Database Storage (Supabase)\n   ├── legal_documents (primary)\n   ├── document_metadata (extended)\n   └── processing_logs (audit)\n              ↓\n4. Real-time Dashboards\n   ├── Master Dashboard (overview)\n   ├── Timeline Dashboard (events)\n   └── Bulk Ingestion Monitor (progress)\n```\n",
+  "content_preview": "# ASEAGI Optimization Recommendations\nGenerated: 2025-11-05 22:25:38\n======================================================================\n\n## 1. 🗄️  Database Optimization\n\n✅ No obvious table consolidation needed\n\n\n## 2. 📊 Dashboard Optimization\n\n### Dashboard-Table Access Patterns:\n\n\n## 3. 📥 Ingestion Pipeline Optimization\n\n✅ Single ingestion pipeline detected\n\n\n## 4. 🔗 Missing Relationships\n\n✅ All tables have relationships\n\n\n## 5. 🔄 Workflow Optimization\n\n### Recommended Unified Workflow:\n\n\n`...",
+  "sections": [
+    {
+      "title": "ASEAGI Optimization Recommendations",
+      "content": "Generated: 2025-11-05 22:25:38\n======================================================================"
+    },
+    {
+      "title": "1. 🗄️  Database Optimization",
+      "content": "✅ No obvious table consolidation needed"
+    },
+    {
+      "title": "2. 📊 Dashboard Optimization",
+      "content": ""
+    },
+    {
+      "title": "Dashboard-Table Access Patterns:",
+      "content": ""
+    },
+    {
+      "title": "3. 📥 Ingestion Pipeline Optimization",
+      "content": "✅ Single ingestion pipeline detected"
+    },
+    {
+      "title": "4. 🔗 Missing Relationships",
+      "content": "✅ All tables have relationships"
+    },
+    {
+      "title": "5. 🔄 Workflow Optimization",
+      "content": ""
+    },
+    {
+      "title": "Recommended Unified Workflow:",
+      "content": "```\n1. Document Ingestion (All Sources)\n   ├── Telegram Bot (Phone uploads)\n   ├── Bulk Processor (Folder scans)\n   └── Cloud Sync (Google Drive, etc.)\n              ↓\n2. Central Processing Pipeline\n   ├── Duplicate Detection (MD5 hash)\n   ├── OCR Processing (Tesseract + Claude)\n   ├── Metadata Extraction\n   └── Quality Validation\n              ↓\n3. Database Storage (Supabase)\n   ├── legal_documents (primary)\n   ├── document_metadata (extended)\n   └── processing_logs (audit)\n              ↓\n4. Real-time Dashboards\n   ├── Master Dashboard (overview)\n   ├── Timeline Dashboard (events)\n   └── Bulk Ingestion Monitor (progress)\n```"
+    }
+  ],
+  "extraction_success": true,
+  "extraction_error": null
+}
