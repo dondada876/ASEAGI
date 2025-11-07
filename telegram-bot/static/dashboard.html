@@ -1,0 +1,425 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ASEAGI Dashboard - For Ashe</title>
+
+    <!-- Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+
+    <!-- Chart.js -->
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+
+    <!-- Custom styles -->
+    <style>
+        .dashboard-card {
+            transition: transform 0.2s, box-shadow 0.2s;
+        }
+        .dashboard-card:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 10px 25px rgba(0,0,0,0.1);
+        }
+        .metric-card {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+        }
+        .critical {
+            background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);
+        }
+        .success {
+            background: linear-gradient(135deg, #4facfe 0%, #00f2fe 100%);
+        }
+    </style>
+</head>
+<body class="bg-gray-100">
+    <!-- Header -->
+    <header class="bg-white shadow-md">
+        <div class="container mx-auto px-4 py-4">
+            <div class="flex justify-between items-center">
+                <div>
+                    <h1 class="text-3xl font-bold text-gray-800">⚖️ ASEAGI Dashboard</h1>
+                    <p class="text-gray-600">For Ashe - Protecting children through intelligent legal assistance</p>
+                </div>
+                <div class="text-right">
+                    <p class="text-sm text-gray-500">Case: In re Ashe B., J24-00478</p>
+                    <p class="text-xs text-gray-400" id="last-updated">Loading...</p>
+                </div>
+            </div>
+        </div>
+    </header>
+
+    <!-- Navigation Tabs -->
+    <div class="container mx-auto px-4 mt-6">
+        <div class="bg-white rounded-lg shadow-md p-2 flex space-x-2">
+            <button onclick="showTab('overview')" id="tab-overview" class="tab-button active px-6 py-2 rounded-lg font-medium transition">
+                📊 Overview
+            </button>
+            <button onclick="showTab('truth')" id="tab-truth" class="tab-button px-6 py-2 rounded-lg font-medium transition">
+                ⚖️ Truth Timeline
+            </button>
+            <button onclick="showTab('violations')" id="tab-violations" class="tab-button px-6 py-2 rounded-lg font-medium transition">
+                🚨 Violations
+            </button>
+            <button onclick="showTab('events')" id="tab-events" class="tab-button px-6 py-2 rounded-lg font-medium transition">
+                📅 Court Events
+            </button>
+        </div>
+    </div>
+
+    <!-- Main Content -->
+    <div class="container mx-auto px-4 mt-6 mb-12">
+
+        <!-- Overview Tab -->
+        <div id="content-overview" class="tab-content">
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-6 mb-6">
+                <div class="dashboard-card bg-white rounded-lg shadow-md p-6 metric-card">
+                    <h3 class="text-lg font-semibold mb-2">📅 Total Events</h3>
+                    <p class="text-4xl font-bold" id="overview-events">-</p>
+                    <p class="text-sm opacity-75 mt-2">Court hearings & filings</p>
+                </div>
+                <div class="dashboard-card bg-white rounded-lg shadow-md p-6 metric-card">
+                    <h3 class="text-lg font-semibold mb-2">📄 Documents</h3>
+                    <p class="text-4xl font-bold" id="overview-docs">-</p>
+                    <p class="text-sm opacity-75 mt-2">Processed & analyzed</p>
+                </div>
+                <div class="dashboard-card bg-white rounded-lg shadow-md p-6 metric-card">
+                    <h3 class="text-lg font-semibold mb-2">💬 Communications</h3>
+                    <p class="text-4xl font-bold" id="overview-comms">-</p>
+                    <p class="text-sm opacity-75 mt-2">Evidence tracked</p>
+                </div>
+            </div>
+
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                <div class="dashboard-card bg-white rounded-lg shadow-md p-6">
+                    <h3 class="text-xl font-bold mb-4">🔥 Critical Events (900+ significance)</h3>
+                    <div id="overview-critical-events" class="space-y-3">Loading...</div>
+                </div>
+                <div class="dashboard-card bg-white rounded-lg shadow-md p-6">
+                    <h3 class="text-xl font-bold mb-4">📄 Critical Documents (900+ relevancy)</h3>
+                    <div id="overview-critical-docs" class="space-y-3">Loading...</div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Truth Timeline Tab -->
+        <div id="content-truth" class="tab-content hidden">
+            <div class="grid grid-cols-1 md:grid-cols-4 gap-4 mb-6">
+                <div class="dashboard-card bg-white rounded-lg shadow-md p-4 success">
+                    <h3 class="text-sm font-semibold mb-1">⚖️ Justice Score</h3>
+                    <p class="text-3xl font-bold" id="truth-justice-score">-</p>
+                </div>
+                <div class="dashboard-card bg-white rounded-lg shadow-md p-4 bg-green-500 text-white">
+                    <h3 class="text-sm font-semibold mb-1">✅ Truthful</h3>
+                    <p class="text-3xl font-bold" id="truth-true-count">-</p>
+                </div>
+                <div class="dashboard-card bg-white rounded-lg shadow-md p-4 bg-yellow-500 text-white">
+                    <h3 class="text-sm font-semibold mb-1">⚠️ Questionable</h3>
+                    <p class="text-3xl font-bold" id="truth-questionable-count">-</p>
+                </div>
+                <div class="dashboard-card bg-white rounded-lg shadow-md p-4 bg-red-500 text-white">
+                    <h3 class="text-sm font-semibold mb-1">❌ False</h3>
+                    <p class="text-3xl font-bold" id="truth-false-count">-</p>
+                </div>
+            </div>
+
+            <div class="dashboard-card bg-white rounded-lg shadow-md p-6 mb-6">
+                <h3 class="text-xl font-bold mb-4">📊 Truth Score Distribution</h3>
+                <canvas id="truth-chart" height="100"></canvas>
+            </div>
+
+            <div class="dashboard-card bg-white rounded-lg shadow-md p-6">
+                <h3 class="text-xl font-bold mb-4">📅 Recent Timeline Items</h3>
+                <div id="truth-timeline-items" class="space-y-3">Loading...</div>
+            </div>
+        </div>
+
+        <!-- Violations Tab -->
+        <div id="content-violations" class="tab-content hidden">
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-6 mb-6">
+                <div class="dashboard-card bg-white rounded-lg shadow-md p-6 critical">
+                    <h3 class="text-lg font-semibold mb-2">🚨 Total Violations</h3>
+                    <p class="text-4xl font-bold" id="violations-total">-</p>
+                    <p class="text-sm opacity-75 mt-2">Documented violations</p>
+                </div>
+                <div class="dashboard-card bg-white rounded-lg shadow-md p-6 critical">
+                    <h3 class="text-lg font-semibold mb-2">⚠️ Critical Violations</h3>
+                    <p class="text-4xl font-bold" id="violations-critical">-</p>
+                    <p class="text-sm opacity-75 mt-2">Severity ≥ 800</p>
+                </div>
+            </div>
+
+            <div class="dashboard-card bg-white rounded-lg shadow-md p-6 mb-6">
+                <h3 class="text-xl font-bold mb-4">📊 Violations by Type</h3>
+                <canvas id="violations-chart" height="100"></canvas>
+            </div>
+
+            <div class="dashboard-card bg-white rounded-lg shadow-md p-6">
+                <h3 class="text-xl font-bold mb-4">🚨 Critical Violations</h3>
+                <div id="violations-list" class="space-y-3">Loading...</div>
+            </div>
+        </div>
+
+        <!-- Court Events Tab -->
+        <div id="content-events" class="tab-content hidden">
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-6 mb-6">
+                <div class="dashboard-card bg-white rounded-lg shadow-md p-6 bg-red-500 text-white">
+                    <h3 class="text-lg font-semibold mb-2">🔴 Urgent</h3>
+                    <p class="text-4xl font-bold" id="events-urgent-count">-</p>
+                    <p class="text-sm opacity-75 mt-2">≤ 3 days</p>
+                </div>
+                <div class="dashboard-card bg-white rounded-lg shadow-md p-6 bg-yellow-500 text-white">
+                    <h3 class="text-lg font-semibold mb-2">🟡 High Priority</h3>
+                    <p class="text-4xl font-bold" id="events-high-count">-</p>
+                    <p class="text-sm opacity-75 mt-2">≤ 7 days</p>
+                </div>
+                <div class="dashboard-card bg-white rounded-lg shadow-md p-6 bg-blue-500 text-white">
+                    <h3 class="text-lg font-semibold mb-2">🔵 Normal</h3>
+                    <p class="text-4xl font-bold" id="events-normal-count">-</p>
+                    <p class="text-sm opacity-75 mt-2">> 7 days</p>
+                </div>
+            </div>
+
+            <div class="dashboard-card bg-white rounded-lg shadow-md p-6 mb-6">
+                <h3 class="text-xl font-bold mb-4">📅 Upcoming Events Requiring Action</h3>
+                <div id="events-upcoming-list" class="space-y-3">Loading...</div>
+            </div>
+
+            <div class="dashboard-card bg-white rounded-lg shadow-md p-6">
+                <h3 class="text-xl font-bold mb-4">✅ Recently Completed Events</h3>
+                <div id="events-recent-list" class="space-y-3">Loading...</div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Footer -->
+    <footer class="bg-white shadow-md mt-12 py-4">
+        <div class="container mx-auto px-4 text-center text-gray-600">
+            <p><strong>ASEAGI</strong> - Ashe Sanctuary of Empowerment AGI</p>
+            <p class="text-sm">For Ashe. For All Children. ⚖️</p>
+            <p class="text-xs mt-2">"When children speak, truth must roar louder than lies."</p>
+        </div>
+    </footer>
+
+    <script>
+        // Configuration
+        const API_BASE = 'http://localhost:8000/api/dashboard';
+        let currentTab = 'overview';
+
+        // Tab switching
+        function showTab(tabName) {
+            // Hide all tabs
+            document.querySelectorAll('.tab-content').forEach(el => el.classList.add('hidden'));
+            document.querySelectorAll('.tab-button').forEach(el => {
+                el.classList.remove('bg-blue-500', 'text-white');
+                el.classList.add('text-gray-700', 'hover:bg-gray-100');
+            });
+
+            // Show selected tab
+            document.getElementById(`content-${tabName}`).classList.remove('hidden');
+            const button = document.getElementById(`tab-${tabName}`);
+            button.classList.add('bg-blue-500', 'text-white');
+            button.classList.remove('text-gray-700', 'hover:bg-gray-100');
+
+            currentTab = tabName;
+
+            // Load data for tab
+            loadTabData(tabName);
+        }
+
+        // Load data for specific tab
+        async function loadTabData(tabName) {
+            try {
+                switch(tabName) {
+                    case 'overview':
+                        await loadOverviewData();
+                        break;
+                    case 'truth':
+                        await loadTruthTimelineData();
+                        break;
+                    case 'violations':
+                        await loadViolationsData();
+                        break;
+                    case 'events':
+                        await loadCourtEventsData();
+                        break;
+                }
+                updateLastUpdated();
+            } catch (error) {
+                console.error(`Error loading ${tabName} data:`, error);
+                showError(`Failed to load ${tabName} data: ${error.message}`);
+            }
+        }
+
+        // Overview Data
+        async function loadOverviewData() {
+            const response = await fetch(`${API_BASE}/overview`);
+            const result = await response.json();
+
+            if (!result.success) throw new Error(result.message);
+
+            const data = result.data;
+
+            // Update counts
+            document.getElementById('overview-events').textContent = data.counts.events;
+            document.getElementById('overview-docs').textContent = data.counts.documents;
+            document.getElementById('overview-comms').textContent = data.counts.communications;
+
+            // Critical events
+            const eventsHtml = data.critical.events.map(e => `
+                <div class="border-l-4 border-red-500 pl-4 py-2">
+                    <p class="font-semibold">${e.event_title}</p>
+                    <p class="text-sm text-gray-600">${e.event_date} | Significance: ${e.significance_score}/1000</p>
+                </div>
+            `).join('');
+            document.getElementById('overview-critical-events').innerHTML = eventsHtml || '<p class="text-gray-500">No critical events</p>';
+
+            // Critical documents
+            const docsHtml = data.critical.documents.map(d => `
+                <div class="border-l-4 border-yellow-500 pl-4 py-2">
+                    <p class="font-semibold">${d.original_filename}</p>
+                    <p class="text-sm text-gray-600">Relevancy: ${d.relevancy_score}/1000</p>
+                </div>
+            `).join('');
+            document.getElementById('overview-critical-docs').innerHTML = docsHtml || '<p class="text-gray-500">No critical documents</p>';
+        }
+
+        // Truth Timeline Data
+        async function loadTruthTimelineData() {
+            const response = await fetch(`${API_BASE}/truth-timeline?days=90`);
+            const result = await response.json();
+
+            if (!result.success) throw new Error(result.message);
+
+            const data = result.data;
+
+            // Update metrics
+            document.getElementById('truth-justice-score').textContent = data.justice_score;
+            document.getElementById('truth-true-count').textContent = data.true_count;
+            document.getElementById('truth-questionable-count').textContent = data.questionable_count;
+            document.getElementById('truth-false-count').textContent = data.false_count;
+
+            // Timeline items
+            const timelineHtml = data.timeline.slice(0, 20).map(item => {
+                const emoji = item.truth_score >= 75 ? '✅' : item.truth_score >= 25 ? '⚠️' : '❌';
+                const color = item.truth_score >= 75 ? 'green' : item.truth_score >= 25 ? 'yellow' : 'red';
+                return `
+                    <div class="border-l-4 border-${color}-500 pl-4 py-2">
+                        <p class="font-semibold">${emoji} ${item.title}</p>
+                        <p class="text-sm text-gray-600">${item.date} | Truth: ${item.truth_score}/100 | Type: ${item.type}</p>
+                    </div>
+                `;
+            }).join('');
+            document.getElementById('truth-timeline-items').innerHTML = timelineHtml;
+
+            // Chart
+            const ctx = document.getElementById('truth-chart').getContext('2d');
+            new Chart(ctx, {
+                type: 'doughnut',
+                data: {
+                    labels: ['Truthful (≥75)', 'Questionable (25-75)', 'False (<25)'],
+                    datasets: [{
+                        data: [data.true_count, data.questionable_count, data.false_count],
+                        backgroundColor: ['#10b981', '#fbbf24', '#ef4444']
+                    }]
+                }
+            });
+        }
+
+        // Violations Data
+        async function loadViolationsData() {
+            const response = await fetch(`${API_BASE}/violations`);
+            const result = await response.json();
+
+            if (!result.success) throw new Error(result.message);
+
+            const data = result.data;
+
+            // Update counts
+            document.getElementById('violations-total').textContent = data.total_violations;
+            document.getElementById('violations-critical').textContent = data.critical.length;
+
+            // Violations list
+            const violationsHtml = data.critical.map(v => `
+                <div class="border-l-4 border-red-500 pl-4 py-2">
+                    <p class="font-semibold">🚨 ${v.event_title}</p>
+                    <p class="text-sm text-gray-600">${v.event_date} | Significance: ${v.significance_score}/1000</p>
+                </div>
+            `).join('');
+            document.getElementById('violations-list').innerHTML = violationsHtml || '<p class="text-gray-500">No critical violations</p>';
+
+            // Chart
+            const ctx = document.getElementById('violations-chart').getContext('2d');
+            new Chart(ctx, {
+                type: 'bar',
+                data: {
+                    labels: Object.keys(data.by_type),
+                    datasets: [{
+                        label: 'Violations',
+                        data: Object.values(data.by_type),
+                        backgroundColor: '#ef4444'
+                    }]
+                }
+            });
+        }
+
+        // Court Events Data
+        async function loadCourtEventsData() {
+            const response = await fetch(`${API_BASE}/court-events`);
+            const result = await response.json();
+
+            if (!result.success) throw new Error(result.message);
+
+            const data = result.data;
+
+            // Count by urgency
+            const urgentCount = data.upcoming.filter(e => e.urgency === 'URGENT').length;
+            const highCount = data.upcoming.filter(e => e.urgency === 'HIGH').length;
+            const normalCount = data.upcoming.filter(e => e.urgency === 'NORMAL').length;
+
+            document.getElementById('events-urgent-count').textContent = urgentCount;
+            document.getElementById('events-high-count').textContent = highCount;
+            document.getElementById('events-normal-count').textContent = normalCount;
+
+            // Upcoming events
+            const upcomingHtml = data.upcoming.map(e => {
+                const urgencyColor = e.urgency === 'URGENT' ? 'red' : e.urgency === 'HIGH' ? 'yellow' : 'blue';
+                return `
+                    <div class="border-l-4 border-${urgencyColor}-500 pl-4 py-2">
+                        <p class="font-semibold">${e.urgency === 'URGENT' ? '🔴' : e.urgency === 'HIGH' ? '🟡' : '🔵'} ${e.event_title}</p>
+                        <p class="text-sm text-gray-600">${e.event_date} | ${e.urgency}</p>
+                    </div>
+                `;
+            }).join('');
+            document.getElementById('events-upcoming-list').innerHTML = upcomingHtml || '<p class="text-gray-500">No upcoming events</p>';
+
+            // Recent events
+            const recentHtml = data.recent.map(e => `
+                <div class="border-l-4 border-gray-300 pl-4 py-2">
+                    <p class="font-semibold">${e.event_title}</p>
+                    <p class="text-sm text-gray-600">${e.event_date}</p>
+                </div>
+            `).join('');
+            document.getElementById('events-recent-list').innerHTML = recentHtml || '<p class="text-gray-500">No recent events</p>';
+        }
+
+        // Update last updated timestamp
+        function updateLastUpdated() {
+            const now = new Date();
+            document.getElementById('last-updated').textContent = `Last updated: ${now.toLocaleTimeString()}`;
+        }
+
+        // Error display
+        function showError(message) {
+            alert(`Error: ${message}`);
+        }
+
+        // Initialize on load
+        document.addEventListener('DOMContentLoaded', () => {
+            showTab('overview');
+            // Auto-refresh every 5 minutes
+            setInterval(() => loadTabData(currentTab), 5 * 60 * 1000);
+        });
+    </script>
+</body>
+</html>
