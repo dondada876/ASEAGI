@@ -16,9 +16,10 @@ REPOSITORY_URL = 'https://github.com/dondada876/ASEAGI'
 DEFAULT_COMPONENT = 'legal_document_scanner'
 DEFAULT_ENVIRONMENT = 'production'
 
-# File Export Paths
-BUG_EXPORT_DIR = '/data/bugs/legal'
-LOG_EXPORT_DIR = '/data/logs/legal'
+# File Export Paths (local development)
+import os
+BUG_EXPORT_DIR = os.path.expanduser('~/ASEAGI/data/bugs/legal')
+LOG_EXPORT_DIR = os.path.expanduser('~/ASEAGI/data/logs/legal')
 
 # Feature Flags
 ENABLE_AUTO_BUG_CREATION = True
