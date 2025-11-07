@@ -1,0 +1,16 @@
+# ASEAGI MVP MCP Server Dependencies
+# Python 3.11+
+
+# MCP SDK - Model Context Protocol
+mcp>=0.9.0
+
+# Supabase client - FIXED VERSION (was 2.3.0, caused proxy parameter error)
+supabase>=2.12.0
+
+# Additional dependencies (installed automatically with supabase)
+# - httpx (HTTP client)
+# - python-dotenv (environment variables)
+# - postgrest-py (PostgreSQL REST client)
+# - gotrue (authentication)
+# - storage3 (file storage)
+# - realtime (websocket support)
