@@ -36,8 +36,8 @@ def init_supabase():
 
     try:
         client = create_client(url, key)
-        # Test connection
-        client.table('court_events').select('id', count='exact').limit(1).execute()
+        # Test connection (NON-NEGOTIABLE TABLE)
+        client.table('events').select('id', count='exact').limit(1).execute()
         return client, None
     except Exception as e:
         return None, str(e)
@@ -46,9 +46,9 @@ def init_supabase():
 
 @st.cache_data(ttl=30)
 def get_all_events(_client):
-    """Get all court events"""
+    """Get all events (NON-NEGOTIABLE TABLE)"""
     try:
-        response = _client.table('court_events')\
+        response = _client.table('events')\
             .select('*')\
             .order('event_date', desc=True)\
             .execute()
@@ -59,10 +59,10 @@ def get_all_events(_client):
 
 @st.cache_data(ttl=30)
 def get_event_documents(_client, event_id):
-    """Get all documents for an event"""
+    """Get all documents for an event (NON-NEGOTIABLE document_journal TABLE)"""
     try:
         response = _client.table('event_documents')\
-            .select('*, legal_documents(*)')\
+            .select('*, document_journal(*)')\
             .eq('event_id', event_id)\
             .execute()
         return response.data
@@ -203,12 +203,12 @@ def main():
                 if docs:
                     st.write(f"**📎 {len(docs)} Linked Documents:**")
                     for doc in docs:
-                        legal_doc = doc.get('legal_documents', {})
+                        journal_doc = doc.get('document_journal', {})
                         role = doc.get('document_role', 'N/A')
                         time_rel = doc.get('time_relevance', 'N/A')
                         exhibit = doc.get('exhibit_number', '')
 
-                        doc_title = legal_doc.get('document_title') or legal_doc.get('original_filename', 'Untitled')
+                        doc_title = journal_doc.get('original_filename', 'Untitled')
                         st.write(f"  - {role}: {doc_title} ({time_rel}){' - ' + exhibit if exhibit else ''}")
 
     # ===== UPCOMING EVENTS MODE =====
@@ -360,8 +360,8 @@ def main():
 
             if docs:
                 for doc in docs:
-                    legal_doc = doc.get('legal_documents', {})
-                    with st.expander(f"{doc.get('document_role')}: {legal_doc.get('document_title') or legal_doc.get('original_filename')}"):
+                    journal_doc = doc.get('document_journal', {})
+                    with st.expander(f"{doc.get('document_role')}: {journal_doc.get('original_filename')}"):
                         col1, col2 = st.columns(2)
 
                         with col1:
@@ -376,8 +376,8 @@ def main():
                                 st.write(f"**Filing Date:** {doc['filing_date']}")
                             st.write(f"**Key Evidence:** {'Yes' if doc.get('is_key_evidence') else 'No'}")
 
-                        if legal_doc.get('executive_summary'):
-                            st.info(legal_doc['executive_summary'])
+                        if journal_doc.get('processing_notes'):
+                            st.info(journal_doc['processing_notes'])
             else:
                 st.warning("No documents linked to this event yet.")
 
@@ -436,7 +436,7 @@ def main():
                             'status': 'PENDING'
                         }
 
-                        result = client.table('court_events').insert(new_event).execute()
+                        result = client.table('events').insert(new_event).execute()
                         st.success(f"✅ Event created successfully! ID: {result.data[0]['id'][:8]}...")
                         st.cache_data.clear()
                     except Exception as e:

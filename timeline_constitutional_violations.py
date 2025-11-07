@@ -72,8 +72,8 @@ with tab1:
             # Query all data sources
             st.info("📥 Loading data from Supabase...")
 
-            # 1. Get court events
-            events_response = supabase.table('court_events')\
+            # 1. Get events (MOST IMPORTANT NON-NEGOTIABLE TABLE)
+            events_response = supabase.table('events')\
                 .select('*')\
                 .gte('event_date', date_range[0].isoformat())\
                 .lte('event_date', date_range[1].isoformat())\
@@ -85,13 +85,13 @@ with tab1:
             if not events_df.empty and event_types:
                 events_df = events_df[events_df['event_type'].isin(event_types)]
 
-            # 2. Get legal documents
+            # 2. Get document journal (NON-NEGOTIABLE TABLE)
             docs_df = pd.DataFrame()
             if show_docs:
-                docs_response = supabase.table('legal_documents')\
+                docs_response = supabase.table('document_journal')\
                     .select('*')\
-                    .gte('relevancy_number', min_relevancy)\
-                    .order('created_at', desc=True)\
+                    .gte('relevancy_score', min_relevancy)\
+                    .order('upload_date', desc=True)\
                     .execute()
                 docs_df = pd.DataFrame(docs_response.data)
 
@@ -275,9 +275,9 @@ with tab2:
     - **Constitutional Concern**: Evidence of false claims in restraining order proceedings
     """)
 
-    # Get events from Aug 10-20, 2024
+    # Get events from Aug 10-20, 2024 (NON-NEGOTIABLE TABLE)
     try:
-        aug_events = supabase.table('court_events')\
+        aug_events = supabase.table('events')\
             .select('*')\
             .gte('event_date', '2024-08-10')\
             .lte('event_date', '2024-08-20')\
@@ -317,7 +317,7 @@ with tab2:
             """)
 
             # Check for related documents
-            docs_check = supabase.table('legal_documents')\
+            docs_check = supabase.table('document_journal')\
                 .select('*')\
                 .ilike('original_filename', '%police%')\
                 .execute()
@@ -362,9 +362,9 @@ with tab3:
         - Unequal access to evidence
         """)
 
-    # Get events with constitutional issues
+    # Get events with constitutional issues (NON-NEGOTIABLE TABLE)
     try:
-        violations_response = supabase.table('court_events')\
+        violations_response = supabase.table('events')\
             .select('event_date, event_title, event_description, event_type, judge_name')\
             .or_('event_title.ilike.%false%,event_title.ilike.%violation%,event_title.ilike.%contempt%')\
             .order('event_date', desc=True)\
@@ -414,10 +414,10 @@ with tab4:
     """)
 
     try:
-        # Get all documents with scores
-        docs_response = supabase.table('legal_documents')\
-            .select('original_filename, relevancy_number, micro_number, document_type, created_at, file_extension')\
-            .order('relevancy_number', desc=True)\
+        # Get all documents with scores (NON-NEGOTIABLE TABLE)
+        docs_response = supabase.table('document_journal')\
+            .select('original_filename, relevancy_score, micro_score, document_type, upload_date, storage_path')\
+            .order('relevancy_score', desc=True)\
             .execute()
 
         docs_df = pd.DataFrame(docs_response.data)
@@ -428,18 +428,18 @@ with tab4:
             with col1:
                 st.metric("Total Documents", len(docs_df))
             with col2:
-                high_relevancy = len(docs_df[docs_df['relevancy_number'] >= 700])
+                high_relevancy = len(docs_df[docs_df['relevancy_score'] >= 700])
                 st.metric("High Relevancy (≥700)", high_relevancy)
             with col3:
-                high_micro = len(docs_df[docs_df['micro_number'] >= 70]) if 'micro_number' in docs_df.columns else 0
+                high_micro = len(docs_df[docs_df['micro_score'] >= 70]) if 'micro_score' in docs_df.columns else 0
                 st.metric("High Micro Score (≥70)", high_micro)
 
             st.subheader("📄 Documents with Relevancy & Analysis Scores")
 
             # Add filters
-            min_relevancy = st.slider("Minimum Relevancy Score", 0, 999, 500)
+            min_relevancy = st.slider("Minimum Relevancy Score", 0, 1000, 500)
 
-            filtered_docs = docs_df[docs_df['relevancy_number'] >= min_relevancy]
+            filtered_docs = docs_df[docs_df['relevancy_score'] >= min_relevancy]
 
             # Display with color coding
             def color_relevancy(val):
@@ -451,7 +451,7 @@ with tab4:
                     return 'background-color: #f8d7da'  # Red
 
             st.dataframe(
-                filtered_docs.style.applymap(color_relevancy, subset=['relevancy_number']),
+                filtered_docs.style.applymap(color_relevancy, subset=['relevancy_score']),
                 use_container_width=True
             )
 
@@ -467,8 +467,8 @@ with tab4:
                 )
 
             with col2:
-                # Get recent events
-                events_response = supabase.table('court_events')\
+                # Get recent events (NON-NEGOTIABLE TABLE)
+                events_response = supabase.table('events')\
                     .select('event_date, event_title')\
                     .order('event_date', desc=True)\
                     .limit(50)\
@@ -496,4 +496,4 @@ with tab4:
 
 # Footer
 st.markdown("---")
-st.markdown("**Data Sources:** Supabase (court_events + legal_documents) | **Last Updated:** " + datetime.now().strftime("%Y-%m-%d %H:%M"))
+st.markdown("**Data Sources:** Supabase (events + document_journal + communications) | **Last Updated:** " + datetime.now().strftime("%Y-%m-%d %H:%M"))

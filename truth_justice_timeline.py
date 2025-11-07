@@ -122,8 +122,8 @@ def load_master_timeline():
     timeline_items = []
 
     try:
-        # 1. Court Events
-        events = supabase.table('court_events').select('*').execute()
+        # 1. Events (Timeline - MOST IMPORTANT NON-NEGOTIABLE TABLE)
+        events = supabase.table('events').select('*').execute()
         for event in events.data:
             truth_data = {
                 'has_supporting_evidence': bool(event.get('event_outcome')),
@@ -149,8 +149,8 @@ def load_master_timeline():
                 'source': 'court_events'
             })
 
-        # 2. Legal Documents (Filings, Motions, Declarations)
-        docs = supabase.table('legal_documents').select('*').execute()
+        # 2. Document Journal (Processing & Growth Assessment - NON-NEGOTIABLE TABLE)
+        docs = supabase.table('document_journal').select('*').execute()
         for doc in docs.data:
             truth_data = {
                 'fraud_score': doc.get('micro_number', 0),
@@ -201,9 +201,9 @@ def load_master_timeline():
                 'source': 'legal_violations'
             })
 
-        # 4. Communications (Statements made)
+        # 4. Communications (Evidence - CRITICAL NON-NEGOTIABLE TABLE)
         try:
-            comms = supabase.table('communications_matrix').select('*').execute()
+            comms = supabase.table('communications').select('*').execute()
             for comm in comms.data:
                 truth_data = {
                     'has_supporting_evidence': True,  # Communication is documented
@@ -548,4 +548,4 @@ with col_export2:
 
 # Footer
 st.markdown("---")
-st.caption(f"**Master Truth Timeline** | Data Sources: court_events, legal_documents, legal_violations, communications_matrix | Last Updated: {datetime.now().strftime('%Y-%m-%d %H:%M')}")
+st.caption(f"**Master Truth Timeline** | Data Sources: events, document_journal, legal_violations, communications | Last Updated: {datetime.now().strftime('%Y-%m-%d %H:%M')}")
