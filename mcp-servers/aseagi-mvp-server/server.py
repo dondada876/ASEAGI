@@ -280,62 +280,84 @@ async def search_communications_impl(
 ) -> str:
     """
     Search communications in database.
-    Uses communications_matrix table (or creates helpful message if missing).
+    CRITICAL: Uses 'communications' table - required for evidence tracking.
     """
     try:
         supabase = get_supabase_client()
 
-        # Try to query communications_matrix table
-        try:
-            db_query = supabase.table("communications_matrix").select("*")
+        db_query = supabase.table("communications").select("*")
 
-            # Apply filters
-            if query:
-                db_query = db_query.ilike("summary", f"%{query}%")
-            if sender:
-                db_query = db_query.ilike("sender", f"%{sender}%")
-            if recipient:
-                db_query = db_query.ilike("recipient", f"%{recipient}%")
-            if start_date:
-                db_query = db_query.gte("communication_date", start_date)
-            if end_date:
-                db_query = db_query.lte("communication_date", end_date)
+        # Apply filters
+        if query:
+            # Search in content, subject, and summary
+            db_query = db_query.or_(
+                f"content.ilike.%{query}%,"
+                f"subject.ilike.%{query}%,"
+                f"summary.ilike.%{query}%"
+            )
+        if sender:
+            db_query = db_query.ilike("sender", f"%{sender}%")
+        if recipient:
+            db_query = db_query.ilike("recipient", f"%{recipient}%")
+        if start_date:
+            db_query = db_query.gte("communication_date", start_date)
+        if end_date:
+            db_query = db_query.lte("communication_date", end_date)
 
-            db_query = db_query.order("communication_date", desc=True).limit(limit)
-            result = supabase.table("communications_matrix").select("*").limit(limit).execute()
+        db_query = db_query.order("communication_date", desc=True).limit(limit)
+        result = db_query.execute()
 
-            if not result.data:
-                return "No communications found matching your criteria."
+        if not result.data:
+            return "No communications found matching your criteria."
 
-            # Format results
-            output = [f"Found {len(result.data)} communication(s):\n"]
+        # Format results with evidence scoring
+        output = [f"Found {len(result.data)} communication(s):\n"]
+        output.append("=" * 70)
 
-            for i, comm in enumerate(result.data, 1):
-                output.append(f"\n{i}. {safe_get(comm, 'communication_date', 'Unknown date')}")
-                output.append(f"   From: {safe_get(comm, 'sender', 'Unknown')}")
-                output.append(f"   To: {safe_get(comm, 'recipient', 'Unknown')}")
-                output.append(f"   Subject: {safe_get(comm, 'subject', 'No subject')}")
-                output.append(f"   Summary: {safe_get(comm, 'summary', 'No summary')[:200]}")
-                output.append(f"   Method: {safe_get(comm, 'communication_method', 'Unknown')}")
+        for i, comm in enumerate(result.data, 1):
+            output.append(f"\n{i}. {format_date(safe_get(comm, 'communication_date', 'Unknown date'))}")
+            output.append(f"   From: {safe_get(comm, 'sender', 'Unknown')}")
+            output.append(f"   To: {safe_get(comm, 'recipient', 'Unknown')}")
+            output.append(f"   Method: {safe_get(comm, 'communication_method', 'Unknown')}")
 
-            return "\n".join(output)
+            if comm.get('subject'):
+                output.append(f"   Subject: {comm['subject']}")
 
-        except Exception as table_error:
-            # Table might not exist yet
-            if "does not exist" in str(table_error).lower() or "relation" in str(table_error).lower():
-                return (
-                    "Communications tracking is not yet set up in the database.\n\n"
-                    "To enable this feature:\n"
-                    "1. Create 'communications_matrix' table in Supabase\n"
-                    "2. Add columns: id, sender, recipient, subject, summary, "
-                    "communication_date, communication_method\n\n"
-                    "Or this tool will be available in Phase 2."
-                )
-            else:
-                raise table_error
+            if comm.get('summary'):
+                output.append(f"   Summary: {comm['summary'][:200]}...")
+            elif comm.get('content'):
+                output.append(f"   Content: {comm['content'][:200]}...")
+
+            # Evidence scoring (CRITICAL)
+            if comm.get('truthfulness_score') is not None:
+                score = comm['truthfulness_score']
+                grade = "A+" if score >= 900 else "A" if score >= 800 else "B" if score >= 700 else "C" if score >= 600 else "D" if score >= 500 else "F"
+                output.append(f"   Truth Score: {score}/1000 ({grade})")
+
+            if comm.get('contains_contradiction'):
+                output.append(f"   ⚠️ CONTAINS CONTRADICTION")
+
+            if comm.get('contains_manipulation'):
+                output.append(f"   ⚠️ CONTAINS MANIPULATION")
+
+            if comm.get('relevancy_score') is not None:
+                output.append(f"   Relevancy: {comm['relevancy_score']}/1000")
+
+            output.append("")
+
+        return "\n".join(output)
 
     except Exception as e:
         logger.error(f"Error searching communications: {e}")
+        if "does not exist" in str(e).lower() or "relation" in str(e).lower():
+            return (
+                "❌ CRITICAL: 'communications' table does not exist.\n\n"
+                "This table is NON-NEGOTIABLE for evidence tracking.\n\n"
+                "To create it:\n"
+                "1. Run: database/01_create_critical_tables.sql in Supabase SQL Editor\n"
+                "2. Or use: psql < database/01_create_critical_tables.sql\n\n"
+                "This table is essential for legal case management."
+            )
         return f"Error searching communications: {str(e)}"
 
 
@@ -346,13 +368,13 @@ async def get_timeline_impl(
     limit: int = 100
 ) -> str:
     """
-    Get case timeline from court_events table.
-    Adapted to use existing court_events table (not 'events').
+    Get case timeline from events table.
+    CRITICAL: Most important timeline factor - uses 'events' table.
     """
     try:
         supabase = get_supabase_client()
 
-        db_query = supabase.table("court_events").select("*")
+        db_query = supabase.table("events").select("*")
 
         # Apply filters
         if start_date:
@@ -393,6 +415,15 @@ async def get_timeline_impl(
 
     except Exception as e:
         logger.error(f"Error getting timeline: {e}")
+        if "does not exist" in str(e).lower() or "relation" in str(e).lower():
+            return (
+                "❌ CRITICAL: 'events' table does not exist.\n\n"
+                "This table is NON-NEGOTIABLE - it's the most important timeline factor.\n\n"
+                "To create it:\n"
+                "1. Run: database/01_create_critical_tables.sql in Supabase SQL Editor\n"
+                "2. Or use: psql < database/01_create_critical_tables.sql\n\n"
+                "This table is essential for case chronology and pattern analysis."
+            )
         return f"Error retrieving timeline: {str(e)}"
 
 
@@ -404,13 +435,13 @@ async def search_documents_impl(
     limit: int = 20
 ) -> str:
     """
-    Search legal documents.
-    Uses legal_documents table (601 documents with relevancy/micro scoring).
+    Search legal documents from document journal.
+    CRITICAL: Uses 'document_journal' - tracks processing and long-term growth.
     """
     try:
         supabase = get_supabase_client()
 
-        db_query = supabase.table("legal_documents").select("*")
+        db_query = supabase.table("document_journal").select("*")
 
         # Apply filters
         if query:
@@ -461,6 +492,15 @@ async def search_documents_impl(
 
     except Exception as e:
         logger.error(f"Error searching documents: {e}")
+        if "does not exist" in str(e).lower() or "relation" in str(e).lower():
+            return (
+                "❌ CRITICAL: 'document_journal' table does not exist.\n\n"
+                "This table is NON-NEGOTIABLE for document tracking and growth assessment.\n\n"
+                "To create it:\n"
+                "1. Run: database/01_create_critical_tables.sql in Supabase SQL Editor\n"
+                "2. Or use: psql < database/01_create_critical_tables.sql\n\n"
+                "This table records every scan, processing step, and long-term assessment."
+            )
         return f"Error searching documents: {str(e)}"
 
 
