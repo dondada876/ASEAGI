@@ -1,6 +1,7 @@
 version: '3.8'
 
 services:
+  # FastAPI Telegram Bot + Web Interface
   api:
     build: .
     container_name: aseagi-telegram-api
@@ -9,11 +10,96 @@ services:
     environment:
       - SUPABASE_URL=${SUPABASE_URL}
       - SUPABASE_KEY=${SUPABASE_KEY}
+      - CLAUDE_API_KEY=${CLAUDE_API_KEY}
       - PORT=8000
     restart: unless-stopped
     networks:
       - aseagi-network
+    volumes:
+      - ./static:/app/static
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:8000/health"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+
+  # Batch Processor for 7TB Google Drive processing
+  batch-processor:
+    build: ../batch-processor
+    container_name: aseagi-batch-processor
+    ports:
+      - "8001:8001"
+    environment:
+      - SUPABASE_URL=${SUPABASE_URL}
+      - SUPABASE_KEY=${SUPABASE_KEY}
+      - VAST_AI_API_KEY=${VAST_AI_API_KEY}
+      - CLAUDE_API_KEY=${CLAUDE_API_KEY}
+      - GOOGLE_APPLICATION_CREDENTIALS=/app/credentials/credentials.json
+    restart: unless-stopped
+    networks:
+      - aseagi-network
+    volumes:
+      - ./credentials:/app/credentials
+      - batch-state:/app/batch_state
+      - batch-cache:/app/cache
+    depends_on:
+      - redis
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:8001/health"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+
+  # Redis for job queue
+  redis:
+    image: redis:7-alpine
+    container_name: aseagi-redis
+    ports:
+      - "6379:6379"
+    restart: unless-stopped
+    networks:
+      - aseagi-network
+    volumes:
+      - redis-data:/data
+    command: redis-server --appendonly yes
+    healthcheck:
+      test: ["CMD", "redis-cli", "ping"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+
+  # Nginx reverse proxy (optional, for production)
+  nginx:
+    image: nginx:alpine
+    container_name: aseagi-nginx
+    ports:
+      - "80:80"
+      - "443:443"
+    restart: unless-stopped
+    networks:
+      - aseagi-network
+    volumes:
+      - ./nginx/nginx.conf:/etc/nginx/nginx.conf:ro
+      - ./nginx/ssl:/etc/nginx/ssl:ro
+    depends_on:
+      - api
+      - batch-processor
+    healthcheck:
+      test: ["CMD", "wget", "--quiet", "--tries=1", "--spider", "http://localhost/health"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+    profiles:
+      - production  # Only start in production (docker-compose --profile production up)
 
 networks:
   aseagi-network:
     driver: bridge
+
+volumes:
+  batch-state:
+    driver: local
+  batch-cache:
+    driver: local
+  redis-data:
+    driver: local

@@ -1,0 +1,43 @@
+# Batch Processing System Requirements
+# For processing 7TB Google Drive documents using Vast.ai GPU
+
+# Core dependencies
+fastapi==0.104.1
+uvicorn[standard]==0.24.0
+pydantic==2.4.2
+python-dotenv==1.0.0
+
+# Database
+supabase==2.0.3
+psycopg2-binary==2.9.9
+
+# Google Drive API
+google-auth==2.23.4
+google-auth-oauthlib==1.1.0
+google-auth-httplib2==0.1.1
+google-api-python-client==2.108.0
+
+# Vast.ai API
+requests==2.31.0
+aiohttp==3.9.0
+
+# Job queue
+redis==5.0.1
+rq==1.15.1
+
+# AI Processing
+anthropic==0.7.7
+
+# File handling
+PyPDF2==3.0.1
+python-magic==0.4.27
+pillow==10.1.0
+
+# Monitoring & logging
+python-json-logger==2.0.7
+
+# Progress tracking
+tqdm==4.66.1
+
+# Utilities
+tenacity==8.2.3  # Retry logic
