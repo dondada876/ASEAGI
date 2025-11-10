@@ -84,13 +84,11 @@ class BugTracker:
 
         log_entry = {
             'log_level': level,
-            'log_type': 'application',
             'component': component,
             'message': message,
-            'details': details or {},
+            'context': details or {},
             'request_id': self.request_id,
-            'workspace_id': workspace_id,
-            'created_at': datetime.now().isoformat()
+            'workspace_id': workspace_id
         }
 
         if error:
