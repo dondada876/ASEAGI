@@ -86,3 +86,20 @@ services:
       interval: 30s
       timeout: 10s
       retries: 3
+
+  # Master 5W+H Dashboard - Port 8506 (NEW)
+  master-5wh:
+    build: .
+    container_name: master-5wh-dashboard
+    ports:
+      - "8506:8506"
+    environment:
+      - SUPABASE_URL=${SUPABASE_URL}
+      - SUPABASE_KEY=${SUPABASE_KEY}
+    command: ["streamlit", "run", "dashboards/master_5wh_dashboard.py", "--server.port=8506", "--server.address=0.0.0.0"]
+    restart: unless-stopped
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:8506/_stcore/health"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
