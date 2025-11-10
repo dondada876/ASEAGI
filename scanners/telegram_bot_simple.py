@@ -225,7 +225,7 @@ async def violations_command(update: Update, context: ContextTypes.DEFAULT_TYPE)
         # Query legal_violations table
         result = supabase.table('legal_violations')\
             .select('*')\
-            .order('created_at', desc=True)\
+            .order('violation_date', desc=True)\
             .limit(10)\
             .execute()
 
@@ -243,13 +243,29 @@ async def violations_command(update: Update, context: ContextTypes.DEFAULT_TYPE)
         violations_text = "⚖️ **Recent Violations Detected**\n\n"
 
         for i, violation in enumerate(result.data[:5], 1):
-            violations_text += f"**{i}. {violation.get('violation_type', 'Unknown')}**\n"
-            violations_text += f"📄 Document: {violation.get('document_title', 'N/A')}\n"
-            violations_text += f"⚠️ Severity: {violation.get('severity', 'Unknown')}\n"
-            violations_text += f"📝 {violation.get('description', '')[:100]}...\n\n"
+            # Get severity level from severity_score
+            severity_score = violation.get('severity_score', 0)
+            if severity_score >= 90:
+                severity = "CRITICAL"
+            elif severity_score >= 70:
+                severity = "HIGH"
+            elif severity_score >= 50:
+                severity = "MEDIUM"
+            else:
+                severity = "LOW"
 
-        violations_text += f"\n📊 Total: {len(result.data)} violations found\n"
-        violations_text += "View all: http://137.184.1.91:8501"
+            violations_text += f"**{i}. {violation.get('violation_category', 'Unknown')}**\n"
+            violations_text += f"📋 {violation.get('violation_title', 'N/A')[:60]}...\n"
+            violations_text += f"👤 By: {violation.get('perpetrator', 'Unknown')}\n"
+            violations_text += f"📅 Date: {violation.get('violation_date', 'N/A')}\n"
+            violations_text += f"⚠️ Severity: {severity} ({severity_score}/100)\n"
+            desc = violation.get('violation_description', '')
+            if desc:
+                violations_text += f"📝 {desc[:150]}...\n"
+            violations_text += "\n"
+
+        violations_text += f"📊 Total: {len(result.data)} violations documented\n"
+        violations_text += "View full details: http://137.184.1.91:8501"
 
         await update.message.reply_text(violations_text)
 
