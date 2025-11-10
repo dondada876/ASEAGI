@@ -1,6 +1,7 @@
 version: '3.8'
 
 services:
+  # Master Dashboard - Port 8501
   proj344-master:
     build: .
     container_name: proj344-master-dashboard
@@ -10,9 +11,15 @@ services:
       - SUPABASE_URL=${SUPABASE_URL}
       - SUPABASE_KEY=${SUPABASE_KEY}
       - ANTHROPIC_API_KEY=${ANTHROPIC_API_KEY}
-    command: ["--server.port=8501", "--server.address=0.0.0.0"]
+    command: ["streamlit", "run", "dashboards/proj344_master_dashboard.py", "--server.port=8501", "--server.address=0.0.0.0"]
     restart: unless-stopped
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:8501/_stcore/health"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
 
+  # Legal Intelligence - Port 8502
   legal-intelligence:
     build: .
     container_name: legal-intelligence-dashboard
@@ -23,7 +30,13 @@ services:
       - SUPABASE_KEY=${SUPABASE_KEY}
     command: ["streamlit", "run", "dashboards/legal_intelligence_dashboard.py", "--server.port=8502", "--server.address=0.0.0.0"]
     restart: unless-stopped
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:8502/_stcore/health"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
 
+  # CEO Dashboard - Port 8503
   ceo-dashboard:
     build: .
     container_name: ceo-dashboard
@@ -34,3 +47,59 @@ services:
       - SUPABASE_KEY=${SUPABASE_KEY}
     command: ["streamlit", "run", "dashboards/ceo_dashboard.py", "--server.port=8503", "--server.address=0.0.0.0"]
     restart: unless-stopped
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:8503/_stcore/health"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+
+  # Enhanced Scanning Monitor - Port 8504
+  scanning-monitor:
+    build: .
+    container_name: scanning-monitor-dashboard
+    ports:
+      - "8504:8504"
+    environment:
+      - SUPABASE_URL=${SUPABASE_URL}
+      - SUPABASE_KEY=${SUPABASE_KEY}
+    command: ["streamlit", "run", "dashboards/enhanced_scanning_monitor.py", "--server.port=8504", "--server.address=0.0.0.0"]
+    restart: unless-stopped
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:8504/_stcore/health"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+
+  # Timeline & Violations - Port 8505
+  timeline-dashboard:
+    build: .
+    container_name: timeline-dashboard
+    ports:
+      - "8505:8505"
+    environment:
+      - SUPABASE_URL=${SUPABASE_URL}
+      - SUPABASE_KEY=${SUPABASE_KEY}
+    command: ["streamlit", "run", "dashboards/timeline_violations_dashboard.py", "--server.port=8505", "--server.address=0.0.0.0"]
+    restart: unless-stopped
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:8505/_stcore/health"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+
+  # Master 5W+H Dashboard - Port 8506 (NEW)
+  master-5wh:
+    build: .
+    container_name: master-5wh-dashboard
+    ports:
+      - "8506:8506"
+    environment:
+      - SUPABASE_URL=${SUPABASE_URL}
+      - SUPABASE_KEY=${SUPABASE_KEY}
+    command: ["streamlit", "run", "dashboards/master_5wh_dashboard.py", "--server.port=8506", "--server.address=0.0.0.0"]
+    restart: unless-stopped
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:8506/_stcore/health"]
+      interval: 30s
+      timeout: 10s
+      retries: 3

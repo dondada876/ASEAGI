@@ -1,5 +1,35 @@
 # Claude API Usage & Cost Tracking
 
+## 🔑 Understanding Your Billing: API Credits vs Subscription
+
+### **Two Ways to Use Claude Code:**
+
+| Method | How It Works | Billing | Your $876 Balance |
+|--------|--------------|---------|-------------------|
+| **API Credits** | Set `ANTHROPIC_API_KEY` env variable | Pay-per-use at API rates | ✅ This is what you're using |
+| **Subscription** | Authenticate with Pro/Max account | Uses subscription limits | ❌ Not applicable |
+
+### **Key Points:**
+
+1. **"Web Credit" is just API credits viewed in the web interface**
+   - Same balance whether you use Web or Terminal
+   - Both interfaces access the same credit pool
+   - The label "Web Credit" is just UI terminology
+
+2. **Your $876 balance is API credits**
+   - Works for both Claude Code Web AND Terminal
+   - Charges at API rates: $3/M input, $15/M output (Sonnet)
+   - Separate from any claude.ai subscription you might have
+
+3. **No difference between Web and Terminal**
+   - Both use the same API
+   - Both charge the same rates
+   - Both deduct from the same $876 balance
+
+**Bottom Line:** When you see "$876 Web Credit", it means you have $876 in API credits, viewable in the web interface. Use Terminal or Web - it's the same pool.
+
+---
+
 ## 💰 Pricing (Web & Terminal - Same Rates)
 
 | Model | Input | Output | Best For |
@@ -223,8 +253,17 @@ cat ~/.claude_usage_log.jsonl | jq '.cost' | awk '{s+=$1} END {print "Total: $"s
 
 ## ❓ FAQ
 
+**Q: What does "Web Credit" mean?**
+A: It's just the UI label for your API credit balance when viewed in Claude Code Web. It's the SAME balance used by Terminal. Think of it like checking your bank account via mobile app vs ATM - same money, different interface.
+
 **Q: Does Claude Code Web cost more than Terminal?**
-A: No, they cost exactly the same. Both use the same API.
+A: No, they cost exactly the same. Both use the same API and deduct from the same credit pool.
+
+**Q: I got a git error in Terminal. Is this a credit issue?**
+A: No! Git errors (like "rejected - fetch first") are unrelated to credits. These are version control issues. Credit errors show as API 429/403 errors with billing messages.
+
+**Q: How do I know if I'm using API credits vs subscription?**
+A: Check if you have `ANTHROPIC_API_KEY` set in your environment. If yes, you're using API credits. If authenticating via claude.ai account, you're using subscription limits.
 
 **Q: How are tokens counted?**
 A: Both input (your prompts + context) and output (Claude's responses) are counted separately and charged at different rates.
@@ -235,8 +274,8 @@ A: That's the context window size (memory). It resets each session. It's not a c
 **Q: Can I use multiple API keys?**
 A: Yes! Create separate keys for different projects to track usage separately.
 
-**Q: What happens if I hit my limit?**
-A: API requests will fail with a 429 error. Set alerts to avoid this.
+**Q: What happens if I hit my credit limit?**
+A: API requests will fail with a 429 error and a billing message. Git operations and other non-API commands will continue working.
 
 **Q: Is there a free tier?**
 A: Anthropic offers $5 free credits for new accounts. After that, you pay per use.
@@ -257,6 +296,6 @@ A: Anthropic offers $5 free credits for new accounts. After that, you pay per us
 
 ---
 
-**Last Updated:** November 7, 2025
-**Your Current Session Cost:** ~$0.29
-**Estimated Monthly (current pace):** ~$8.70
+**Last Updated:** November 8, 2025
+**Your Current Balance:** $876 API Credits
+**Note:** This balance works for BOTH Web and Terminal - they're the same pool!

@@ -1,0 +1,77 @@
+# CODEOWNERS file
+#
+# This file defines which users or teams are responsible for code review
+# of specific files or directories in this repository.
+#
+# Reference: BUG-00366 - Production file deletion incident
+# See: docs/GIT_WORKFLOW_BEST_PRACTICES.md
+
+# ============================================================================
+# CRITICAL PRODUCTION FILES
+# These files require mandatory review before any changes can be merged
+# ============================================================================
+
+# Scanner Files - Production Telegram bot and document processors
+/scanners/telegram_bot_simple.py       @dondada876
+/scanners/telegram_bot_enhanced.py     @dondada876
+/scanners/ocr_telegram_documents.py    @dondada876
+/scanners/whatsapp_analyzer.py         @dondada876
+/scanners/upload_telegram_images.py    @dondada876
+/scanners/check_ex_parte.py            @dondada876
+
+# Security Documentation - Bug tracking and security reports
+/database/security/                    @dondada876
+/database/security/*.py                @dondada876
+/database/security/*.md                @dondada876
+
+# Core System Files - Bug tracker and error handling
+/core/bug_tracker.py                   @dondada876
+/core/bug_exports.py                   @dondada876
+/core/workspace_config.py              @dondada876
+
+# Dashboards - User-facing applications
+/dashboards/*.py                       @dondada876
+
+# ============================================================================
+# INFRASTRUCTURE & CONFIGURATION
+# ============================================================================
+
+# GitHub Workflows - CI/CD pipelines
+/.github/workflows/                    @dondada876
+/.github/CODEOWNERS                    @dondada876
+
+# Git Configuration
+/.gitignore                            @dondada876
+/.pre-commit-config.yaml               @dondada876
+
+# Documentation - Best practices and guides
+/docs/GIT_WORKFLOW_BEST_PRACTICES.md   @dondada876
+/docs/                                 @dondada876
+
+# ============================================================================
+# DEFAULT REVIEWERS
+# ============================================================================
+
+# All other files require at least one review
+*                                      @dondada876
+
+# ============================================================================
+# NOTES
+# ============================================================================
+#
+# 1. To add more reviewers, append GitHub usernames with @ prefix
+#    Example: /scanners/*.py @dondada876 @reviewer2
+#
+# 2. For team-based reviews, use @org/team-name
+#    Example: /scanners/*.py @dondada876 @myorg/security-team
+#
+# 3. CODEOWNERS rules are enforced when:
+#    - Branch protection is enabled
+#    - "Require review from Code Owners" is checked in branch settings
+#
+# 4. To bypass CODEOWNERS (emergency only):
+#    - Admin override capability must be enabled
+#    - Document reason in PR description
+#    - Create follow-up issue for review
+#
+# ============================================================================
