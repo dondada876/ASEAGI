@@ -42,6 +42,9 @@ class WhatsAppAnalyzer:
         # Pattern 2: MM/DD/YY, HH:MM - Name: Message
         pattern2 = r'(\d{1,2}/\d{1,2}/\d{2,4}),?\s+(\d{1,2}:\d{2})\s*-\s*([^:]+?):\s*(.+?)(?=\d{1,2}/\d{1,2}/\d{2,4}|$)'
 
+        # Pattern 3: MM/DD/YY, HH:MM?PM/AM - Name: Message (with ? before AM/PM)
+        pattern3 = r'(\d{1,2}/\d{1,2}/\d{2,4}),?\s+(\d{1,2}:\d{2})\??(?:PM|AM)\s*-\s*([^:]+?):\s*(.+?)(?=\d{1,2}/\d{1,2}/\d{2,4}|$)'
+
         messages = []
 
         # Try pattern 1
@@ -58,14 +61,26 @@ class WhatsAppAnalyzer:
         else:
             # Try pattern 2
             matches = re.findall(pattern2, content, re.DOTALL)
-            for match in matches:
-                date_str, time_str, sender, message = match
-                messages.append({
-                    'date': date_str.strip(),
-                    'time': time_str.strip(),
-                    'sender': sender.strip(),
-                    'message': message.strip()
-                })
+            if matches:
+                for match in matches:
+                    date_str, time_str, sender, message = match
+                    messages.append({
+                        'date': date_str.strip(),
+                        'time': time_str.strip(),
+                        'sender': sender.strip(),
+                        'message': message.strip()
+                    })
+            else:
+                # Try pattern 3
+                matches = re.findall(pattern3, content, re.DOTALL)
+                for match in matches:
+                    date_str, time_str, sender, message = match
+                    messages.append({
+                        'date': date_str.strip(),
+                        'time': time_str.strip(),
+                        'sender': sender.strip(),
+                        'message': message.strip()
+                    })
 
         print(f"✅ Parsed {len(messages)} messages")
 
@@ -188,6 +203,7 @@ Be specific and quote exact statements from the conversation as evidence."""
         document_data = {
             'case_id': self.case_id,
             'original_filename': f"WhatsApp_{date.replace('/', '-')}_{Path(source_file).stem}.txt",
+            'file_path': source_file,
             'document_type': 'TEXT',
             'document_date': date,
             'document_title': f"WhatsApp Conversation - {date} ({participants_str})",
