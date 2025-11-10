@@ -106,7 +106,7 @@ class BugTracker:
         # Store in database
         if self.db_enabled:
             try:
-                result = self.supabase.table('system_logs').insert(log_entry).execute()
+                result = self.supabase.table('error_logs').insert(log_entry).execute()
                 log_id = result.data[0]['id'] if result.data else None
 
                 # Auto-create bug if critical
@@ -194,7 +194,7 @@ class BugTracker:
                 bug_number = bug['bug_number']
 
                 # Link log back to bug
-                self.supabase.table('system_logs')\
+                self.supabase.table('error_logs')\
                     .update({'related_bug_id': bug_id})\
                     .eq('id', log_id)\
                     .execute()
