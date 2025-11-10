@@ -1,0 +1,130 @@
+name: Critical Files Check
+
+on:
+  push:
+    branches: ['**']
+  pull_request:
+    branches: ['main', 'develop']
+
+jobs:
+  check-files:
+    runs-on: ubuntu-latest
+    name: Verify Critical Files Exist
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v3
+
+      - name: Check critical production files
+        run: |
+          echo "🔍 Checking critical files..."
+          MISSING=0
+
+          # List of critical files that must always exist
+          CRITICAL_FILES=(
+            "scanners/telegram_bot_simple.py"
+            "scanners/telegram_bot_enhanced.py"
+            "scanners/ocr_telegram_documents.py"
+            "scanners/whatsapp_analyzer.py"
+            "scanners/upload_telegram_images.py"
+            "scanners/check_ex_parte.py"
+            "database/security/create_security_bug_tickets.py"
+            "database/security/create_violations_display_bugs.py"
+            "database/security/SECURITY_ISSUES_REPORT.md"
+            "dashboards/timeline_violations_dashboard.py"
+            "core/bug_tracker.py"
+            "core/bug_exports.py"
+          )
+
+          for file in "${CRITICAL_FILES[@]}"; do
+            if [ ! -f "$file" ]; then
+              echo "❌ CRITICAL: File missing: $file"
+              MISSING=$((MISSING+1))
+            else
+              echo "✅ File exists: $file"
+            fi
+          done
+
+          if [ $MISSING -gt 0 ]; then
+            echo ""
+            echo "❌ ERROR: $MISSING critical files are missing!"
+            echo ""
+            echo "This may indicate:"
+            echo "- Accidental deletion during merge"
+            echo "- Incorrect branch checkout"
+            echo "- Git operation error"
+            echo ""
+            echo "Please restore missing files before continuing."
+            echo "See docs/GIT_WORKFLOW_BEST_PRACTICES.md for recovery procedures."
+            exit 1
+          fi
+
+          echo ""
+          echo "✅ All critical files present"
+
+      - name: Check for unexpected file deletions
+        run: |
+          echo ""
+          echo "🔍 Checking for file deletions in this commit..."
+
+          # Only check on pull requests
+          if [ "${{ github.event_name }}" == "pull_request" ]; then
+            DELETED_FILES=$(git diff --name-status ${{ github.event.pull_request.base.sha }}...${{ github.sha }} | grep "^D" | wc -l || echo "0")
+
+            if [ "$DELETED_FILES" -gt 0 ]; then
+              echo "⚠️  WARNING: This PR deletes $DELETED_FILES file(s)"
+              echo ""
+              echo "Deleted files:"
+              git diff --name-status ${{ github.event.pull_request.base.sha }}...${{ github.sha }} | grep "^D"
+              echo ""
+              echo "⚠️  File deletions require explicit documentation in PR description"
+              echo "⚠️  Please ensure:"
+              echo "   1. Deletion is intentional"
+              echo "   2. Reason is documented in PR description"
+              echo "   3. No critical files are being removed"
+              echo "   4. Backup/migration plan exists if needed"
+            else
+              echo "✅ No file deletions detected"
+            fi
+          fi
+
+      - name: Validate Python syntax
+        run: |
+          echo ""
+          echo "🐍 Validating Python syntax..."
+
+          # Check if Python is available
+          if command -v python3 &> /dev/null; then
+            SYNTAX_ERRORS=0
+
+            # Find all Python files and check syntax
+            for pyfile in $(find . -name "*.py" -not -path "./.git/*" -not -path "./venv/*" -not -path "./__pycache__/*"); do
+              if ! python3 -m py_compile "$pyfile" 2>/dev/null; then
+                echo "❌ Syntax error in: $pyfile"
+                SYNTAX_ERRORS=$((SYNTAX_ERRORS+1))
+              fi
+            done
+
+            if [ $SYNTAX_ERRORS -gt 0 ]; then
+              echo ""
+              echo "❌ Found $SYNTAX_ERRORS Python syntax error(s)"
+              exit 1
+            fi
+
+            echo "✅ All Python files have valid syntax"
+          else
+            echo "⚠️  Python not available, skipping syntax check"
+          fi
+
+      - name: Summary
+        if: success()
+        run: |
+          echo ""
+          echo "═══════════════════════════════════════"
+          echo "✅ ALL CHECKS PASSED"
+          echo "═══════════════════════════════════════"
+          echo "✅ Critical files present"
+          echo "✅ Python syntax valid"
+          echo "✅ No unexpected deletions"
+          echo ""
+          echo "Safe to merge!"
