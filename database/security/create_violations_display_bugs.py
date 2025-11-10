@@ -65,9 +65,7 @@ Updated scanners/telegram_bot_simple.py violations_command() function:
     "component": "telegram_bot",
     "status": "resolved",
     "tags": ["telegram", "violations", "database", "schema-mismatch"],
-    "workspace_id": "legal",
-    "resolution": "Fixed database column mapping and added severity calculation logic",
-    "resolved_at": datetime.utcnow().isoformat()
+    "workspace_id": "legal"
 }
 
 try:
@@ -133,9 +131,7 @@ Completely rewrote Tab 3 in dashboards/timeline_violations_dashboard.py:
     "component": "streamlit_dashboard",
     "status": "resolved",
     "tags": ["streamlit", "violations", "dashboard", "legal_violations"],
-    "workspace_id": "legal",
-    "resolution": "Rewrote violations tab to properly query and display legal_violations table with filters and metrics",
-    "resolved_at": datetime.utcnow().isoformat()
+    "workspace_id": "legal"
 }
 
 try:
