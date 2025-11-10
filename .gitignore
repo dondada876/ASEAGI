@@ -76,3 +76,6 @@ documents/
 tmp/
 temp/
 *.tmp
+
+# Multi-page app structure (work in progress)
+pages/
