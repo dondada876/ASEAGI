@@ -95,8 +95,7 @@ class BugTracker:
             log_entry.update({
                 'error_type': type(error).__name__,
                 'error_message': str(error),
-                'stack_trace': traceback.format_exc(),
-                'error_code': getattr(error, 'code', None)
+                'stack_trace': traceback.format_exc()
             })
 
         log_id = None
@@ -177,7 +176,6 @@ class BugTracker:
                 'reported_by': 'system',
                 'error_message': log_entry.get('error_message'),
                 'stack_trace': log_entry.get('stack_trace'),
-                'error_code': log_entry.get('error_code'),
                 'related_log_ids': [log_id],
                 'first_occurred_at': datetime.now().isoformat(),
                 'last_occurred_at': datetime.now().isoformat(),
