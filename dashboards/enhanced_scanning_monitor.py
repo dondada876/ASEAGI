@@ -11,7 +11,14 @@ import plotly.express as px
 from datetime import datetime, timedelta
 import re
 import time
+import os
 from pathlib import Path
+
+try:
+    from supabase import create_client
+except ImportError:
+    st.error("❌ Install supabase: pip3 install supabase")
+    st.stop()
 
 # Page config
 st.set_page_config(
@@ -57,6 +64,48 @@ st.markdown("""
 """, unsafe_allow_html=True)
 
 LOG_FILE = "/tmp/proj344-scan.log"
+
+# ============================================================================
+# SUPABASE CONNECTION
+# ============================================================================
+
+@st.cache_resource
+def init_supabase():
+    """Initialize Supabase client"""
+    url = os.environ.get('SUPABASE_URL', 'https://jvjlhxodmbkodzmggwpu.supabase.co')
+    key = os.environ.get('SUPABASE_KEY', 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Imp2amxoeG9kbWJrb2R6bWdnd3B1Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3NjIyMjMxOTAsImV4cCI6MjA3Nzc5OTE5MH0.ai65vVW816bNAV56XiuRxp5PE5IhBkMGPx3IbxfPh8c')
+
+    try:
+        client = create_client(url, key)
+        return client, None
+    except Exception as e:
+        return None, str(e)
+
+@st.cache_data(ttl=10)
+def get_recent_documents(_client, limit=10):
+    """Get recently processed documents from Supabase"""
+    try:
+        response = _client.table('legal_documents')\
+            .select('*')\
+            .order('processed_at', desc=True)\
+            .limit(limit)\
+            .execute()
+        return response.data
+    except:
+        return []
+
+@st.cache_data(ttl=10)
+def get_db_document_count(_client):
+    """Get total document count from database"""
+    try:
+        result = _client.table('legal_documents').select('id', count='exact').execute()
+        return result.count
+    except:
+        return 0
+
+# ============================================================================
+# LOG PARSING
+# ============================================================================
 
 @st.cache_data(ttl=3)
 def parse_log_file():
@@ -294,6 +343,10 @@ with col3:
     if st.button("🔁 Refresh Now"):
         st.rerun()
 
+# Initialize Supabase
+client, db_error = init_supabase()
+db_count = get_db_document_count(client) if client else 0
+
 # Parse log
 stats = parse_log_file()
 
@@ -354,6 +407,37 @@ with col5:
         f"{completion:.1f}%",
         f"{stats['batches_completed']} batches"
     )
+
+# Database sync row
+col1, col2, col3 = st.columns([1, 1, 2])
+
+with col1:
+    st.metric(
+        "🗄️ In Database",
+        f"{db_count:,}",
+        help="Documents successfully uploaded to Supabase"
+    )
+
+with col2:
+    if client:
+        sync_status = "✅ Connected" if not db_error else f"❌ {db_error[:30]}"
+        st.metric(
+            "📡 Database",
+            sync_status
+        )
+    else:
+        st.metric("📡 Database", "❌ Disconnected")
+
+with col3:
+    if stats['processed'] > 0 and db_count > 0:
+        sync_rate = (db_count / stats['processed'] * 100) if stats['processed'] > 0 else 0
+        st.metric(
+            "📊 Upload Success Rate",
+            f"{sync_rate:.1f}%",
+            f"{db_count}/{stats['processed']} in DB"
+        )
+    else:
+        st.metric("📊 Upload Success Rate", "Calculating...")
 
 st.divider()
 
@@ -461,7 +545,7 @@ if stats['documents']:
 st.divider()
 
 # Tabs for detailed views
-tab1, tab2, tab3, tab4, tab5 = st.tabs(["📋 Recent Documents", "🚨 Errors", "📊 Statistics", "🔄 Conversions", "📜 Live Log"])
+tab1, tab2, tab3, tab4, tab5, tab6 = st.tabs(["📋 Recent Documents", "🗄️ Database Documents", "🚨 Errors", "📊 Statistics", "🔄 Conversions", "📜 Live Log"])
 
 with tab1:
     st.subheader("Recently Processed Documents")
@@ -508,6 +592,68 @@ with tab1:
         st.info("No documents processed yet. Scanner is initializing...")
 
 with tab2:
+    st.subheader("🗄️ Documents in Supabase Database")
+
+    if client and not db_error:
+        recent_docs = get_recent_documents(client, limit=15)
+
+        if recent_docs:
+            st.success(f"✅ Successfully connected to Supabase. Showing {len(recent_docs)} most recent documents.")
+
+            for i, doc in enumerate(recent_docs, 1):
+                rel = doc.get('relevancy_number', 0)
+
+                # Color code by relevancy
+                if rel >= 900:
+                    bg_color = "#1a4d2e"
+                    border_color = "#00ff00"
+                    icon = "🔥"
+                    badge = "SMOKING GUN"
+                elif rel >= 800:
+                    bg_color = "#4a3f0a"
+                    border_color = "#ffaa00"
+                    icon = "⚠️"
+                    badge = "CRITICAL"
+                elif rel >= 700:
+                    bg_color = "#2a3f4a"
+                    border_color = "#00aaff"
+                    icon = "📌"
+                    badge = "IMPORTANT"
+                else:
+                    bg_color = "#4a1a1a"
+                    border_color = "#ff4444"
+                    icon = "📄"
+                    badge = "REFERENCE"
+
+                st.markdown(f"""
+                <div style="background: {bg_color};
+                            padding: 1rem;
+                            border-radius: 8px;
+                            margin: 0.5rem 0;
+                            border-left: 4px solid {border_color};
+                            box-shadow: 0 2px 8px rgba(0,0,0,0.3);">
+                    <div>
+                        <strong style="font-size: 1.05rem;">{icon} {badge} - {doc.get('document_title', doc.get('original_filename', 'Untitled'))[:60]}</strong><br>
+                        <small>Relevancy: <strong>{rel}</strong> | Legal: <strong>{doc.get('legal_number', 0)}</strong> | Micro: <strong>{doc.get('micro_number', 0)}</strong> | Macro: <strong>{doc.get('macro_number', 0)}</strong></small><br>
+                        <small>Cost: <strong>${doc.get('api_cost_usd', 0):.4f}</strong> | Processed: <strong>{doc.get('processed_at', 'N/A')[:10]}</strong></small>
+                    </div>
+                </div>
+                """, unsafe_allow_html=True)
+
+                if doc.get('executive_summary'):
+                    with st.expander(f"📄 Summary - {doc.get('original_filename', 'Document')[:40]}"):
+                        st.write(doc['executive_summary'])
+                        if doc.get('smoking_guns'):
+                            st.markdown("**🔥 Smoking Guns:**")
+                            for sg in doc['smoking_guns']:
+                                st.write(f"- {sg}")
+        else:
+            st.info("No documents in database yet. Scanning in progress...")
+    else:
+        st.error(f"❌ Database connection failed: {db_error}")
+        st.info("💡 Check SUPABASE_URL and SUPABASE_KEY environment variables")
+
+with tab3:
     st.subheader("Error Analysis")
 
     if stats['error_messages']:
@@ -525,7 +671,7 @@ with tab2:
     else:
         st.success("✅ No errors detected! All uploads successful.")
 
-with tab3:
+with tab4:
     st.subheader("Detailed Statistics")
 
     col1, col2 = st.columns(2)
@@ -571,7 +717,7 @@ with tab3:
             - **High (≥800):** {len([s for s in stats['legal_scores'] if s >= 800])}
             """)
 
-with tab4:
+with tab5:
     st.subheader("🔄 Filename Conversions & Queue Status")
 
     st.markdown("""
@@ -665,7 +811,7 @@ with tab4:
     else:
         st.info("No conversions yet. Scanner is initializing...")
 
-with tab5:
+with tab6:
     st.subheader("📜 Live Log Feed")
 
     if stats['recent_activity']:

@@ -1,7 +1,9 @@
 #!/usr/bin/env python3
 """
-Legal Document Intelligence Dashboard
-View and analyze documents with micro/macro/legal/category/relevancy scoring
+Legal Document Intelligence Dashboard - Port 8503
+HIGH-VALUE DOCUMENTS ONLY (Relevancy ≥ 700)
+View and analyze critical documents with micro/macro/legal/category/relevancy scoring
+UNIQUE PURPOSE: Focus on high-value documents only (NOT all documents - use Port 8501 for complete list)
 """
 
 import streamlit as st
@@ -17,7 +19,7 @@ except ImportError:
     st.stop()
 
 st.set_page_config(
-    page_title="Legal Document Intelligence Dashboard",
+    page_title="Legal Intelligence - High-Value Docs",
     page_icon="⚖️",
     layout="wide"
 )
@@ -45,10 +47,11 @@ def init_supabase():
 
 @st.cache_data(ttl=30)
 def get_all_documents(_client):
-    """Get all legal documents with scores"""
+    """Get HIGH-VALUE legal documents (relevancy ≥ 700) with scores"""
     try:
         response = _client.table('legal_documents')\
             .select('*')\
+            .gte('relevancy_number', 700)\
             .order('relevancy_number', desc=True)\
             .execute()
         return response.data
@@ -125,9 +128,10 @@ def search_documents(_client, search_term):
 
 def main():
     # Header
-    st.title("⚖️ Legal Document Intelligence Dashboard")
-    st.markdown(f"**Last Updated:** {datetime.now().strftime('%Y-%m-%d %H:%M:%S')}")
+    st.title("⚖️ Legal Intelligence: High-Value Documents")
+    st.markdown(f"**Port 8503** | Showing ONLY documents with relevancy ≥ 700 | **Last Updated:** {datetime.now().strftime('%Y-%m-%d %H:%M:%S')}")
     st.markdown("**Case:** In re Ashe B. (J24-00478)")
+    st.info("💡 This dashboard shows HIGH-VALUE documents only. For ALL documents, use **PROJ344 Master Dashboard** (Port 8501)")
 
     # Initialize Supabase
     client, error = init_supabase()
@@ -151,7 +155,7 @@ def main():
 
     mode = st.sidebar.radio(
         "Select View",
-        ["Dashboard", "Smoking Guns Pitch Chart", "Critical Documents", "All Documents", "Search", "Document Detail", "Score Analysis"],
+        ["Dashboard", "Smoking Guns Pitch Chart", "Critical Documents", "High-Value Documents", "Search", "Document Detail", "Score Analysis"],
         help="Choose analysis mode"
     )
 
@@ -162,8 +166,8 @@ def main():
         stats = get_statistics(client)
 
         if not stats:
-            st.warning("No documents found. Run the scanner to analyze documents.")
-            st.code("python3 Resources/CH16_Technology/API-Integration/intelligent_document_scanner.py ~/Downloads/Areas/CH22_Legal")
+            st.warning("No high-value documents found (relevancy ≥ 700). Run the scanner to analyze documents.")
+            st.info("💡 For ALL documents regardless of relevancy, use **PROJ344 Master Dashboard** (Port 8501)")
             return
 
         # Top metrics
@@ -406,9 +410,9 @@ def main():
 
                 st.caption(f"ID: {doc['id']} | File: {doc.get('original_filename')}")
 
-    # ===== ALL DOCUMENTS MODE =====
-    elif mode == "All Documents":
-        st.header("📚 All Documents")
+    # ===== HIGH-VALUE DOCUMENTS MODE =====
+    elif mode == "High-Value Documents":
+        st.header("📚 High-Value Documents (Relevancy ≥ 700)")
 
         docs = get_all_documents(client)
 
