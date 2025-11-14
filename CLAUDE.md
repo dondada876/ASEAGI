@@ -328,18 +328,155 @@ context.user_data['document_info'] = {...}
 
 ## Production Deployment Notes
 
+### Hybrid Cloud Implementation (aseagi-droplet/)
+
+**Status:** Implementation complete on `feature/vastai-hybrid-deployment` branch
+
+**Directory Structure:**
+```
+aseagi-droplet/
+├── app/                          # Flask API Control Plane
+│   ├── app.py                    # Main Flask application (400+ LOC)
+│   ├── Dockerfile                # Production container config
+│   └── requirements.txt          # Flask, Supabase, Redis, Boto3
+├── dashboard/                    # Streamlit Monitoring Dashboard
+│   ├── streamlit_app.py          # Multi-page dashboard (500+ LOC)
+│   ├── Dockerfile                # Dashboard container config
+│   └── requirements.txt          # Streamlit, Plotly, Pandas
+├── vastai/                       # GPU Worker Components
+│   ├── worker.py                 # Main worker loop (300+ LOC)
+│   ├── process_document.py       # OCR & Claude Vision (250+ LOC)
+│   ├── Dockerfile                # GPU-enabled CUDA container
+│   ├── build_and_push.sh         # Docker build automation
+│   └── requirements.txt          # Anthropic, Tesseract, Pillow
+├── scripts/                      # Deployment Automation
+│   ├── deploy.sh                 # Full droplet deployment
+│   └── setup_spaces.sh           # S3 storage configuration
+├── nginx/                        # Reverse Proxy
+│   └── nginx.conf                # HTTP/HTTPS routing, SSL
+├── docker-compose.yml            # Multi-container orchestration
+├── .env.example                  # Configuration template
+├── requirements.txt              # Shared dependencies
+├── README.md                     # Quick start guide
+└── DEPLOYMENT_SUMMARY.md         # Complete deployment docs
+```
+
+### Flask API Control Plane (app/app.py)
+
+**Responsibilities:**
+- Vast.ai instance lifecycle management (launch/destroy)
+- Job queue management via Redis
+- Telegram webhook receiver
+- S3 file coordination
+- Cost tracking and statistics
+
+**Key Endpoints:**
+```python
+GET  /health                    # System health check
+POST /jobs                      # Create processing job
+GET  /jobs/<job_id>            # Job status
+GET  /instances                # List Vast.ai instances
+POST /instances/launch         # Manual launch
+DELETE /instances/<id>         # Destroy instance
+POST /telegram/webhook         # Telegram updates
+GET  /stats                    # System statistics
+```
+
+**Auto-Scaling Logic:**
+```python
+def check_and_launch():
+    queue_size = JobQueue.get_queue_size()
+    instances = VastAIController.list_instances()
+
+    if queue_size > 0 and no_active_instances:
+        VastAIController.launch_instance(job_count=queue_size)
+```
+
+### Streamlit Dashboard (dashboard/streamlit_app.py)
+
+**Pages:**
+1. **Overview** - Metrics, job status distribution, processing timeline
+2. **Documents** - Browse, search, filter with relevancy scores
+3. **Processing Jobs** - Job queue monitor, status tracking
+4. **Instances** - Vast.ai GPU instance control panel
+5. **Costs** - Real-time cost tracking, daily/monthly projections
+
+**Features:**
+- Real-time updates (10-second refresh)
+- Manual instance launch/destroy controls
+- Document browser with filters (category, relevancy, date)
+- Cost analytics with charts (Plotly)
+- Job retry mechanisms
+- Health monitoring
+
+**Access:** http://droplet-ip:8501 (behind Nginx in production)
+
 ### Vast.ai GPU Worker Pattern
 
-Docker container runs stateless worker:
+**Worker Loop (vastai/worker.py):**
 
-1. Fetch jobs from Supabase (`status='queued'`)
-2. Download document from S3
-3. Process with GPU (OCR + Claude)
-4. Upload results to S3
-5. Update Supabase (`status='completed'`)
-6. Auto-shutdown after 5 min idle
+1. Poll Supabase for queued jobs (`status='queued'`)
+2. Download document from S3 to `/tmp/processing/`
+3. Process with tiered OCR:
+   - Try Tesseract (fast, free, 90% accuracy)
+   - Fallback to Claude Vision (slow, $0.01/doc, 98% accuracy)
+4. Upload results JSON to S3 (`/processed/` folder)
+5. Insert document record to Supabase `legal_documents` table
+6. Update job status to `completed`
+7. Clean up local files
+8. Check idle timeout (5 minutes)
+9. Auto-destroy instance if idle
 
-**Key:** No local storage. All state in Supabase, all files in S3.
+**Key:** Stateless worker - no local storage persists between jobs. All state in Supabase, all files in S3.
+
+**Auto-Shutdown:**
+```python
+def check_idle_timeout(self):
+    idle_time = time.time() - self.last_job_time
+    if idle_time > 300:  # 5 minutes
+        self.self_destruct()
+```
+
+### Document Processing (vastai/process_document.py)
+
+**Tiered OCR Strategy:**
+
+```python
+def process_document(file_path):
+    # Tier 1: Tesseract (if available)
+    if TESSERACT_AVAILABLE:
+        text = extract_text_tesseract(image_path)
+        if text and len(text) > 50:
+            return {'text': text, 'ocr_method': 'tesseract'}
+
+    # Tier 2: Claude Vision (fallback or primary)
+    result = extract_text_claude(image_path)
+    return result
+```
+
+**Claude Vision Analysis:**
+- Extracts full OCR text
+- Document type classification
+- 5-dimension scoring (relevancy, macro, micro, legal, category)
+- Key entity extraction
+- Document date detection
+- Cost tracking ($3/MTok input, $15/MTok output)
+
+**Output Format:**
+```json
+{
+  "text": "Full extracted text...",
+  "document_type": "legal",
+  "category": "court_document",
+  "relevancy_number": 950,
+  "macro_score": 880,
+  "micro_score": 920,
+  "legal_score": 975,
+  "category_score": 900,
+  "document_date": "2024-03-15",
+  "api_cost": 0.0142
+}
+```
 
 ### Environment Variables (Production)
 
@@ -371,6 +508,70 @@ VASTAI_API_KEY=<vastai-key>
 - **redis**: Job queue (port 6379) - In-memory state
 - **nginx**: Reverse proxy (port 80/443) - SSL termination
 - **certbot**: SSL renewal - Let's Encrypt automation
+
+### Deployment Scripts
+
+**scripts/deploy.sh** - Automated droplet setup:
+1. Validates `.env` file exists and required variables set
+2. Installs Docker and Docker Compose if needed
+3. Installs Vast.ai CLI
+4. Configures Vast.ai API key
+5. Creates necessary directories (nginx/ssl, data/)
+6. Builds Docker containers
+7. Starts all services with `docker compose up -d`
+8. Waits for services to be healthy
+9. Displays access URLs and useful commands
+10. Provides Telegram webhook setup command
+
+**scripts/setup_spaces.sh** - S3 storage configuration:
+1. Installs AWS CLI
+2. Configures credentials for DigitalOcean Spaces
+3. Creates bucket (if doesn't exist)
+4. Creates folder structure: `raw/`, `processed/`, `archive/`
+5. Sets CORS policy for webhook access
+6. Tests connection and lists contents
+
+**Usage:**
+```bash
+# Initial deployment
+cd aseagi-droplet
+cp .env.example .env
+# Edit .env with your credentials
+chmod +x scripts/*.sh
+./scripts/deploy.sh
+
+# Setup S3 storage
+./scripts/setup_spaces.sh
+
+# Build and push Vast.ai worker image
+cd vastai
+chmod +x build_and_push.sh
+./build_and_push.sh
+```
+
+### Nginx Configuration (nginx/nginx.conf)
+
+**Routes:**
+- `/api/*` → Flask API (port 5000) with rate limiting (10 req/s)
+- `/telegram/webhook` → Telegram handler (5 req/s limit)
+- `/*` → Streamlit dashboard (port 8501) with WebSocket support
+- `/_stcore/health` → Streamlit health check
+- `/health` → API health check (no logging)
+- `/.well-known/acme-challenge/` → Let's Encrypt validation
+
+**Features:**
+- Rate limiting (prevents abuse)
+- WebSocket upgrade for Streamlit
+- Health check endpoints
+- SSL/TLS ready (commented out, enable after certificate)
+- 5-minute read timeout for long-running requests
+
+**Production SSL Setup:**
+1. Uncomment HTTPS server block in nginx.conf
+2. Update `your-domain.com` with actual domain
+3. Run certbot to obtain certificate
+4. Enable HTTP → HTTPS redirect
+5. Restart nginx: `docker compose restart nginx`
 
 ### Cost Tracking
 
