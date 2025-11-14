@@ -1,0 +1,7 @@
+# Dashboard Requirements
+streamlit==1.51.0
+supabase==2.3.4
+pandas==2.1.0
+plotly==5.17.0
+requests==2.31.0
+python-dotenv==1.0.0

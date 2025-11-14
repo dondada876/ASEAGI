@@ -1,0 +1,14 @@
+# Vast.ai GPU Worker Requirements
+
+# AI/ML
+anthropic==0.40.0
+pillow==10.1.0
+pytesseract==0.3.10
+
+# Database & Storage
+supabase==2.3.4
+boto3==1.34.0
+
+# Utilities
+python-dotenv==1.0.0
+requests==2.31.0

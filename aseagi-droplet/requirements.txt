@@ -1,0 +1,25 @@
+# ASEAGI Droplet Requirements
+# Lightweight - No GPU packages
+
+# Web Framework
+flask==3.0.0
+gunicorn==21.2.0
+
+# Dashboard
+streamlit==1.51.0
+
+# Database & Storage
+supabase==2.3.4
+boto3==1.34.0
+redis==5.0.1
+
+# Telegram
+python-telegram-bot==20.7
+
+# Vast.ai CLI (installed separately)
+# pip install vastai
+
+# Utilities
+python-dotenv==1.0.0
+requests==2.31.0
+pydantic==2.5.0
