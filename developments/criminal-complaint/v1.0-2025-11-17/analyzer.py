@@ -24,9 +24,8 @@ from typing import List, Dict, Any
 from supabase import create_client
 import re
 
-# Add parent directory to path
-sys.path.insert(0, str(Path(__file__).parent.parent))
-from database.criminal_complaint_schema import (
+# Import schema from same directory
+from schema import (
     PERJURY_COMPLAINT_2025,
     EVIDENCE_QUERIES,
     CorrelationScoring
