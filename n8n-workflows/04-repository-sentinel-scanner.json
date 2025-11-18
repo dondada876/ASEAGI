@@ -1,0 +1,123 @@
+{
+  "name": "Repository Sentinel - Auto Scanner",
+  "nodes": [
+    {
+      "parameters": {
+        "rule": {
+          "interval": [
+            {
+              "field": "cronExpression",
+              "expression": "0 2 * * *"
+            }
+          ]
+        }
+      },
+      "name": "Schedule Trigger",
+      "type": "n8n-nodes-base.scheduleTrigger",
+      "typeVersion": 1,
+      "position": [250, 300],
+      "id": "schedule-trigger",
+      "notes": "Runs daily at 2:00 AM"
+    },
+    {
+      "parameters": {
+        "command": "python3 /home/user/ASEAGI/scanners/repository_scanner.py /home/user/ASEAGI --scan-type incremental"
+      },
+      "name": "Scan ASEAGI Repo",
+      "type": "n8n-nodes-base.executeCommand",
+      "typeVersion": 1,
+      "position": [450, 200],
+      "id": "scan-aseagi"
+    },
+    {
+      "parameters": {
+        "chatId": "YOUR_TELEGRAM_CHAT_ID",
+        "text": "=📊 Repository Sentinel Scan Complete\n\n✅ Scanned: ASEAGI repository\n⏰ Time: {{ $now.toLocaleString() }}\n\nView dashboard: http://localhost:8506"
+      },
+      "name": "Send Telegram Notification",
+      "type": "n8n-nodes-base.telegram",
+      "typeVersion": 1,
+      "position": [650, 200],
+      "id": "telegram-notify",
+      "credentials": {
+        "telegramApi": {
+          "id": "telegram-bot",
+          "name": "ASEAGI Bot"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "functionCode": "// Get scan statistics from Supabase\nconst stats = await $requestWithAuthentication.call(\n  this,\n  'supabase',\n  {\n    url: `${$credentials.supabase.host}/rest/v1/repositories?select=count`,\n    method: 'GET',\n    headers: {\n      'apikey': $credentials.supabase.serviceRole,\n      'Prefer': 'count=exact'\n    }\n  }\n);\n\nreturn {\n  total_repos: stats.headers['content-range'].split('/')[1],\n  scan_time: new Date().toISOString()\n};"
+      },
+      "name": "Get Stats",
+      "type": "n8n-nodes-base.function",
+      "typeVersion": 1,
+      "position": [450, 400],
+      "id": "get-stats"
+    },
+    {
+      "parameters": {
+        "chatId": "YOUR_TELEGRAM_CHAT_ID",
+        "text": "=📈 Repository Inventory Stats\n\nTotal Repositories: {{ $json.total_repos }}\nLast Update: {{ $json.scan_time }}\n\nView details: http://localhost:8506"
+      },
+      "name": "Send Stats",
+      "type": "n8n-nodes-base.telegram",
+      "typeVersion": 1,
+      "position": [650, 400],
+      "id": "telegram-stats",
+      "credentials": {
+        "telegramApi": {
+          "id": "telegram-bot",
+          "name": "ASEAGI Bot"
+        }
+      }
+    }
+  ],
+  "connections": {
+    "Schedule Trigger": {
+      "main": [
+        [
+          {
+            "node": "Scan ASEAGI Repo",
+            "type": "main",
+            "index": 0
+          },
+          {
+            "node": "Get Stats",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Scan ASEAGI Repo": {
+      "main": [
+        [
+          {
+            "node": "Send Telegram Notification",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Get Stats": {
+      "main": [
+        [
+          {
+            "node": "Send Stats",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "settings": {},
+  "staticData": null,
+  "tags": [],
+  "triggerCount": 0,
+  "updatedAt": "2025-11-18T00:00:00.000Z",
+  "versionId": "1"
+}
