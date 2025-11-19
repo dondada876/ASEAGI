@@ -1,0 +1,80 @@
+version: '3.8'
+
+# AGI Protocol Services
+# Completely isolated from PROJ344 docker-compose.yml
+# Can be started/stopped independently
+
+services:
+  # FastAPI Backend (Port 8000)
+  agi-api:
+    build:
+      context: ./agi-protocol
+      dockerfile: Dockerfile.api
+    container_name: agi-protocol-api
+    ports:
+      - "8000:8000"
+    environment:
+      - SUPABASE_URL=${SUPABASE_URL}
+      - SUPABASE_KEY=${SUPABASE_KEY}
+      - ANTHROPIC_API_KEY=${ANTHROPIC_API_KEY}
+      - API_HOST=0.0.0.0
+      - API_PORT=8000
+      - LOG_LEVEL=INFO
+    volumes:
+      - ./agi-protocol/api:/app/api
+      - ./agi-protocol/logs:/app/logs
+    restart: unless-stopped
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:8000/health"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+    networks:
+      - agi-network
+
+  # Telegram Bot (Port 8443 for webhook)
+  agi-telegram-bot:
+    build:
+      context: ./agi-protocol
+      dockerfile: Dockerfile.bot
+    container_name: agi-telegram-bot
+    ports:
+      - "8443:8443"
+    environment:
+      - TELEGRAM_BOT_TOKEN=${TELEGRAM_BOT_TOKEN}
+      - API_URL=http://agi-api:8000
+      - WEBHOOK_URL=${WEBHOOK_URL}
+      - SUPABASE_URL=${SUPABASE_URL}
+      - SUPABASE_KEY=${SUPABASE_KEY}
+    depends_on:
+      - agi-api
+    restart: unless-stopped
+    networks:
+      - agi-network
+
+  # Redis Cache (Optional - for future use)
+  agi-redis:
+    image: redis:7-alpine
+    container_name: agi-redis
+    ports:
+      - "6379:6379"
+    volumes:
+      - agi-redis-data:/data
+    restart: unless-stopped
+    networks:
+      - agi-network
+
+networks:
+  agi-network:
+    driver: bridge
+
+volumes:
+  agi-redis-data:
+    driver: local
+
+# Usage:
+# docker-compose -f docker-compose.agi.yml up -d
+# docker-compose -f docker-compose.agi.yml down
+#
+# To run both PROJ344 and AGI Protocol:
+# docker-compose up -d && docker-compose -f docker-compose.agi.yml up -d

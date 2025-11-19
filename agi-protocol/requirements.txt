@@ -1,0 +1,44 @@
+# AGI Protocol Dependencies
+# Completely separate from PROJ344 requirements.txt
+# FastAPI Backend & API
+fastapi==0.104.1
+uvicorn[standard]==0.24.0
+pydantic==2.5.0
+pydantic-settings==2.1.0
+
+# Async HTTP & WebSockets
+aiohttp==3.9.1
+websockets==12.0
+httpx==0.25.2
+
+# Database (shared with PROJ344)
+supabase==2.3.4
+postgrest==0.13.2
+
+# AI & ML
+anthropic==0.8.1
+openai==1.6.1  # For potential GPT integrations
+
+# Telegram Bot
+python-telegram-bot==20.7
+
+# Utilities
+python-dotenv==1.0.0
+python-multipart==0.0.6  # For file uploads
+Pillow==10.2.0  # Image processing (same as PROJ344)
+python-jose[cryptography]==3.3.0  # JWT tokens
+passlib[bcrypt]==1.7.4  # Password hashing
+
+# Testing
+pytest==7.4.3
+pytest-asyncio==0.21.1
+pytest-cov==4.1.0
+httpx==0.25.2  # For testing async endpoints
+
+# Development
+black==23.12.1
+flake8==6.1.0
+mypy==1.7.1
+
+# Logging & Monitoring
+loguru==0.7.2

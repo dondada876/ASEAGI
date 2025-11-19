@@ -1,0 +1,27 @@
+# AGI Protocol Telegram Bot Dockerfile
+# Telegram bot on port 8443 (webhook mode)
+
+FROM python:3.11-slim
+
+# Set working directory
+WORKDIR /app
+
+# Install system dependencies
+RUN apt-get update && apt-get install -y \
+    build-essential \
+    && rm -rf /var/lib/apt/lists/*
+
+# Copy requirements
+COPY requirements.txt .
+
+# Install Python dependencies
+RUN pip3 install --no-cache-dir -r requirements.txt
+
+# Copy bot code
+COPY telegram-bot/ ./telegram-bot/
+
+# Expose webhook port
+EXPOSE 8443
+
+# Run bot
+CMD ["python3", "telegram-bot/bot.py"]
