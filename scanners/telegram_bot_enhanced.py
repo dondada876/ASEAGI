@@ -10,9 +10,9 @@ This is a wrapper around the existing unified telegram bot that adds:
 
 Usage:
     export TELEGRAM_BOT_TOKEN="your_token"
-    export SUPABASE_URL="https://jvjlhxodmbkodzmggwpu.supabase.co"
-    export SUPABASE_KEY="your_key"
-    export ANTHROPIC_API_KEY="your_key"
+    export SUPABASE_URL="your_supabase_project_url"
+    export SUPABASE_KEY="your_supabase_anon_key"
+    export ANTHROPIC_API_KEY="your_anthropic_api_key"
 
     python3 scanners/telegram_bot_enhanced.py
 """

@@ -2,9 +2,9 @@
 
 This file provides guidance to Claude Code (claude.ai/code) when working with code in this repository.
 
-**Last Updated:** November 8, 2025
+**Last Updated:** November 19, 2025
 **Project:** PROJ344 - Legal Case Intelligence Dashboards
-**Codebase Size:** ~5000 LOC (16 Python files, 18 Markdown docs)
+**Codebase Size:** ~10,034 LOC (35 Python files, 37 Markdown docs)
 **Repository:** https://github.com/dondada876/ASEAGI
 
 ---
@@ -21,11 +21,12 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 
 ## Key Statistics
 
-- **16 Python files** across 4 main modules
-- **5 Streamlit dashboards** running on ports 8501-8505
-- **~4,990 total lines of Python code**
+- **35 Python files** across 8 main components
+- **7 Streamlit dashboards** running on ports 8501-8506
+- **~10,034 total lines of Python code**
 - **601 legal documents** in Supabase database (as of Nov 6)
-- **Zero external packages** for complex logic (uses Streamlit, Supabase, Claude API, Plotly)
+- **Comprehensive CI/CD** with pre-commit hooks and GitHub Actions
+- **Production-ready infrastructure** (Docker, testing, security scanning)
 
 ---
 
@@ -33,15 +34,16 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 
 ```
 ASEAGI/
-├── dashboards/              # Streamlit web applications (5 dashboards, ~3,700 LOC)
+├── dashboards/              # Streamlit web applications (7 dashboards, ~3,808 LOC)
 │   ├── proj344_master_dashboard.py (441 LOC)         # Main case intelligence
 │   ├── legal_intelligence_dashboard.py (675 LOC)    # Document-by-document analysis
 │   ├── enhanced_scanning_monitor.py (714 LOC)       # Real-time scanning monitor
+│   ├── master_5wh_dashboard.py (651 LOC)            # 5W+H analysis framework (NEW)
 │   ├── scanning_monitor_dashboard.py (526 LOC)      # Detailed scan progress
-│   ├── ceo_dashboard.py (384 LOC)                   # File organization & system health
-│   └── timeline_violations_dashboard.py (340 LOC)   # Constitutional violations tracker
+│   ├── timeline_violations_dashboard.py (417 LOC)   # Constitutional violations tracker
+│   └── ceo_dashboard.py (384 LOC)                   # File organization & system health
 │
-├── scanners/                # Document processing (3 files, ~750 LOC)
+├── scanners/                # Document processing (9 files, ~2,290 LOC)
 │   ├── batch_scan_documents.py (384 LOC)            # Main document scanner with PROJ344 scoring
 │   ├── 2025-11-05-CH16-batch-scan-all-documents.py  # Variant for batch processing
 │   └── query_legal_documents.py (247 LOC)           # Database query utility
@@ -86,7 +88,7 @@ ASEAGI/
 ## Core Technologies
 
 ### Frontend & Visualization
-- **Streamlit 1.31.0** - Dashboard framework (5 apps)
+- **Streamlit 1.31.0** - Dashboard framework (7 apps)
 - **Plotly 5.18.0** - Interactive visualizations
 - **Pandas 2.1.4** - Data manipulation
 
@@ -204,9 +206,15 @@ CASE_NUMBER=J24-00478
   - 5-second auto-refresh
   - Live log tailing
 
-#### D. Scanning Monitor Dashboard (Port 8505)
-- **File:** `scanning_monitor_dashboard.py` (526 LOC)
-- **Similar to** Enhanced Scanning Monitor with different visualizations
+#### D. Master 5W+H Dashboard (Port 8506) **NEW**
+- **File:** `master_5wh_dashboard.py` (651 LOC)
+- **Purpose:** Comprehensive legal intelligence with 5W+H framework analysis
+- **Key Features:**
+  - Independent querying by: Who, What, When, Where, Why, How
+  - Deep visual analytics with custom CSS
+  - Gradient metric cards for key statistics
+  - Advanced Plotly visualizations
+  - Smoking gun evidence highlighting
 
 #### E. CEO Dashboard (Port 8503)
 - **File:** `ceo_dashboard.py` (384 LOC)
@@ -218,13 +226,19 @@ CASE_NUMBER=J24-00478
   - Duplicate file detection
   - System statistics
 
-#### F. Timeline & Violations Dashboard (Port ???)
-- **File:** `timeline_violations_dashboard.py` (340 LOC)
+#### F. Timeline & Violations Dashboard (Port 8505)
+- **File:** `timeline_violations_dashboard.py` (417 LOC)
 - **Purpose:** Constitutional violations tracking
 - **Features:**
   - Court events timeline
   - Due process violations
   - Multi-jurisdiction tracking
+  - Event frequency analysis
+
+#### G. Scanning Monitor Dashboard
+- **File:** `scanning_monitor_dashboard.py` (526 LOC)
+- **Purpose:** Alternative scanning monitor with different visualizations
+- **Note:** Similar to Enhanced Scanning Monitor (Port 8504)
 
 ### 2. Scanners (`/scanners/`)
 
@@ -772,8 +786,9 @@ cd1f123 Add promotional credit tracking for $1,000 Claude Code credit
 | 8501 | Master | `proj344_master_dashboard.py` | Main case intelligence |
 | 8502 | Legal Intelligence | `legal_intelligence_dashboard.py` | Document analysis |
 | 8503 | CEO | `ceo_dashboard.py` | File organization |
-| 8504 | Enhanced Monitor | `enhanced_scanning_monitor.py` | Scanning progress |
-| 8505 | Monitor | `scanning_monitor_dashboard.py` | Alternative monitor |
+| 8504 | Enhanced Monitor | `enhanced_scanning_monitor.py` | Real-time scanning |
+| 8505 | Timeline & Violations | `timeline_violations_dashboard.py` | Constitutional violations |
+| 8506 | Master 5W+H | `master_5wh_dashboard.py` | 5W+H analysis framework |
 
 ---
 

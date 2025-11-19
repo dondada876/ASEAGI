@@ -17,8 +17,8 @@ except ImportError:
     print("ERROR: psycopg2 not installed. Install with: pip install psycopg2-binary")
     sys.exit(1)
 
-# Get Supabase connection details
-SUPABASE_URL = os.getenv('SUPABASE_URL', 'https://jvjlhxodmbkodzmggwpu.supabase.co')
+# Get Supabase connection details - REQUIRES environment variables
+SUPABASE_URL = os.getenv('SUPABASE_URL')
 SUPABASE_DB_PASSWORD = os.getenv('SUPABASE_DB_PASSWORD')  # Need the DB password, not API key
 
 if not SUPABASE_DB_PASSWORD:

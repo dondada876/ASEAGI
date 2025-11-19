@@ -67,15 +67,48 @@ streamlit run ceo_dashboard.py \
     --server.address=localhost &
 CEO_PID=$!
 
+sleep 2
+
+# Dashboard 4: Enhanced Scanning Monitor
+echo "📊 Port 8504: Enhanced Scanning Monitor"
+streamlit run enhanced_scanning_monitor.py \
+    --server.headless=true \
+    --server.port=8504 \
+    --server.address=localhost &
+ENHANCED_PID=$!
+
+sleep 2
+
+# Dashboard 5: Timeline & Violations
+echo "⚖️  Port 8505: Timeline & Constitutional Violations"
+streamlit run timeline_violations_dashboard.py \
+    --server.headless=true \
+    --server.port=8505 \
+    --server.address=localhost &
+TIMELINE_PID=$!
+
+sleep 2
+
+# Dashboard 6: Master 5W+H Dashboard
+echo "🔍 Port 8506: Master 5W+H Framework Dashboard"
+streamlit run master_5wh_dashboard.py \
+    --server.headless=true \
+    --server.port=8506 \
+    --server.address=localhost &
+MASTER5WH_PID=$!
+
 echo ""
 echo "======================================================================"
-echo "✅ ALL DASHBOARDS RUNNING!"
+echo "✅ ALL 6 DASHBOARDS RUNNING!"
 echo "======================================================================"
 echo ""
 echo "Access dashboards at:"
-echo "  🎯 PROJ344 Master:      http://localhost:8501"
-echo "  ⚖️  Legal Intelligence:  http://localhost:8502"
-echo "  👔 CEO Dashboard:       http://localhost:8503"
+echo "  🎯 PROJ344 Master:           http://localhost:8501"
+echo "  ⚖️  Legal Intelligence:       http://localhost:8502"
+echo "  👔 CEO Dashboard:            http://localhost:8503"
+echo "  📊 Enhanced Scanning Monitor: http://localhost:8504"
+echo "  ⚖️  Timeline & Violations:    http://localhost:8505"
+echo "  🔍 Master 5W+H Framework:    http://localhost:8506"
 echo ""
 echo "======================================================================"
 echo ""
@@ -89,6 +122,9 @@ cleanup() {
     kill $PROJ344_PID 2>/dev/null
     kill $LEGAL_PID 2>/dev/null
     kill $CEO_PID 2>/dev/null
+    kill $ENHANCED_PID 2>/dev/null
+    kill $TIMELINE_PID 2>/dev/null
+    kill $MASTER5WH_PID 2>/dev/null
     echo "✅ All dashboards stopped"
     exit 0
 }

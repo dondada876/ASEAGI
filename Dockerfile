@@ -22,7 +22,7 @@ RUN pip3 install --no-cache-dir -r requirements.txt
 COPY dashboards/ ./dashboards/
 COPY scanners/ ./scanners/
 COPY scripts/ ./scripts/
-COPY supabase/ ./supabase/
+COPY core/ ./core/
 COPY README.md .
 
 # Expose Streamlit ports
