@@ -1,0 +1,1317 @@
+Feature Availability
+You can trigger a certain number of API calls per day/user based on the Edition. For more details, click here.
+
+Introduction
+The Vtiger REST API is a developer-friendly interface that enables seamless interaction between your Vtiger CRM instance and external systems such as mobile apps, websites, ERP tools, or automation platforms. It supports common web standards like HTTP and JSON, making it easy to use for both simple and complex integrations.
+
+With REST APIs, you can securely perform a wide range of operations such as creating, retrieving, updating, deleting CRM records, syncing data, managing documents and files, executing workflows, tagging, and interacting with related modules. You can enable APIs to create multiple records with a single REST API. This helps in creating multiple module records at the same time. You can make a sub-request (another request) that uses data from the previous response and combines it with that response.
+
+To test and understand API behavior before building your own integration, Vtiger provides a Postman Collection that contains all supported endpoints.
+
+Benefits of Using REST API in Vtiger
+The following are the benefits of using REST APIs in Vtiger:
+
+Flexible Integrations: Easily connect Vtiger with external applications that don’t have built-in integrations.
+Automation: Automate repetitive tasks like lead creation, record updates, or campaign tracking.
+Scalability: Build scalable applications that interact with Vtiger CRM.
+Customization: Extend Vtiger functionality for unique business requirements.
+Time-Saving: Retrieve or update multiple records efficiently.
+Key Terminology
+Name
+
+Description
+
+API
+
+Application Programming Interface enabling communication between systems.
+
+Endpoint
+
+The base URL where all REST API requests are directed.
+
+Access Key
+
+Unique key for each user, used in authentication (found in My Preferences).
+
+Authentication
+
+Method to validate the identity of an API user using the username and access key.
+
+Postman
+
+A tool to test and prototype API requests before final implementation.
+
+Module Name
+
+Name of the CRM module, like Contacts, Leads, Deals, etc.
+
+Record ID
+
+Identifier for records in format: moduleIDxrecordID (e.g., 4x2063).
+
+Element
+
+JSON object containing field data passed in the Create, Update, or Revise APIs.
+
+JSON
+
+Format used for sending requests and receiving responses in REST APIs.
+
+HTTP Methods
+
+Web request types: GET (retrieve), POST (create/update), DELETE, etc.
+
+Getting Started with Vtiger API
+Endpoint
+Each Vtiger instance has a unique API endpoint. You’ll use this as the base URL for all API requests
+
+API Endpoint Format
+
+https://your_instance.odx.vtiger.com/restapi/v1/vtiger/default
+
+ 
+Replace your_instance with your Vtiger instance name
+Replace odx with od1, od2, or od3 based on your instance URL
+Authentication
+Authentication is done using HTTP Basic Auth.
+
+Username: Your CRM login email.
+Access Key: Found in the My Preferences section in Vtiger.
+Follow these steps to get your Access key and Username:
+
+Log in to Vtiger CRM
+Click the User Menu. 
+Select My Preference. The My Preference page opens. 
+Copy the following information:
+Username: The login username for the CRM account
+Access Key: A unique API key
+The Access Key acts like a password for API operations.
+
+Using Postman for API Testing
+Follow these steps to test Vtiger REST APIs using Postman:
+
+Install Postman from https://www.postman.com/downloads if you haven't already.
+Create a new request and set the request URL to your Vtiger endpoint (e.g., https://your_instance.odx.vtiger.com/restapi/v1/vtiger/default).
+Choose the HTTP method – either GET to fetch data or POST to send/update data.
+Go to the Authorization tab and set the type to Basic Authentication. Enter your Vtiger username and access key.
+If it's a POST request, switch to the Body tab and then enter your request payload.
+Click Send to execute the request.
+Review the response JSON in the output section to validate the API behavior. 
+API Response Format
+Sample Success Response
+
+{
+
+  "success": true,
+
+  "result": {
+
+    "id": "4x2063",
+
+    "firstname": "John",
+
+    "lastname": "Doe"
+
+  }
+
+}
+
+Sample Failure Response
+
+{
+
+  "success": false,
+
+  "error": {
+
+    "code": "ACCESS_DENIED",
+
+    "message": "Invalid authentication information"
+
+  }
+
+}
+
+HTTP 200 = Success
+HTTP 400/500 = Failure or error in request
+Record ID Format
+Record IDs in the REST API use the format:
+
+moduleIDxrecordID
+
+Example: 4x2063 – where 4 is the module ID for Contacts, and 2063 is the record ID.
+
+Postman Collection of APIs
+You can use all the APIs below using the Postman collection. Use this link to access them.
+
+Me
+Authentication can be confirmed using this API before using any other operation. Response to this API can come in handy when the user-reference-id is required.
+
+GET endpoint/me
+
+Response
+
+{
+
+success: true,
+result: {
+
+id: user_record_id,
+user_name: string,
+first_name: string,
+last_name: string,
+email1: string
+
+}
+
+ }
+
+ListTypes
+You can get details about the module accessible to users through this API.
+
+ 
+GET endpoint/listtypes?fieldTypeList=null
+
+fieldTypeList - filter modules by field type available in those modules. If you want to see all, then pass null. For example, you want to see which modules have "grid" type of fields, then you can pass like below
+endpoint/listtypes?fieldTypeList[]=grid
+
+Response 
+
+{
+
+success: true,
+result: {
+
+types: [
+
+module_name
+
+],
+information: {
+
+module_name: {
+
+isEntity: boolean,
+label: string,
+singular: string
+
+}
+
+}
+
+}
+
+ }
+
+Describe
+The Metadata of the module provides information about record permissions, blocks, and field configuration for performing further operations.
+
+GET endpoint/describe?elementType=moduleName
+
+Response 
+
+{
+
+success: true,
+result: {
+
+label: string,
+name: string,
+createable: boolean,
+updateable: boolean,
+deleteable: boolean,
+retrieveable: boolean,
+fields: [
+
+name: string,
+label: string,
+mandatory: boolean,
+quickcreate: boolean,
+summaryfield: boolean,
+headerfield: boolean,
+default: value,
+type: {
+
+name: string,
+length: size,
+refersTo: reference_modulename_array,
+picklistValues: value_label_array,
+defaultValue: picklist_default_value
+
+}
+isunique: boolean,
+nullable: boolean,
+editable: boolean,
+data: extended_info
+
+],
+inactivefields: field_information_array,
+idPrefix: module_id_string,
+isEntity: boolean,
+allowDuplicates: boolean,
+labelFields: string_or_array
+..
+
+}
+
+ }
+
+Create
+This API enables you to create a single entity record. You are expected to send all the mandatory field values along with the optional fields for successful record creation. (Use Describe API to know more about the field mandatory configuration).
+
+POST   endpoint/create?elementType=moduleName&element=convert_into_json_string ({field1: value1, field2=value2})
+
+Response 
+
+{
+
+success: true,
+result: {
+
+id: record_id,
+label: string,
+field1: value1,
+field2: value2,
+...
+
+}
+
+ }
+
+Note: Most entity records expect the Assigned To (assigne_user_id) field value to be set. This value can be set to user_record_id obtained through the Me API.
+
+Retrieve
+You can pull a piece of specific record information using this API.
+
+GET endpoint/retrieve?id=record_id
+
+Response 
+
+  {
+
+success: true,
+result: {
+
+id: record_id,
+label: string,
+field1: value1,
+field2: value2,
+...
+
+}
+
+ }
+
+Decrypt
+Use this API when you want to extract the value of a sensitive field of a record.
+
+GET endpoint/decrypt?id=record_id&fieldname=field_name
+
+Response 
+
+{
+
+success: true,
+result: field_value
+
+ }
+
+Update
+When you intend to update specific fields of existing records, you can use this or the Revise API.
+Note:
+This API expects all the mandatory fields to be stated as part of the element parameter. 
+If a field parameter is provided but left empty, the corresponding field in the CRM record will be updated with an empty value.
+POST endpoint/update?element=convert_into_json_string({id:record_id, field1:revalue1, field2:value2})
+
+Response 
+
+{
+
+success: true,
+result: {
+
+id: record_id,
+label: string,
+field1: revalue1,
+field2: value2,
+...
+
+}
+
+ }
+
+Revise
+This is similar to the Update API, but relaxes the constraint of re-stating the mandatory fields, but expects target fields that need to be updated. 
+
+POST endpoint/revise?element=convert_into_json_string({id:record_id, field2:revalue2})
+
+Response 
+
+{
+
+success: true,
+result: {
+
+id: record_id,
+label: string,
+field1: value1,
+field2: revalue2,
+...
+
+}
+
+ }
+
+Delete
+Delete existing records through this API.
+
+POST endpoint/deleteid=record_id
+
+Response 
+
+{
+
+success: true,
+result: {
+
+status: "successful"
+
+}
+
+ }
+
+Query
+Retrieve one or more records matching filtering field conditions.
+
+GET endpoint/query?query=query_string
+Query_string: select * | field_list | count(*) from module where conditions order by field_list limit m, n;
+
+field_list: should be a comma-separated list of field names.
+conditions can have an expression having
+operators: <, >, <=, >=, =, !=
+clauses: in ( ), like ‘sql_regex’
+limit m, n: m represents the offset, n represents the count
+Response 
+
+{
+
+success: true,
+result: array_of_matching_records
+
+ }
+
+Note:
+
+Queries will be enforced with an implicit maximum limit of 100 per fetch.
+Joins are not supported across different modules.
+Sync 
+When you need to fetch records that changed their state from the last known time, you can use this API.
+
+GET endpoint/sync?modifiedTime=timestamp&elementType=moduleName&syncType=sync_type
+ 
+
+Parameter
+
+modified time: Last known modified time from where you expect state changes of records should be in UNIX timestamp. For example 1561718898
+syncType:
+user: fetch records restricted to the assigned owner of the record.
+userandgroup: fetch records restricted to the assigned owner of a group.
+application: fetch records without restriction on the assigned owner.
+elementType: Target module name.
+Response 
+
+{
+
+success: true,
+result: {
+
+updated: record_id_array,
+deleted: record_id_array,
+more: boolean,
+lastModifiedTime: timestamp
+
+}
+
+ }
+
+Note: A maximum of 200 records are returned within the array.
+
+Convert Lead
+Use this API to achieve lead conversion.
+
+POST endpoint/convertlead?element=convert_into_json_string({
+
+leadId: [record_id],
+entities: {
+
+Contacts: {
+
+create: true,
+name: "Contacts"
+
+},
+Accounts: {
+
+create: true,
+name: "Accounts"
+
+},
+Potentials: {
+
+create: true,
+name: "Potentials",
+closingdate: "YYYY-MM-DD"
+
+}
+
+}
+
+ })
+
+Response 
+
+{
+
+success: true,
+result: {
+
+Accounts: account_id,
+Contacts: contact_id,
+Potentials: potential_id
+
+}
+
+ }
+
+Note: You cannot link the lead to an existing Opportunity.
+
+Related Types
+What relationship a module has with others can be obtained through this API.
+
+GET endpoint/relatedtypes?elementType=moduleName
+
+Response 
+
+{
+
+success: true,
+result: {
+
+types: module_name_array,
+information: {
+
+module_name: {
+
+name: string,
+label: string,
+translated_label: string,
+isEntity: boolean,
+relation_id: integer,
+actions: string
+
+}
+
+}
+
+}
+
+ }
+
+Retrieve Related
+When you need related records of a target, use this API to retrieve a record.
+
+GET endpoint/retrieve_related?id=record_id&relatedLabel=target_relationship_label&relatedType=target_moduleName
+
+Response 
+
+{
+
+success: true,
+result: related_record_array
+
+ }
+
+Query Related
+Fetch related records matching search criteria using this API.
+
+GET endpoint/query_related?query=query_string&id=record_id&relatedLabel=target_moduleName
+
+Response 
+
+{
+
+success: true,
+result: matching_related_record_array
+
+ }
+
+Add Related
+Establish a relationship between the two records.
+
+POST endpoint/add_related?sourceRecordId=record_id&relatedRecordId=target_record_id&relationIdLabel=target_relation_label
+
+Response 
+
+{
+
+success: true,
+result: {
+
+message: "successful"
+
+}
+
+ }
+
+Delete Related
+When you are looking to break the existing relationship between two records, you can use this API.
+
+POST endpoint/delete_related?sourceRecordId=record_id&relatedRecordId=target_record_id
+
+Response 
+
+{
+
+success: true,
+result: {
+
+status: "successful"
+
+}
+
+ }
+
+Reopen
+Reopen the closed record if permitted.
+
+POST endpoint/reopen?id=record_id
+
+Response 
+
+{
+
+success: true,
+result: {
+
+message: "Record reopened successfully."
+
+}
+
+ }
+
+Picklist Dependency
+You can get a dependency between picklist fields. For example, you want to know all the details of the pipeline and stage dependencies in your Deals module so you can configure your CRM to map them.
+
+GET endpoint/picklist_dependency?module=moduleName&&sourcefield=sourceFieldName&targetfield=targetFieldName
+
+Example - GET endpoint/picklist_dependency?module=Potentials&sourcefield=pipeline&targetfield=sales_stage'
+
+Parameters:
+
+module: name of the module
+sourceField: field name where the dependency should be triggered
+targetField: field that changes according to sourceField values
+Response 
+
+{
+
+success: true,
+
+result: {
+
+sourcefield: string,
+
+targetfield: string,
+
+valuemapping : [
+
+{
+
+sourcevalue : string,
+
+targetvalues: [
+
+string,
+
+string,
+
+...
+
+]
+
+},
+
+{
+
+sourcevalue : string,
+
+targetvalues: [
+
+string,
+
+string,
+
+...
+
+]
+
+},
+
+...
+
+]
+
+}
+
+ }
+
+Tags Add
+Add tags to the target record.
+
+POST endpoint/tags_add?id=record_id&tags=convert_into_json_string(["tag1", "tag2"])
+
+Response 
+
+{
+
+success: true,
+result: {
+
+message: "tags added"
+
+}
+
+ }
+
+Tags Retrieve 
+Fetch tags applied to the target record.
+
+GET endpoint/tags_retrieve?id=record_id
+
+Response 
+
+ {
+
+success: true,
+result: {
+
+tags: tag_name_array
+
+}
+
+ }
+
+Tags Delete
+Drop tag(s) applied to the target record. 
+
+POST endpoint/tag_delete?id=record_id&tags=convert_into_json_string(["tag"])&delete_all=boolean
+
+Response 
+
+{ 
+      success: true,
+
+result: {
+
+message: "tags deleted"
+
+}
+
+ }
+
+Files Retrieve
+This special API lets you pull the content of the linked image (Contacts, Products) that are not embedded as part of the record.
+
+GET endpoint/files_retrieve?id=resource_id
+
+resource_id: You obtain this value through record retrieval (Example: imageattachmentids field value of Contacts module record).
+
+Response 
+
+{
+
+success: true,
+result: {
+
+fileid: file_record_id,
+filename: string,
+filetype: mime_type,
+filezie: approx_size,
+filecontents: base64_encoded_string
+
+}
+
+ }
+
+Lookup
+This API enables you to search records with a phone or email ID in different modules and fields.
+
+Rest API: GET endpoint/lookup?type=phone&value=2861166887&searchIn={“Contacts”:[“mobile”,”phone”]}
+
+type : phone / email
+value : search value
+searchIn : Module and fieldname to search
+
+
+Webservices:
+webservice.php?operation=lookup&type=phone&value=343459844566&sessionName={session_name}&searchIn={“module_name”:[“field_names”]}
+
+Get Account Hierarchy
+Accounts can be linked to parent Accounts and hence form a hierarchy. Information about this hierarchy can be retrieved through this API.
+
+GET endpoint/get_account_hierarchy?id=record_id
+
+Response 
+
+{
+
+success: true,
+result: [
+
+{
+
+id: target_record_id,
+name: record_label,
+label: Org | Parent Org,
+level: depth,
+current: boolean
+
+}
+
+]
+
+ }
+
+Search for Phone or Email address
+You can look up a phone number or email address in the CRM.
+
+GET endpoint/lookup?type=phone&value=xxx&searchIn={"Contacts":["mobile","phone"]}
+Parameters
+
+type - either phone or email
+value - search value (we are looking for exact string)
+searchIn - optional Json string with one or more module names and optional fields to search the value. You can also just pass module name like {“Contacts”} and it will search in all the fields of Contacts.
+Response 
+
+{
+
+success: true,
+result: [
+
+{
+
+firstname:xxxxx,
+lastname:zzzzzz,
+email:xx@ccc.com,
+phone:1234567890,
+...
+
+}
+
+]
+
+ }
+
+Note: You can use a web service endpoint that supports session-based operation, which works better for repeated operations.
+
+Add Picklist 
+You can use this API to add new Picklist values for a Picklist Field in a specific module.
+
+POST endpoint/add_picklist?elementType=moduleName&element={"fieldname":"nameoffield","values":["value1","value2"]}
+
+Response 
+
+{
+
+    "success": true,
+
+    "result": {
+
+        "success": true,
+
+        "result": {
+
+            "id0": 4
+
+        }
+
+    }
+
+}
+
+Edit Picklist
+You can use this API to edit a Picklist value for a Picklist Field in a specific module. 
+
+POST endpoint/edit_picklist?elementType=moduleName&element={"fieldname":"nameoffield","current_value":"current_name","new_value" : "new_name"}
+
+Response 
+
+{
+
+    "success": true,
+
+    "result": {
+
+        "success": true,
+
+        "result": [
+
+            "success",
+
+            true
+
+        ]
+
+    }
+
+}
+
+Delete Picklist
+You can use this API to delete Picklist values for a Picklist Field in a specific module.
+
+Note: Deleting Picklist values requires a replacement Picklist value. You cannot delete values without replacing them with an existing picklist value.
+
+POST endpoint/delete_picklist?elementType=moduleName&element={"fieldname":"nameoffield","delete_values":["value1","value2"],"replace_with" : "value3"}
+
+Response 
+
+{
+
+    "success": true,
+
+    "result": {
+
+        "success": true,
+
+        "result": [
+
+            "success",
+
+            true
+
+        ]
+
+    }
+
+}
+
+Note:
+
+You cannot use the Add Picklist, Edit Picklist, or Delete Picklist APIs to update Picklist values in Global Picklists.
+You must be a CRM admin to use the Add Picklist, Edit Picklist, or Delete Picklist APIs. Non-admin users are restricted.
+You cannot use the Add Picklist, Edit Picklist, or Delete Picklist APIs for disabled modules. 
+Quick Reference
+CRM Modules
+List of default CRM modules exposed by the API. Alternatively, you can use the ListTypes API to get all the standard and custom modules available in your account.
+
+Name
+
+Description
+
+Calendar
+
+The Calendar module is used to manage To-Dos, Events, and Meetings.
+
+Leads
+
+The Leads module is used to track sales leads.
+
+Accounts
+
+The Accounts module is used to manage individuals or organizations involved in your business.
+
+Contacts
+
+The Contacts module is used to manage individuals associated with an Account.
+
+Potentials
+
+The Potential module is used to manage sales opportunities.
+
+Products
+
+The Products module is used to manage the products that your organization sells.
+
+Documents
+
+The Documents module is used to manage the uploaded documents and notes.
+
+Emails
+
+The Emails module is an email client used to manage your emails.
+
+HelpDesk
+
+The HelpDesk module is used to track customer issues such as feedback, problems, etc.
+
+Faq
+
+The FAQ module is used to manage the frequently asked questions by your customers.
+
+Vendors
+
+The Vendors module is used for managing manufacturers.
+
+PriceBooks
+
+The PriceBook module is used for managing the pricing of products.
+
+Quotes
+
+The Quotes module is used for managing the Quotes for products.
+
+PurchaseOrder
+
+The Purchase Order module is used for managing the Purchase Orders.
+
+SalesOrder
+
+The SalesOrder module is used for managing the SalesOrders.
+
+Invoice
+
+The Invoice module is used for creating invoice reports.
+
+Campaigns
+
+The Campaigns module is used for managing Marketing Campaigns.
+
+Events
+
+The Events module is used for managing activities such as Calls and Meetings.
+
+Users
+
+The Users module is used for managing the CRM users.
+
+Groups
+
+User groups on the vtiger CRM.
+
+Currency
+
+The Currency module lets the administrator define different currencies and set the expected conversion rate with respect to the base currency. These currencies can be used in the Inventory modules to support multi-currency.
+
+DocumentFolders
+
+The DocumentFolders module is used to group documents.
+
+Module IDs (Examples)
+The following are sample IDs shown as references. You can get the values for provisional accounts with the Rest API method - Describe API. Standard module ID uses list types to get a more accurate value for your account.
+
+ 
+Module Name
+
+ID number
+
+Accounts
+
+3
+
+Assets
+
+27
+
+Calendar
+
+1
+
+Campaigns
+
+17
+
+Cases
+
+39
+
+CampanyDetails
+
+26
+
+Contacts
+
+4
+
+Currency
+
+21
+
+DocumentFolders
+
+22
+
+Documents
+
+7
+
+EmailCampaigns
+
+37
+
+Emails
+
+8
+
+Events
+
+18
+
+Faq
+
+10
+
+Groups
+
+20
+
+HelpDesk
+
+9
+
+Invoice
+
+16
+
+Leads
+
+2
+
+LineItem
+
+33
+
+ModComments
+
+28
+
+Olark
+
+40
+
+PBXManager
+
+24
+
+Potentials
+
+5
+
+PriceBooks
+
+12
+
+PrintTemplates
+
+41
+
+Products
+
+6
+
+ProductTaxes
+
+35
+
+Project
+
+31
+
+ProjectMilestone
+
+29
+
+ProjectTask
+
+30
+
+PurchaseOrder
+
+14
+
+Quotes
+
+13
+
+SalesOrder
+
+15
+
+ServiceContracts
+
+23
+
+Services
+
+25
+
+SLA
+
+38
+
+Tax
+
+34
+
+Users
+
+19
+
+Vendors
+
+11
+
+Vtiger CRM Edition Limits API
+The Vtiger CRM Edition Limits API allows users to check system restrictions on various functionalities. This API helps monitor limits such as email campaigns, document uploads, workflow executions, and storage, ensuring efficient CRM usage.
+
+API Endpoint
+The API request should be made to the following URL:
+
+instanceurl/restapi/v1/vtiger/default/edition_Limits
+
+Replace instanceurl with the actual Vtiger CRM instance URL.
+
+Request Parameters
+The serviceName specifies the CRM feature whose limit needs to be retrieved.
+The serviceName must be selected from the predefined list of allowed keywords.
+The authentication process follows the same method as existing REST API calls.
+Service Name Keywords
+The following are the allowed service names:
+
+INBOX_LIMIT
+GMAIL_TWO_WAY_SYNC
+IMPORT_FILE_LIMIT
+DOCUMENT_UPLOAD_FILE_LIMIT
+SCHEDULED_WORKFLOW
+EMAILCAMPAIGN_LIMIT
+MODULE_BUILDER_LIMIT
+BHOUR_RECORD_LIMIT
+SLA_RECORD_LIMIT
+WEBHOOKS_ACTIONS
+WEBHOOK_CALLS
+REPORTS_COLUMN_LIMIT
+CUSTOM_FIELD_LIMIT_BY_TYPE_PER_MODULE
+PICKLIST_VALUES_MAX_ALLOWED
+SCHEDULED_WORKFLOW_RECORD_SET_LIMIT
+MULTIPATH_WORKFLOW_LIMIT
+WORKFLOW_ACTIONS
+SCHEDULED_WORKFLOW_HOURLY_LIMIT
+SCHEDULED_WORKFLOW_DAILY_LIMIT
+STORAGE
+STORAGE_USER_QUOTA
+WORKFLOW_SEND_EMAIL_ATTACHMENTS_LIMIT
+MASSEMAIL_TRIAL_LIMIT
+MASSEMAIL_EDITION_LIMIT
+MENTION_UPLOAD_FILE_LIMIT
+EMAILS_TRIAL_LIMIT
+EMAILS_EDITION_LIMIT
+DASHBOARD_TAB_LIMIT
+ATTACHMENTS_UPLOAD_LIMIT
+SUMMARY_WIDGET_CUSTOM_LIMIT
+CUSTOM_FIELD_LIMIT
+WORKFLOW_LIMIT
+APPROVALS_PROCESS_LIMIT_PER_MODULE
+APPROVALS_RULES_LIMIT_PER_PROCESS
+APPROVALS_PROCESS_LIMIT
+GLOBAL_PICKLISTS_LIMIT
+LBL_PIVOT_REPORT
+LBL_CHARTS
+SCHEDULED_REPORT
+SESSION_LIMIT_PER_DEVICE
+LIGHT_AGENT_ROLE
+SINGLE_APP_ROLE
+LIGHT_AGENT_USER
+CCEMAIL_LIMIT
+SENSITIVE_FIELD_LIMIT
+SINGLE_APP_USER
+MINILIST_MAX_ALLOWED_COLUMNS
+WEBSERVICE_LIMIT
+EMAILSEQUENCE_USER_DAILY_EMAILS_LIMIT
+LBL_CUSTOM_REPORT
+PROFILES_LIMIT
+ROLES_LIMIT
+CUSTOM_CONSENT_FIELD_LIMIT
+PIVOT_DATA_LIMIT
+WEBSENSE_TRACKER_LIMIT
+HELPDESK_EMAILS_LIMIT
+APPROVALS_REQUEST_EMAIL_ATTACHMENTS_LIMIT
+FIELD_CUSTOM_VALIDATION_RULE_LIMIT
+SMSREPLY_RULES
+SMSREPLY_ACTIONS
+LINE_ITEMS_CUSTOM_FIELD_LIMIT
+MODULEDESIGNER_MODULE_TAPSCRIPTS_LIMIT
+MODULEDESIGNER_INSTANCE_TAPSCRIPTS_LIMIT
+MODULEDESIGNER_MODULE_TAPSTYLES_LIMIT
+MODULEDESIGNER_INSTANCE_TAPSTYLES_LIMIT
+MODULEDESIGNER_MODULE_PAGES_LIMIT
+MODULEDESIGNER_INSTANCE_PAGES_LIMIT
+APIDESIGNER_API_LIMIT
+LBL_SERVICE_LEVEL_AGREEMENT_MODULE_LIMIT
+METRIC_PICKLIST_VALUES_MAX_ALLOWED
+LANDING_PAGES_EDITION_LIMIT
+SOCIAL_FACEBOOK_LIMIT
+SOCIAL_INSTAGRAM_LIMIT
+SOCIAL_GOOGLE_LIMIT
+SOCIAL_TWITTER_LIMIT
+SOCIAL_SEARCHSTREAMS_LIMIT
+IMAGE_MAX_UPLOAD_SIZE
+PROCESS_DESIGNER_PROCESS_PER_MODULE
+PROCESS_DESIGNER_FLOWS_PER_PROCESS
+PROCESS_DESIGNER_ACTIONS_PER_FLOW
+RADIO_VALUES_MAX_ALLOWED
+FACEBOOKLEADS_RECORD_LIMIT
+CCEMAIL_TRIAL_LIMIT
+BCCEMAIL_TRIAL_LIMIT
+BCCEMAIL_LIMIT
+LIVE_CHAT_AGENTS_LIMIT
+INSIGHTSDESIGNER_INSIGHT_LIMIT
+INSIGHTSDESIGNER_INSIGHT_WIDGET_LIMIT
+PROCESS_DESIGNER_SCHEDULED_PROCESS
+PROCESS_DESIGNER_SCHEDULED_PROCESS_FLOWS
+SLA_NOTIFICATION_LIMIT
+EXPORT_LIMIT
+SCHEDULED_WORKFLOW_RECORDS_LIMIT
+LAYOUT_DESIGNER_RECORDS_LIMIT
+CSATSURVEYS_RECORDS_LIMIT
+MACROS_JOB_DAILY_RUN_LIMIT
+MACROS_SCRIPT_DAILY_RUN_LIMIT
+Example API Request
+To check the document upload file limit, send a request as follows:
+
+Request URL
+
+instanceurl/restapi/v1/vtiger/default/edition_Limits
+
+Request Parameters
+
+{
+
+  "serviceName": "DOCUMENT_UPLOAD_FILE_LIMIT"
+
+}
+
+Example API Response
+
+{
+
+  "success": true,
+
+  "result": {
+
+    "serviceName": "DOCUMENT_UPLOAD_FILE_LIMIT",
+
+    "limit": "50MB"
+
+  }
+
+}
+
+This response indicates that the maximum document upload file size allowed is 50MB.
+
+Limitations
+You cannot perform sync on user-defined modules and non-entity modules such as Currency, Groups, etc.
+You cannot run queries on non-entity modules such as Currency, Groups, etc.
+You cannot use the Add Picklist, Edit Picklist, or Delete Picklist APIs to update values in Global Picklists.
+You must be a CRM admin to use the Add Picklist, Edit Picklist, or Delete Picklist APIs. Non-admin users are restricted.
+You cannot use the Add Picklist, Edit Picklist, or Delete Picklist APIs for disabled modules. 
+Reference 
+API Designer in Vtiger CRM 

@@ -1,0 +1,79 @@
+{
+  "name": "ASEAGI High Priority Document Alerts",
+  "nodes": [
+    {
+      "parameters": {
+        "rule": {
+          "interval": [
+            {
+              "field": "cronExpression",
+              "expression": "0 * * * *"
+            }
+          ]
+        }
+      },
+      "name": "Hourly Check Trigger",
+      "type": "n8n-nodes-base.scheduleTrigger",
+      "typeVersion": 1,
+      "position": [250, 300],
+      "id": "schedule-hourly"
+    },
+    {
+      "parameters": {
+        "operation": "executeQuery",
+        "query": "SELECT \n  original_filename,\n  relevancy_score,\n  document_category,\n  fraud_indicators,\n  perjury_indicators,\n  processed_at\nFROM legal_documents \nWHERE relevancy_score >= 950 \n  AND processed_at >= NOW() - INTERVAL '1 hour'\n  AND docket_number = 'J24-00478'\nORDER BY relevancy_score DESC\nLIMIT 10"
+      },
+      "name": "Check for New Critical Documents",
+      "type": "n8n-nodes-base.supabase",
+      "typeVersion": 1,
+      "position": [450, 300],
+      "id": "supabase-check"
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "number": [
+            {
+              "value1": "={{ $json.length }}",
+              "operation": "larger",
+              "value2": 0
+            }
+          ]
+        }
+      },
+      "name": "Any New Critical Docs?",
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 1,
+      "position": [650, 300],
+      "id": "if-check"
+    },
+    {
+      "parameters": {
+        "chatId": "YOUR_TELEGRAM_CHAT_ID",
+        "text": "=🚨 **HIGH PRIORITY ALERT**\n\n{{ $json.length }} new critical document(s) detected!\n\n{{ $json.map(doc => `📄 **${doc.original_filename}**\n🎯 Relevancy Score: ${doc.relevancy_score}\n📂 Category: ${doc.document_category}\n${doc.fraud_indicators.length > 0 ? '🚫 Fraud Indicators: ' + doc.fraud_indicators.join(', ') : ''}\n${doc.perjury_indicators.length > 0 ? '⚖️  Perjury Indicators: ' + doc.perjury_indicators.join(', ') : ''}`).join('\\n\\n') }}\n\n🔗 **Review Now:**\nhttp://137.184.1.91:8502\n\n⚠️ *Immediate attention recommended*",
+        "additionalFields": {
+          "parse_mode": "Markdown"
+        }
+      },
+      "name": "Send Urgent Alert",
+      "type": "n8n-nodes-base.telegram",
+      "typeVersion": 1,
+      "position": [850, 250],
+      "id": "telegram-alert"
+    }
+  ],
+  "connections": {
+    "Hourly Check Trigger": {
+      "main": [[{"node": "Check for New Critical Documents", "type": "main", "index": 0}]]
+    },
+    "Check for New Critical Documents": {
+      "main": [[{"node": "Any New Critical Docs?", "type": "main", "index": 0}]]
+    },
+    "Any New Critical Docs?": {
+      "main": [[{"node": "Send Urgent Alert", "type": "main", "index": 0}], []]
+    }
+  },
+  "settings": {
+    "executionOrder": "v1"
+  }
+}

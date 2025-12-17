@@ -1,5 +1,5 @@
 {
-  "name": "ASEAGI Daily Report",
+  "name": "ASEAGI Daily Case Report",
   "nodes": [
     {
       "parameters": {
@@ -12,123 +12,47 @@
           ]
         }
       },
-      "name": "Every Day at 8 AM",
+      "name": "Schedule Trigger - 8 AM Daily",
       "type": "n8n-nodes-base.scheduleTrigger",
       "typeVersion": 1,
-      "position": [250, 300]
+      "position": [250, 300],
+      "id": "schedule-daily"
     },
     {
       "parameters": {
-        "url": "http://api:8000/telegram/report",
-        "authentication": "genericCredentialType",
-        "genericAuthType": "httpHeaderAuth",
-        "sendHeaders": true,
-        "headerParameters": {
-          "parameters": [
-            {
-              "name": "Content-Type",
-              "value": "application/json"
-            }
-          ]
-        },
-        "options": {}
+        "operation": "executeQuery",
+        "query": "SELECT \n  COUNT(*) as total_docs,\n  COUNT(CASE WHEN relevancy_score >= 900 THEN 1 END) as critical_docs,\n  COUNT(CASE WHEN relevancy_score >= 800 THEN 1 END) as important_docs,\n  MAX(processed_at) as last_update\nFROM legal_documents \nWHERE docket_number = 'J24-00478'"
       },
-      "name": "Get Daily Report",
-      "type": "n8n-nodes-base.httpRequest",
-      "typeVersion": 3,
-      "position": [450, 300]
-    },
-    {
-      "parameters": {
-        "conditions": {
-          "string": [
-            {
-              "value1": "={{$json[\"success\"]}}",
-              "value2": "true"
-            }
-          ]
-        }
-      },
-      "name": "Check Success",
-      "type": "n8n-nodes-base.if",
+      "name": "Get Document Stats from Supabase",
+      "type": "n8n-nodes-base.supabase",
       "typeVersion": 1,
-      "position": [650, 300]
+      "position": [450, 300],
+      "id": "supabase-stats"
     },
     {
       "parameters": {
-        "chatId": "YOUR_TELEGRAM_USER_ID",
-        "text": "=📊 **Daily Report - {{$json[\"data\"][\"date\"]}}**\n\n🚨 Urgent Actions: {{$json[\"data\"][\"urgent_actions\"].length}}\n⚠️ Upcoming Deadlines: {{$json[\"data\"][\"upcoming_deadlines\"].length}}\n📅 Upcoming Hearings: {{$json[\"data\"][\"upcoming_hearings\"].length}}\n⚖️ Recent Violations: {{$json[\"data\"][\"recent_violations\"].length}}\n\nCheck your Telegram bot for details!",
+        "chatId": "YOUR_TELEGRAM_CHAT_ID",
+        "text": "=📊 **ASEAGI Daily Report**\n📅 {{ $now.format('MMMM d, yyyy') }}\n\n**Case J24-00478: Ashe Bucknor**\n\n📁 Total Documents: {{ $json.total_docs }}\n🎯 Critical Evidence (900+): {{ $json.critical_docs }}\n⚠️  Important Evidence (800+): {{ $json.important_docs }}\n🕐 Last Update: {{ $json.last_update }}\n\n🔗 **View Dashboards:**\n• Master: http://137.184.1.91:8501\n• Legal Intel: http://137.184.1.91:8502\n• CEO Dashboard: http://137.184.1.91:8503\n\n⚖️ *For Ashe. For Justice. For All Children.*",
         "additionalFields": {
           "parse_mode": "Markdown"
         }
       },
-      "name": "Send Telegram Alert",
+      "name": "Send Telegram Daily Report",
       "type": "n8n-nodes-base.telegram",
       "typeVersion": 1,
-      "position": [850, 250],
-      "credentials": {
-        "telegramApi": {
-          "id": "1",
-          "name": "Telegram account"
-        }
-      }
-    },
-    {
-      "parameters": {
-        "message": "=Daily report failed: {{$json[\"error\"]}}",
-        "additionalFields": {}
-      },
-      "name": "Log Error",
-      "type": "n8n-nodes-base.noOp",
-      "typeVersion": 1,
-      "position": [850, 400]
+      "position": [650, 300],
+      "id": "telegram-report"
     }
   ],
   "connections": {
-    "Every Day at 8 AM": {
-      "main": [
-        [
-          {
-            "node": "Get Daily Report",
-            "type": "main",
-            "index": 0
-          }
-        ]
-      ]
+    "Schedule Trigger - 8 AM Daily": {
+      "main": [[{"node": "Get Document Stats from Supabase", "type": "main", "index": 0}]]
     },
-    "Get Daily Report": {
-      "main": [
-        [
-          {
-            "node": "Check Success",
-            "type": "main",
-            "index": 0
-          }
-        ]
-      ]
-    },
-    "Check Success": {
-      "main": [
-        [
-          {
-            "node": "Send Telegram Alert",
-            "type": "main",
-            "index": 0
-          }
-        ],
-        [
-          {
-            "node": "Log Error",
-            "type": "main",
-            "index": 0
-          }
-        ]
-      ]
+    "Get Document Stats from Supabase": {
+      "main": [[{"node": "Send Telegram Daily Report", "type": "main", "index": 0}]]
     }
   },
-  "settings": {},
-  "staticData": null,
-  "tags": ["ASEAGI", "Daily", "Report"],
-  "pinData": {},
-  "versionId": "1"
+  "settings": {
+    "executionOrder": "v1"
+  }
 }

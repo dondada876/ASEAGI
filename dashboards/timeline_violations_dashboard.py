@@ -180,60 +180,136 @@ with tab2:
 with tab3:
     st.header("⚠️ Constitutional Violations Tracker")
 
-    # Violation categories
-    st.subheader("📋 Violation Categories")
-
-    col1, col2 = st.columns(2)
-
-    with col1:
-        st.markdown("""
-        **Due Process Violations:**
-        - False evidence in court filings
-        - Denial of parental rights without hearing
-        - Improper service of documents
-        - Violation of discovery rules
-        """)
-
-    with col2:
-        st.markdown("""
-        **Equal Protection Violations:**
-        - Gender bias in custody decisions
-        - Disparate treatment of parties
-        - Unequal access to evidence
-        """)
-
-    # Get events with constitutional issues
+    # Get violations from legal_violations table
     try:
-        violations_response = supabase.table('court_events')\
-            .select('event_date, event_title, event_description, event_type, judge_name')\
-            .or_('event_title.ilike.%false%,event_title.ilike.%violation%,event_title.ilike.%contempt%')\
-            .order('event_date', desc=True)\
+        violations_response = supabase.table('legal_violations')\
+            .select('*')\
+            .order('violation_date', desc=True)\
             .execute()
 
         violations_df = pd.DataFrame(violations_response.data)
 
         if not violations_df.empty:
-            st.subheader(f"🚨 {len(violations_df)} Potential Constitutional Issues")
-            st.dataframe(violations_df, width='stretch')
+            # Summary metrics
+            col1, col2, col3, col4 = st.columns(4)
+
+            with col1:
+                st.metric("Total Violations", len(violations_df))
+            with col2:
+                critical_count = len(violations_df[violations_df['severity_score'] >= 90])
+                st.metric("Critical", critical_count)
+            with col3:
+                high_count = len(violations_df[(violations_df['severity_score'] >= 70) & (violations_df['severity_score'] < 90)])
+                st.metric("High", high_count)
+            with col4:
+                medium_count = len(violations_df[(violations_df['severity_score'] >= 50) & (violations_df['severity_score'] < 70)])
+                st.metric("Medium", medium_count)
+
+            st.markdown("---")
+
+            # Filters
+            col1, col2 = st.columns([3, 1])
+
+            with col2:
+                st.subheader("Filters")
+
+                # Get unique categories
+                categories = violations_df['violation_category'].unique().tolist()
+                selected_categories = st.multiselect(
+                    "Category",
+                    categories,
+                    default=categories
+                )
+
+                # Severity filter
+                min_severity = st.slider("Minimum Severity Score", 0, 100, 0)
+
+            with col1:
+                # Filter data
+                filtered_df = violations_df[
+                    (violations_df['violation_category'].isin(selected_categories)) &
+                    (violations_df['severity_score'] >= min_severity)
+                ]
+
+                st.subheader(f"🚨 {len(filtered_df)} Documented Violations")
+
+                # Display violations
+                for _, violation in filtered_df.iterrows():
+                    # Determine severity level
+                    severity_score = violation.get('severity_score', 0)
+                    if severity_score >= 90:
+                        severity_level = "CRITICAL"
+                        severity_color = "🔴"
+                    elif severity_score >= 70:
+                        severity_level = "HIGH"
+                        severity_color = "🟠"
+                    elif severity_score >= 50:
+                        severity_level = "MEDIUM"
+                        severity_color = "🟡"
+                    else:
+                        severity_level = "LOW"
+                        severity_color = "🟢"
+
+                    # Create expander for each violation
+                    with st.expander(
+                        f"{severity_color} **{violation.get('violation_category', 'Unknown')}** - "
+                        f"{violation.get('violation_title', 'N/A')[:80]} ({severity_level} {severity_score}/100)"
+                    ):
+                        col_a, col_b = st.columns(2)
+
+                        with col_a:
+                            st.markdown(f"**📅 Date:** {violation.get('violation_date', 'N/A')}")
+                            st.markdown(f"**👤 Perpetrator:** {violation.get('perpetrator', 'Unknown')}")
+                            st.markdown(f"**⚖️ Category:** {violation.get('violation_category', 'N/A')}")
+
+                        with col_b:
+                            st.markdown(f"**⚠️ Severity:** {severity_level} ({severity_score}/100)")
+                            if violation.get('document_id'):
+                                st.markdown(f"**📄 Document ID:** {violation.get('document_id')}")
+                            if violation.get('incident_id'):
+                                st.markdown(f"**🔗 Incident ID:** {violation.get('incident_id')}")
+
+                        st.markdown("---")
+                        st.markdown(f"**📋 Description:**")
+                        st.markdown(violation.get('violation_description', 'No description available'))
+
+                        if violation.get('legal_basis'):
+                            st.markdown(f"**⚖️ Legal Basis:**")
+                            st.markdown(violation.get('legal_basis'))
+
+                        if violation.get('evidence_summary'):
+                            st.markdown(f"**📊 Evidence:**")
+                            st.markdown(violation.get('evidence_summary'))
+
+            # Violation categories breakdown
+            st.markdown("---")
+            st.subheader("📊 Violations by Category")
+
+            category_counts = violations_df['violation_category'].value_counts()
+            st.bar_chart(category_counts)
+
         else:
-            st.info("No flagged violations found in event titles")
+            st.info("No violations documented yet. Upload documents for automatic violation detection.")
 
         # Manual violation tracking
+        st.markdown("---")
         st.subheader("➕ Add Constitutional Violation")
 
         with st.form("add_violation"):
             viol_date = st.date_input("Date of Violation")
-            viol_type = st.selectbox("Violation Type", [
-                "Due Process - False Evidence",
-                "Due Process - Denial of Hearing",
-                "Equal Protection - Gender Bias",
-                "Fourth Amendment - Unlawful Search",
-                "First Amendment - Speech Restriction",
+            viol_type = st.selectbox("Violation Category", [
+                "Constitutional Rights Violation",
+                "Due Process Violation",
+                "Equal Protection Violation",
+                "Parental Rights Violation",
+                "Court Order Violation",
+                "Discovery Violation",
                 "Other"
             ])
+            viol_title = st.text_input("Violation Title")
             viol_desc = st.text_area("Description")
-            related_event = st.text_input("Related Court Event")
-            evidence_refs = st.text_input("Evidence References (file names)")
+            perpetrator = st.text_input("Perpetrator")
+            severity = st.slider("Severity Score", 0, 100, 50)
 
             submitted = st.form_submit_button("Add Violation")
             if submitted:
@@ -241,6 +317,7 @@ with tab3:
 
     except Exception as e:
         st.error(f"Error loading violations: {e}")
+        st.exception(e)
 
 # ============================================================================
 # TAB 4: EVIDENCE CROSS-REFERENCE

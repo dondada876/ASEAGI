@@ -1,0 +1,80 @@
+# AGI Protocol Python Dependencies
+
+# Core Framework
+anthropic>=0.18.1
+openai>=1.10.0
+python-dotenv>=1.0.0
+
+# API Layer
+fastapi>=0.109.0
+uvicorn[standard]>=0.27.0
+pydantic>=2.5.3
+python-multipart>=0.0.6
+
+# Database
+sqlalchemy>=2.0.25
+psycopg2-binary>=2.9.9
+redis>=5.0.1
+asyncpg>=0.29.0
+
+# Task Queue
+celery>=5.3.4
+celery[redis]>=5.3.4
+
+# Document Processing (leverages PROJ344 infrastructure)
+pypdf2>=3.0.1
+pytesseract>=0.3.10
+pillow>=10.2.0
+python-docx>=1.1.0
+pymupdf>=1.23.8
+
+# NLP & ML
+spacy>=3.7.2
+sentence-transformers>=2.3.1
+
+# Vector Database
+qdrant-client>=1.7.0
+chromadb>=0.4.22
+
+# Graph Database (optional)
+neo4j>=5.16.0
+
+# Testing
+pytest>=7.4.3
+pytest-asyncio>=0.23.3
+pytest-cov>=4.1.0
+pytest-mock>=3.12.0
+httpx>=0.26.0  # For testing FastAPI
+
+# Development Tools
+black>=23.12.1
+mypy>=1.8.0
+pylint>=3.0.3
+pre-commit>=3.6.0
+
+# Logging & Monitoring
+structlog>=24.1.0
+python-json-logger>=2.0.7
+
+# Utilities
+python-dateutil>=2.8.2
+pytz>=2023.3
+tenacity>=8.2.3  # Retry logic
+aiofiles>=23.2.1  # Async file operations
+pyyaml>=6.0.1
+
+# Legal Research (Westlaw integration)
+requests>=2.31.0
+beautifulsoup4>=4.12.3
+lxml>=5.1.0
+
+# Security
+cryptography>=41.0.7
+passlib[bcrypt]>=1.7.4
+
+# Configuration Management
+pydantic-settings>=2.1.0
+
+# Type Checking
+types-redis>=4.6.0
+types-requests>=2.31.0

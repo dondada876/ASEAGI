@@ -1,0 +1,84 @@
+{
+  "name": "ASEAGI Weekly Case Statistics",
+  "nodes": [
+    {
+      "parameters": {
+        "rule": {
+          "interval": [
+            {
+              "field": "cronExpression",
+              "expression": "0 18 * * 0"
+            }
+          ]
+        }
+      },
+      "name": "Weekly Trigger - Sunday 6 PM",
+      "type": "n8n-nodes-base.scheduleTrigger",
+      "typeVersion": 1,
+      "position": [250, 300],
+      "id": "schedule-weekly"
+    },
+    {
+      "parameters": {
+        "operation": "executeQuery",
+        "query": "SELECT \n  document_category,\n  COUNT(*) as count,\n  ROUND(AVG(relevancy_score)) as avg_score,\n  MAX(relevancy_score) as max_score\nFROM legal_documents \nWHERE docket_number = 'J24-00478'\nGROUP BY document_category \nORDER BY count DESC"
+      },
+      "name": "Get Category Breakdown",
+      "type": "n8n-nodes-base.supabase",
+      "typeVersion": 1,
+      "position": [450, 250],
+      "id": "supabase-categories"
+    },
+    {
+      "parameters": {
+        "operation": "executeQuery",
+        "query": "SELECT \n  COUNT(DISTINCT unnest(fraud_indicators)) as unique_fraud_indicators,\n  COUNT(DISTINCT unnest(perjury_indicators)) as unique_perjury_indicators,\n  COUNT(CASE WHEN array_length(fraud_indicators, 1) > 0 THEN 1 END) as docs_with_fraud,\n  COUNT(CASE WHEN array_length(perjury_indicators, 1) > 0 THEN 1 END) as docs_with_perjury\nFROM legal_documents \nWHERE docket_number = 'J24-00478'"
+      },
+      "name": "Get Violation Statistics",
+      "type": "n8n-nodes-base.supabase",
+      "typeVersion": 1,
+      "position": [450, 400],
+      "id": "supabase-violations"
+    },
+    {
+      "parameters": {
+        "operation": "executeQuery",
+        "query": "SELECT \n  COUNT(*) FILTER (WHERE relevancy_score >= 900) as critical,\n  COUNT(*) FILTER (WHERE relevancy_score >= 800 AND relevancy_score < 900) as important,\n  COUNT(*) FILTER (WHERE relevancy_score >= 700 AND relevancy_score < 800) as significant,\n  COUNT(*) FILTER (WHERE relevancy_score < 700) as reference\nFROM legal_documents \nWHERE docket_number = 'J24-00478'"
+      },
+      "name": "Get Priority Distribution",
+      "type": "n8n-nodes-base.supabase",
+      "typeVersion": 1,
+      "position": [450, 550],
+      "id": "supabase-priority"
+    },
+    {
+      "parameters": {
+        "chatId": "YOUR_TELEGRAM_CHAT_ID",
+        "text": "=📊 **ASEAGI WEEKLY REPORT**\n📅 Week of {{ $now.format('MMMM d, yyyy') }}\n━━━━━━━━━━━━━━━━━━━━\n\n**📁 DOCUMENT BREAKDOWN BY CATEGORY:**\n{{ $node['Get Category Breakdown'].json.map(cat => `• ${cat.document_category}: ${cat.count} docs\n  Avg Score: ${cat.avg_score} | Max: ${cat.max_score}`).join('\\n') }}\n\n**🎯 PRIORITY DISTRIBUTION:**\n{{ $node['Get Priority Distribution'].json[0] }}\n• Critical (900+): {{ $node['Get Priority Distribution'].json[0].critical }}\n• Important (800-899): {{ $node['Get Priority Distribution'].json[0].important }}\n• Significant (700-799): {{ $node['Get Priority Distribution'].json[0].significant }}\n• Reference (<700): {{ $node['Get Priority Distribution'].json[0].reference }}\n\n**⚠️  VIOLATION INDICATORS:**\n• Unique Fraud Indicators: {{ $node['Get Violation Statistics'].json[0].unique_fraud_indicators }}\n• Documents with Fraud: {{ $node['Get Violation Statistics'].json[0].docs_with_fraud }}\n• Unique Perjury Indicators: {{ $node['Get Violation Statistics'].json[0].unique_perjury_indicators }}\n• Documents with Perjury: {{ $node['Get Violation Statistics'].json[0].docs_with_perjury }}\n\n━━━━━━━━━━━━━━━━━━━━\n🔗 **Full Analysis:**\nhttp://137.184.1.91:8501\n\n⚖️ *Case J24-00478: Active Litigation*",
+        "additionalFields": {
+          "parse_mode": "Markdown"
+        }
+      },
+      "name": "Send Weekly Report",
+      "type": "n8n-nodes-base.telegram",
+      "typeVersion": 1,
+      "position": [700, 375],
+      "id": "telegram-weekly"
+    }
+  ],
+  "connections": {
+    "Weekly Trigger - Sunday 6 PM": {
+      "main": [[
+        {"node": "Get Category Breakdown", "type": "main", "index": 0},
+        {"node": "Get Violation Statistics", "type": "main", "index": 0},
+        {"node": "Get Priority Distribution", "type": "main", "index": 0}
+      ]]
+    },
+    "Get Category Breakdown": {
+      "main": [[{"node": "Send Weekly Report", "type": "main", "index": 0}]]
+    }
+  },
+  "settings": {
+    "executionOrder": "v1"
+  }
+}
